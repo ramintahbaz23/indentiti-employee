@@ -1,0 +1,36 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="loading-state">
+            <lightning-spinner alternative-text="Loading work orders" size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+    <template if:false={isLoading}>
+        <template if:true={hasWorkOrders}>
+            <div class="work-orders-grid">
+                <template for:each={workOrders} for:item="workOrder">
+                    <c-work-order-card 
+                        key={workOrder.id}
+                        work-order={workOrder}
+                        onactionclick={handleWorkOrderAction}
+                        onworkorderclick={handleWorkOrderClick}>
+                    </c-work-order-card>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasWorkOrders}>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <lightning-icon icon-name="standard:work_order" size="large" alternative-text="No work orders"></lightning-icon>
+                </div>
+                <div class="empty-state-title">No Work Orders Found</div>
+                <div class="empty-state-description">
+                    No work orders match your current filters. Try adjusting your search criteria.
+                </div>
+            </div>
+        </template>
+    </template>
+</template>
+
+

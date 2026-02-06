@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Work Orders - List View</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/salesforce-lightning-design-system/2.22.2/styles/salesforce-lightning-design-system.min.css">
+    <style>
+        :root {
+            /* KFM Brand Colors - Primary */
+            --kfm-navy: #003366;
+            --kfm-navy-dark: #002347;
+            --kfm-navy-light: #004D99;
+            --kfm-accent: #E84E1B;
+            --kfm-accent-dark: #C8401A;
+            
+            /* Replace Salesforce Blue with KFM Navy */
+            --sf-brand: #003366;
+            --sf-brand-dark: #002347;
+            --sf-brand-hover: #004D99;
+            
+            /* Update Priority Colors to align with KFM palette */
+            --priority-critical: #c23934;
+            --priority-high: #E84E1B;  /* Use KFM accent */
+            --priority-medium: #FF9800;
+            --priority-low: #90A4AE;
+            
+            /* Keep functional colors */
+            --sf-success: #2e844a;
+            --sf-warning: #fe9339;
+            --sf-error: #ea001e;
+            --sf-info: #003366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            background: #f3f2f2;
+            color: #181818;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Navigation - Tab Headers with Icons */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #dddbda;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.25rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--sf-brand);
+            background: #f3f2f2;
+        }
+
+        .nav-item.active {
+            color: var(--sf-brand);
+            font-weight: 600;
+            border-left-color: var(--sf-brand);
+            background: #f3f2f2;
+        }
+
+        .nav-item-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Nested Navigation */
+        .nav-item-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item-parent {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-item-parent:hover {
+            color: var(--sf-brand);
+        }
+
+        .nav-item-parent.active {
+            color: var(--sf-brand);
+            font-weight: 600;
+        }
+
+        .nav-item-parent.has-children {
+            position: relative;
+        }
+
+        .nav-item-children {
+            display: none;
+            flex-direction: column;
+            margin-left: 1.25rem;
+        }
+
+        .nav-item-parent.active .nav-item-children {
+            display: flex;
+        }
+
+        .nav-item-child {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1.25rem 0.625rem 2.5rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.8125rem;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .nav-item-child:hover {
+            color: var(--sf-brand);
+        }
+
+        .nav-item-child.active {
+            color: var(--sf-brand);
+            font-weight: 600;
+        }
+
+        .nav-item-child-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .recent-work-orders-label {
+            padding: 0.5rem 1.25rem 0.25rem 2.5rem;
+            font-size: 0.6875rem;
+            color: #706e6b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        /* Sidebar Footer - User Info */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #dddbda;
+            background: #ffffff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sf-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #181818;
+            margin-bottom: 0.125rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #706e6b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notification-bell {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .notification-bell:hover {
+            background: #f3f2f2;
+        }
+
+        .notification-bell svg {
+            width: 20px;
+            height: 20px;
+            color: #706e6b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--sf-error);
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+        }
+
+        .notification-badge.has-count {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--sf-error);
+            color: #ffffff;
+            font-size: 0.625rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 4px;
+            right: 4px;
+            border: 2px solid #ffffff;
+        }
+
+        .sidebar-search {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .sidebar-search-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+        }
+
+        .sidebar-search-input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .sidebar-search-wrapper {
+            position: relative;
+        }
+
+        .sidebar-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #706e6b;
+        }
+
+        /* Main Content Area */
+        .main-wrapper {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #dddbda;
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 0.875rem;
+            color: #706e6b;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #003366;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #181818;
+        }
+
+        .page-count {
+            font-size: 0.875rem;
+            color: #706e6b;
+            font-weight: 400;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-icon {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--sf-brand);
+            background: #f3f2f2;
+        }
+
+        .btn-primary {
+            background: var(--sf-brand);
+            color: #ffffff;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--sf-brand-dark);
+        }
+
+        /* Search and Filters Bar */
+        .search-filters-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.25rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            background: #ffffff;
+        }
+
+        .view-toggle-btn {
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            color: #706e6b;
+            cursor: pointer;
+            border-radius: 0.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .view-toggle-btn:hover {
+            background: #f3f2f2;
+            color: #181818;
+        }
+
+        .view-toggle-btn.active {
+            background: #e5f3ff;
+            color: var(--sf-brand);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .search-bar-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #706e6b;
+        }
+
+        .btn-filter {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            padding: 0.625rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3e3e3c;
+        }
+
+        .btn-filter:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .view-toggle-btn {
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--sf-brand);
+            color: #ffffff;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filters-actions a {
+            font-size: 0.875rem;
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .filters-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem 2rem 0.5rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23706e6b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .active-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f2f2;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: #e5f3ff;
+            border: 1px solid #c9e3f5;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            color: #002347;
+        }
+
+        .filter-tag-remove {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #002347;
+        }
+
+        .filter-tag-remove:hover {
+            color: var(--sf-error);
+        }
+
+        /* Table */
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f3f2f2;
+            border-bottom: 2px solid #dddbda;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #ecebea;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            margin-left: 0.25rem;
+            color: #706e6b;
+            font-size: 0.625rem;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f3f2f2;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #fafaf9;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+        }
+
+        .priority-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .priority-dot.critical { background: var(--priority-critical); }
+        .priority-dot.high { background: var(--priority-high); }
+        .priority-dot.medium { background: var(--priority-medium); }
+        .priority-dot.low { background: var(--priority-low); }
+
+        .wo-number {
+            color: var(--sf-brand);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .wo-number:hover {
+            text-decoration: underline;
+        }
+
+        .status-text {
+            font-weight: 500;
+        }
+
+        .status-new { color: #003366; }
+        .status-assigned { color: #fe9339; }
+        .status-scheduled { color: #003366; }
+        .status-in-progress { color: #003366; }
+        .status-dispatched { color: #fe9339; }
+        .status-completed { color: #2e844a; }
+        .status-proposal-pending { color: #fe9339; }
+        .status-text.status-needs-attention { 
+            color: #c23934; 
+            background: transparent;
+        }
+        .status-text.status-in-progress { 
+            color: #003366; 
+            background: transparent;
+        }
+        .status-text.status-on-hold { 
+            color: #fe9339; 
+            background: transparent;
+        }
+        .status-needs-follow-up { color: #9065b0; }
+
+        .priority-status-combined {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .priority-text {
+            font-weight: 500;
+            color: var(--slds-color-text-default);
+        }
+
+        .status-separator {
+            color: var(--slds-color-text-weak);
+            font-weight: 300;
+        }
+
+        .status-with-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hover-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #181818;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .hover-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #181818;
+        }
+
+        .status-with-tooltip:hover .hover-tooltip {
+            opacity: 1;
+        }
+
+        .overdue-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--priority-critical);
+            font-size: 0.8125rem;
+        }
+
+        /* Work Orders Grid */
+        .work-orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .work-order-card {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .work-order-card:hover {
+            box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .work-order-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .work-order-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .work-order-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--sf-brand);
+            line-height: 1.25;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            font-size: 0.625rem;
+            font-weight: 700;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            line-height: 1.5;
+        }
+
+        .status-badge.status-needs-attention {
+            background: #ffebee;
+            color: #c23934;
+        }
+
+        .status-badge.status-in-progress {
+            background: #e3f2fd;
+            color: #003366;
+        }
+
+        .status-badge.status-new-badge {
+            background: #f3e5f5;
+            color: #9065b0;
+        }
+        }
+
+        .status-badge.status-on-hold {
+            background: #fff4e5;
+            color: #fe9339;
+        }
+
+        .status-badge.status-new {
+            background: #e3f2fd;
+            color: #003366;
+        }
+
+        .status-badge.status-assigned {
+            background: #fff4e5;
+            color: #fe9339;
+        }
+
+        .status-badge.status-scheduled {
+            background: #e3f2fd;
+            color: #003366;
+        }
+
+        .status-badge.status-in-progress {
+            background: #e3f2fd;
+            color: #003366;
+        }
+
+        .status-badge.status-dispatched {
+            background: #fff4e5;
+            color: #fe9339;
+        }
+
+        .status-badge.status-completed {
+            background: #d4edda;
+            color: #2e844a;
+        }
+
+        .work-order-title {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #080707;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .priority-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 0.375rem;
+        }
+
+        .priority-indicator.critical { background: var(--priority-critical); }
+        .priority-indicator.high { background: var(--priority-high); }
+        .priority-indicator.medium { background: var(--priority-medium); }
+        .priority-indicator.low { background: var(--priority-low); }
+
+        .work-order-classification {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: #706e6b;
+            line-height: 1.5;
+        }
+
+        .work-order-classification svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .work-order-body {
+            padding: 0.75rem 1rem;
+            flex: 1;
+        }
+
+        .work-order-details {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .detail-label {
+            color: #706e6b;
+            font-weight: 400;
+        }
+
+        .detail-value {
+            color: #080707;
+            font-weight: 400;
+        }
+
+        .location-value {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .location-value svg {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
+
+        .overdue-badge-bottom-right {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            color: #c23934;
+            font-size: 0.75rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #706e6b;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-description {
+            font-size: 0.875rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: #ffffff;
+            border-top: 1px solid #dddbda;
+        }
+
+        .pagination-info {
+            font-size: 0.875rem;
+            color: #706e6b;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .pagination-select {
+            padding: 0.375rem 0.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            margin-right: 1rem;
+        }
+
+        .pagination-btn {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-number {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .pagination-number:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .pagination-number.active {
+            background: var(--sf-brand);
+            color: #ffffff;
+            border-color: var(--sf-brand);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-search">
+            <div class="sidebar-search-wrapper">
+                <svg class="sidebar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                <input type="text" class="sidebar-search-input" placeholder="Search...">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </span>
+                Home
+            </a>
+            <a href="view-all.html" class="nav-item active">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </span>
+                Work Orders
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9.5h4"></path></svg>
+                </span>
+                Invoices
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                </span>
+                Approval Requests
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </span>
+                Client and Store Information
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                </span>
+                Training and FAQs
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">MT</div>
+                <div class="user-details">
+                    <div class="user-name">Mark Thomas</div>
+                    <div class="user-role">Purple Corporate Manager</div>
+                </div>
+                <div class="notification-bell" id="notificationBell">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge has-count" id="notificationBadge">3</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="top-bar"></div>
+        
+        <main class="main-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="index.html">Home</a> > All Work Orders
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title-section">
+                <h1 class="page-title">All Work Orders</h1>
+                <span class="page-count" id="totalCount">0 work orders</span>
+            </div>
+            <div class="page-actions">
+                <button class="btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    New Work Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filters Bar -->
+        <div class="search-filters-bar">
+            <div class="search-bar">
+                <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                <input type="text" id="searchInput" placeholder="Search...">
+            </div>
+            <div class="view-toggle">
+                <button class="view-toggle-btn" id="cardViewBtn" title="Card View">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </button>
+                <button class="view-toggle-btn active" id="tableViewBtn" title="Table View">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section" id="filtersSection">
+            <div class="filters-header">
+                <div class="filters-title">Filters</div>
+                <div class="filters-actions">
+                    <a href="#" id="clearAll">Clear All</a>
+                </div>
+            </div>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="all">All Statuses</option>
+                        <option value="New">New</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="On-site/In Progress">On-site/In Progress</option>
+                        <option value="Proposal Submitted">Proposal Submitted</option>
+                        <option value="Work Complete">Work Complete</option>
+                        <option value="Invoice Submitted">Invoice Submitted</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Trade</label>
+                    <select class="filter-select" id="filterTrade">
+                        <option value="all">All Trades</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="HVAC-R">HVAC-R</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Fire Services">Fire Services</option>
+                        <option value="Janitorial/Cleaning Services">Janitorial/Cleaning Services</option>
+                        <option value="Pest Control">Pest Control</option>
+                        <option value="Locks/Safes/Security">Locks/Safes/Security</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date Range</label>
+                    <select class="filter-select" id="filterDateRange">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="7days">Last 7 Days</option>
+                        <option value="30days" selected>Last 30 Days</option>
+                        <option value="thisWeek">This Week</option>
+                        <option value="thisMonth">This Month</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Store/Location</label>
+                    <select class="filter-select" id="filterLocation">
+                        <option value="all">All Locations</option>
+                        <option value="CA">California</option>
+                        <option value="TX">Texas</option>
+                        <option value="OH">Ohio</option>
+                        <option value="AZ">Arizona</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Contractor</label>
+                    <select class="filter-select" id="filterContractor">
+                        <option value="all">All Contractors</option>
+                        <option value="FireSafe Systems">FireSafe Systems</option>
+                        <option value="CleanPro Services">CleanPro Services</option>
+                        <option value="CoolTech HVAC">CoolTech HVAC</option>
+                    </select>
+                </div>
+            </div>
+            <div class="active-filters" id="activeFilters">
+                <!-- Active filter tags will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Work Orders Grid (Card View) -->
+        <div class="work-orders-grid" id="workOrdersGrid" style="display: none;">
+            <!-- Work orders will be rendered here as cards -->
+        </div>
+
+        <!-- Table (Table View) -->
+        <div class="table-container" id="tableContainer">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" id="selectAll"></th>
+                            <th class="sortable" data-sort="woNumber">
+                                Work Order #
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="status">
+                                Status
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="issue">
+                                Issue
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="dueDate">
+                                Due Date
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="trade">
+                                Trade
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="location">
+                                Store/Location
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="contractor">
+                                Contractor
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="created">
+                                Created
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="nte">
+                                NTE
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="workOrdersTableBody">
+                        <!-- Work orders will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </main>
+    </div>
+
+    <script src="demo-data.js"></script>
+    <script src="view-all-app.js"></script>
+</body>
+</html>
+

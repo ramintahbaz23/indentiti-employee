@@ -1,0 +1,100 @@
+<template>
+    <div class="filters-section">
+        <div class="filters-row">
+            <div class="filter-group">
+                <label class="filter-label" for="status-select">Status</label>
+                <select 
+                    id="status-select"
+                    class="filter-select" 
+                    value={selectedStatus}
+                    onchange={handleStatusChange}>
+                    <template for:each={statusOptions} for:item="status">
+                        <option key={status} value={status}>{status}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="priority-select">Priority</label>
+                <select 
+                    id="priority-select"
+                    class="filter-select" 
+                    value={selectedPriority}
+                    onchange={handlePriorityChange}>
+                    <template for:each={priorityOptions} for:item="priority">
+                        <option key={priority} value={priority}>{priority}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="trade-select">Trade</label>
+                <select 
+                    id="trade-select"
+                    class="filter-select" 
+                    value={selectedTrade}
+                    onchange={handleTradeChange}>
+                    <template for:each={tradeOptions} for:item="trade">
+                        <option key={trade} value={trade}>{trade}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="date-range-select">Date Range</label>
+                <select 
+                    id="date-range-select"
+                    class="filter-select" 
+                    value={selectedDateRange}
+                    onchange={handleDateRangeChange}>
+                    <template for:each={dateRangeOptions} for:item="range">
+                        <option key={range} value={range}>{range}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="location-select">Store/Location</label>
+                <select 
+                    id="location-select"
+                    class="filter-select" 
+                    value={selectedLocation}
+                    onchange={handleLocationChange}>
+                    <template for:each={locationOptions} for:item="location">
+                        <option key={location.value} value={location.value}>{location.label}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="contractor-select">Contractor</label>
+                <select 
+                    id="contractor-select"
+                    class="filter-select" 
+                    value={selectedContractor}
+                    onchange={handleContractorChange}>
+                    <template for:each={contractorOptions} for:item="contractor">
+                        <option key={contractor.value} value={contractor.value}>{contractor.label}</option>
+                    </template>
+                </select>
+            </div>
+        </div>
+
+        <div class="quick-filters-section">
+            <label class="filter-label">Quick Filters</label>
+            <div class="quick-filters">
+                <template for:each={quickFilters} for:item="filter">
+                    <button 
+                        key={filter.value}
+                        class={getQuickFilterClass(filter.value)}
+                        data-value={filter.value}
+                        onclick={handleQuickFilterClick}
+                        type="button">
+                        {filter.label}
+                    </button>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
+

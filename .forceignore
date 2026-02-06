@@ -1,0 +1,56 @@
+# LWC specific files
+**/__tests__/**
+**/__mocks__/**
+**/__stories__/**
+**/__docs__/**
+**/.eslintrc.json
+
+# LWC Jest
+**/jest.config.js
+**/coverage/**
+
+# LWC Storybook
+**/.storybook/**
+**/stories/**
+
+# LWC Local Dev
+**/.localdevserver/**
+**/lwc-services.config.js
+
+# LWC Prettier
+**/.prettierrc
+**/.prettierignore
+
+# LWC TypeScript
+**/tsconfig.json
+**/tslint.json
+
+# LWC Webpack
+**/webpack.config.js
+
+# LWC Rollup
+**/rollup.config.js
+
+# LWC Babel
+**/.babelrc
+**/babel.config.js
+
+# LWC ESLint
+**/.eslintignore
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+

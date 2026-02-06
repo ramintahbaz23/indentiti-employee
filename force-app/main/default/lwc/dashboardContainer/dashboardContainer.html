@@ -1,0 +1,103 @@
+<template>
+    <lightning-card title="Work Order Dashboard" icon-name="standard:work_order">
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Work Order Dashboard</h1>
+                <div class="header-actions">
+                    <lightning-button 
+                        label="Export" 
+                        variant="neutral"
+                        icon-name="utility:download"
+                        onclick={handleExport}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="New Work Order" 
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={handleNewWorkOrder}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid" if:false={isLoadingMetrics}>
+                <c-metric-card
+                    label="Urgent"
+                    value={metrics.urgent}
+                    sublabel="Require immediate attention"
+                    variant="critical"
+                    onmetricclick={handleMetricClick}>
+                </c-metric-card>
+
+                <c-metric-card
+                    label="Pending Approval"
+                    value={metrics.pendingApproval}
+                    sublabel="Awaiting approval or on hold"
+                    variant="warning"
+                    onmetricclick={handleMetricClick}>
+                </c-metric-card>
+
+                <c-metric-card
+                    label="New"
+                    value={metrics.newCount}
+                    sublabel="New work orders"
+                    variant="info"
+                    onmetricclick={handleMetricClick}>
+                </c-metric-card>
+
+                <c-metric-card
+                    label="Needs Follow Up"
+                    value={metrics.needsFollowUp}
+                    sublabel="Require follow-up"
+                    variant="purple"
+                    onmetricclick={handleMetricClick}>
+                </c-metric-card>
+            </div>
+
+            <div class="slds-align_absolute-center slds-p-around_medium" if:true={isLoadingMetrics}>
+                <lightning-spinner alternative-text="Loading metrics" size="medium"></lightning-spinner>
+            </div>
+
+            <!-- Filter Bar -->
+            <c-filter-bar
+                filter-options={filterOptions}
+                selected-status={currentFilters.status}
+                selected-priority={currentFilters.priority}
+                selected-trade={currentFilters.trade}
+                selected-date-range={currentFilters.dateRange}
+                selected-location={currentFilters.location}
+                selected-contractor={currentFilters.contractor}
+                active-quick-filter={currentFilters.quickFilter}
+                onfilterchange={handleFilterChange}>
+            </c-filter-bar>
+
+            <!-- Work Orders Section -->
+            <div class="work-orders-section">
+                <div class="section-header">
+                    <div class="section-title-group">
+                        <h2 class="section-title">
+                            Active Work Orders 
+                            <span class="section-count">({workOrderCount})</span>
+                        </h2>
+                        <lightning-button 
+                            label="Filter" 
+                            variant="neutral"
+                            icon-name="utility:filter"
+                            onclick={handleFilterClick}>
+                        </lightning-button>
+                    </div>
+                    <a href="#" class="view-all-link" onclick={handleViewAll}>View All →</a>
+                </div>
+
+                <c-work-order-grid
+                    work-orders={workOrders}
+                    is-loading={isLoading}
+                    onworkorderaction={handleWorkOrderAction}
+                    onworkorderclick={handleWorkOrderClick}>
+                </c-work-order-grid>
+            </div>
+        </div>
+    </lightning-card>
+</template>
+

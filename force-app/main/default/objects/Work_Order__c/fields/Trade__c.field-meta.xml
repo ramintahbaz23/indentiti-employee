@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Trade__c</fullName>
+    <externalId>false</externalId>
+    <label>Trade</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restrictedPicklist>true</restrictedPicklist>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Plumbing</fullName>
+                <default>false</default>
+                <label>Plumbing</label>
+            </value>
+            <value>
+                <fullName>HVAC-R</fullName>
+                <default>false</default>
+                <label>HVAC-R</label>
+            </value>
+            <value>
+                <fullName>Electrical</fullName>
+                <default>false</default>
+                <label>Electrical</label>
+            </value>
+            <value>
+                <fullName>Fire Services</fullName>
+                <default>false</default>
+                <label>Fire Services</label>
+            </value>
+            <value>
+                <fullName>Janitorial/Cleaning Services</fullName>
+                <default>false</default>
+                <label>Janitorial/Cleaning Services</label>
+            </value>
+            <value>
+                <fullName>Pest Control</fullName>
+                <default>false</default>
+                <label>Pest Control</label>
+            </value>
+            <value>
+                <fullName>Locks/Safes/Security</fullName>
+                <default>false</default>
+                <label>Locks/Safes/Security</label>
+            </value>
+            <value>
+                <fullName>Lighting</fullName>
+                <default>false</default>
+                <label>Lighting</label>
+            </value>
+            <value>
+                <fullName>General Maintenance</fullName>
+                <default>false</default>
+                <label>General Maintenance</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
+
+

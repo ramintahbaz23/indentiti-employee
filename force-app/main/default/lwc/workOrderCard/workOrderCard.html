@@ -1,0 +1,66 @@
+<template>
+    <div class={cardClass} if:true={workOrder} onclick={handleWorkOrderClick} data-id={workOrder.id}>
+        <div class="work-order-header">
+            <div class="work-order-header-top">
+                <span class="work-order-number">
+                    {workOrder.workOrderNumber}
+                </span>
+                <span class={statusBadgeClass}>{statusBadgeText}</span>
+            </div>
+            <div class="work-order-title">
+                <span class={priorityIndicatorClass}></span>
+                {workOrder.issue}
+            </div>
+            <div class="work-order-classification">
+                <lightning-icon icon-name="standard:work_order" size="x-small" alternative-text="Trade"></lightning-icon>
+                {displayTrade}
+            </div>
+        </div>
+        <div class="work-order-body">
+            <div class="work-order-details">
+                <span class="detail-label">Location:</span>
+                <span class="detail-value location-value" if:true={locationDisplay}>
+                    <lightning-icon icon-name="utility:location" size="xx-small" alternative-text="Location"></lightning-icon>
+                    {locationDisplay}
+                </span>
+                
+                <span class="detail-label">Store:</span>
+                <span class="detail-value">{workOrder.storeName}</span>
+                
+                <template if:true={workOrder.scheduledDate}>
+                    <span class="detail-label">Scheduled:</span>
+                    <span class="detail-value">{formattedScheduledDate}</span>
+                </template>
+                
+                <template if:true={workOrder.createdDate}>
+                    <span class="detail-label">Created:</span>
+                    <span class="detail-value">{formattedCreatedDate}</span>
+                </template>
+                
+                <template if:true={workOrder.completedDate}>
+                    <span class="detail-label">Completed:</span>
+                    <span class="detail-value">{formattedCompletedDate}</span>
+                </template>
+                
+                <template if:true={workOrder.contractorName}>
+                    <span class="detail-label">Contractor:</span>
+                    <span class="detail-value">{workOrder.contractorName}</span>
+                </template>
+                
+                <span class="detail-label">NTE:</span>
+                <span class="detail-value">{formattedNteAmount}</span>
+                
+                <template if:true={workOrder.invoiceAmount}>
+                    <span class="detail-label">Cost:</span>
+                    <span class="detail-value">{formattedInvoiceAmount}</span>
+                </template>
+            </div>
+        </div>
+        <template if:true={showOverdueWarning}>
+            <div class="overdue-badge-bottom-right">
+                {overdueText}
+            </div>
+        </template>
+    </div>
+</template>
+

@@ -1,0 +1,123 @@
+.filters-section {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.filters-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3e3e3c;
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    background: #ffffff;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233e3e3c' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 12px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #0176d3;
+    box-shadow: 0 0 3px rgba(1, 118, 211, 0.3);
+}
+
+.quick-filters-section {
+    margin-top: 1rem;
+}
+
+.quick-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.quick-filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    background: #ffffff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #3e3e3c;
+}
+
+.quick-filter-btn:hover {
+    border-color: #0176d3;
+    color: #0176d3;
+}
+
+.quick-filter-btn.active {
+    background: #0176d3;
+    color: #ffffff;
+    border-color: #0176d3;
+}
+
+.quick-filter-btn:focus {
+    outline: 2px solid #0176d3;
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .filters-section {
+        padding: 1rem;
+    }
+
+    .filters-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-select {
+        min-height: 44px;
+        padding: 0.625rem 2rem 0.625rem 0.75rem;
+    }
+
+    .quick-filters {
+        gap: 0.5rem;
+    }
+
+    .quick-filter-btn {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.75rem;
+        padding: 0.75rem 0.875rem;
+        min-height: 44px;
+        -webkit-tap-highlight-color: rgba(1, 118, 211, 0.1);
+    }
+}
+
