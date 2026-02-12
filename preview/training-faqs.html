@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Training and FAQs - Identiti.Connect</title>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --kfm-navy: #003366;
+  --kfm-navy-dark: #002347;
+  --kfm-navy-light: #004D99;
+  --kfm-accent: #E84E1B;
+  --sf-brand: #003366;
+  --sf-brand-dark: #002347;
+  --sf-brand-hover: #004D99;
+  --sf-success: #2e844a;
+  --sf-warning: #fe9339;
+  --sf-error: #ea001e;
+  --sf-page-bg: #f3f2f2;
+  --sf-card-bg: #ffffff;
+  --sf-border: #dddbda;
+  --sf-border-light: #e5e5e5;
+  --sf-text-default: #3e3e3c;
+  --sf-text-title: #181818;
+  --sf-text-weak: #706e6b;
+  --sf-shadow: 0 2px 2px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06);
+  --sf-shadow-drop: 0 4px 12px rgba(0,0,0,0.12);
+  --font: 'Salesforce Sans', -apple-system, sans-serif;
+  --r: 4px;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--sf-page-bg);
+  color: var(--sf-text-default);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Top Navigation */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--sf-border);
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+        .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+.top-nav-left > * {
+  pointer-events: auto;
+}        .top-nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            overflow: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-width: 100%;
+            padding-right: 0.5rem;
+        }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 1rem;
+  color: #3e3e3c;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-item.active {
+  color: var(--sf-brand);
+  font-weight: 600;
+  border-bottom-color: var(--sf-brand);
+}
+
+.nav-item-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: fixed;
+  background: #ffffff;
+  border: 1px solid var(--sf-border);
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  z-index: 10001;
+  margin-top: 0;
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #3e3e3c;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f3f2f2;
+}
+
+.nav-dropdown-item:last-child {
+  border-bottom: none;
+}        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+            position: absolute;
+            right: 1.5rem;
+            z-index: 10;
+            background: #ffffff;
+            padding-left: 1rem;
+        }
+        @media (max-width: 768px) {
+            .top-nav-container {
+                padding: 0 1rem;
+                gap: 0.75rem;
+                justify-content: space-between;
+            }        .top-nav-left {
+                gap: 0.5rem;
+                justify-content: flex-start;
+                position: static;
+                left: auto;
+                right: auto;
+            }
+
+            .nav-logo-text {
+                display: none;
+            }
+        }
+
+.top-nav-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--sf-border);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--sf-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #181818;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 0.6875rem;
+  color: #706e6b;
+  white-space: nowrap;
+}
+
+/* Main Content */
+.main-wrapper {
+  padding-top: 64px;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.page-header {
+  background: linear-gradient(135deg, var(--kfm-navy) 0%, var(--kfm-navy-light) 100%);
+  padding: 3rem 2rem;
+  margin: -3rem -1.5rem 3rem;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.page-header p {
+  font-size: 0.9375rem;
+  color: rgba(245, 245, 245, 1);
+  line-height: 1.5;
+}
+
+/* Guide Cards */
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.guide-card {
+  background: var(--sf-card-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.guide-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--kfm-navy), var(--kfm-navy-light));
+  opacity: 0;
+}
+
+.guide-card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--sf-border-light);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background: linear-gradient(to bottom, #fafafa, #ffffff);
+}
+
+.guide-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guide-icon.store {
+  color: var(--kfm-navy);
+}
+
+.guide-icon.corp {
+  color: var(--kfm-navy-light);
+}
+
+.guide-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.guide-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--sf-text-title);
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.guide-subtitle {
+  font-size: 0.875rem;
+  color: var(--sf-text-weak);
+  line-height: 1.4;
+}
+
+.guide-card-body {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.guide-description {
+  font-size: 0.9375rem;
+  color: var(--sf-text-default);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+.guide-links {
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.guide-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+  color: var(--kfm-navy);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sf-border-light);
+  position: relative;
+}
+
+.guide-link:last-child {
+  border-bottom: none;
+}
+
+.guide-link
+
+.guide-link svg {
+  opacity: 0.6;
+}
+
+.guide-card-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--sf-border-light);
+  display: flex;
+  justify-content: flex-end;
+  background: #fafafa;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: var(--kfm-navy);
+  color: white;
+  border: 1px solid var(--kfm-navy-dark);
+}
+
+.btn-neutral {
+  background: white;
+  color: var(--kfm-navy);
+  border: 1px solid var(--sf-border);
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sf-text-weak);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--sf-border), transparent);
+}
+
+/* Guide Detail Views */
+.guide-detail-view {
+  display: none !important;
+}
+
+.guide-detail-view.active {
+  display: block !important;
+}
+
+.guides-landing {
+  display: block;
+}
+
+.guides-landing.hidden {
+  display: none;
+}
+
+.guide-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--sf-border);
+}
+
+/* Table of Contents - Simple and Bare */
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e5e5;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--kfm-navy);
+  cursor: pointer;
+}
+
+.toc-item:hover {
+  color: var(--kfm-navy-dark);
+  background-color: #f8f9fa;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  border-radius: 4px;
+}
+
+.toc-item:last-child {
+  border-bottom: none;
+}
+
+.toc-number {
+  font-weight: 500;
+  color: var(--kfm-navy);
+  min-width: 2rem;
+  font-size: 0.875rem;
+}
+
+.toc-title {
+  flex: 1;
+  font-size: 0.9375rem;
+}
+
+.guide-detail-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--sf-text-title);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--sf-border);
+  background: white;
+  color: var(--kfm-navy);
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.lessons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lesson-item {
+  background: var(--sf-card-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.lesson-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--kfm-navy);
+  border-radius: 8px 0 0 8px;
+  opacity: 0;
+}
+
+.lesson-item
+
+.lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.lesson-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--kfm-navy), var(--kfm-navy-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 51, 102, 0.2);
+}
+
+.lesson-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--sf-text-title);
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
+}
+
+.lesson-description {
+  font-size: 0.875rem;
+  color: var(--sf-text-weak);
+  line-height: 1.5;
+}
+
+.lesson-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: auto;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.lesson-badge.video {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  color: #bf5600;
+  border: 1px solid #ffcc80;
+}
+
+.lesson-badge.doc {
+  background: linear-gradient(135deg, #e5f3ff, #cce7ff);
+  color: var(--kfm-navy);
+  border: 1px solid #99d3ff;
+}
+
+/* Lesson Detail View */
+.lesson-detail-view {
+  display: none;
+}
+
+.lesson-detail-view.active {
+  display: block;
+}
+
+.lesson-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--sf-border);
+}
+
+.lesson-detail-content {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.lesson-content-card {
+  background: var(--sf-card-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.lesson-content-section {
+  padding: 2rem;
+  border-bottom: 1px solid var(--sf-border-light);
+}
+
+.lesson-content-section:last-child {
+  border-bottom: none;
+}
+
+.lesson-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sf-text-weak);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lesson-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--sf-border-light), transparent);
+}
+
+.lesson-intro-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--sf-text-default);
+}
+
+/* Video Block */
+.video-block {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1b2533;
+  aspect-ratio: 16/9;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--sf-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.video-block
+
+.video-poster {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: linear-gradient(160deg, #0d1822 0%, #1a2a3a 100%);
+}
+
+.video-play-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--kfm-navy), var(--kfm-navy-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 10px rgba(0,51,102,0.25), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.video-play-ring svg {
+  margin-left: 2px;
+}
+
+.video-label-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.video-label-sub {
+  font-size: 0.8125rem;
+  color: rgba(255,255,255,0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Steps */
+.step-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border: 1px solid var(--sf-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.step-item
+
+.step-item-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--kfm-navy), var(--kfm-navy-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.125rem;
+  box-shadow: 0 2px 4px rgba(0, 51, 102, 0.2);
+}
+
+.step-item-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--sf-text-title);
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
+}
+
+.step-item-body {
+  font-size: 0.875rem;
+  color: var(--sf-text-weak);
+  line-height: 1.6;
+}
+
+/* Tip Box */
+.tip-callout {
+  display: flex;
+  gap: 0.875rem;
+  background: linear-gradient(135deg, #e5f3ff, #d6ebff);
+  border-left: 4px solid var(--kfm-navy);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 51, 102, 0.1);
+}
+
+.tip-callout-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.tip-callout-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--kfm-navy);
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.01em;
+}
+
+.tip-callout-body {
+  font-size: 0.875rem;
+  color: var(--sf-text-default);
+  line-height: 1.6;
+}
+
+/* Sidebar */
+.lesson-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 80px;
+}
+
+.sidebar-card {
+  background: var(--sf-card-bg);
+  border: 1px solid var(--sf-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.sidebar-card-header {
+  padding: 0.875rem 1rem;
+  background: linear-gradient(to bottom, #fafafa, #ffffff);
+  border-bottom: 1px solid var(--sf-border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sf-text-weak);
+}
+
+.sidebar-lesson-list {
+  list-style: none;
+}
+
+.sidebar-lesson-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--sf-border-light);
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--sf-text-default);
+}
+
+.sidebar-lesson-item:last-child {
+  border-bottom: none;
+}
+
+.sidebar-lesson-item
+
+.sidebar-lesson-item.current {
+  background: linear-gradient(90deg, #e5f3ff, #f0f7ff);
+  color: var(--kfm-navy);
+  font-weight: 600;
+  border-left: 3px solid var(--kfm-navy);
+  padding-left: 0.875rem;
+}
+
+.sidebar-mini-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--sf-page-bg);
+  color: var(--sf-text-weak);
+  border: 2px solid var(--sf-border);
+}
+
+.sidebar-lesson-item.current .sidebar-mini-num {
+  background: linear-gradient(135deg, var(--kfm-navy), var(--kfm-navy-light));
+  color: white;
+  border-color: var(--kfm-navy);
+  box-shadow: 0 2px 4px rgba(0, 51, 102, 0.2);
+}
+
+.lesson-nav-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--sf-border-light);
+}
+
+.btn-nav {
+  flex: 1;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .lesson-detail-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .lesson-sidebar {
+    position: static;
+  }
+  .guides-grid {
+    grid-template-columns: 1fr;
+  }
+
+                @media (max-width: 1200px) {
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex: 1;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+        }
+
+                @media (max-width: 768px) {
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex: 1;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+        }
+  
+          .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }
+  
+  .main-wrapper {
+    padding-top: 120px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<header class="top-nav">
+  <div class="top-nav-container">
+    <div class="top-nav-left">
+      <nav class="top-nav-menu">
+        <a href="index.html" class="nav-item">
+          <span>Home</span>
+        </a>
+        <a href="view-all.html" class="nav-item">
+          <span>Work Orders</span>
+        </a>
+        <div class="nav-item-dropdown">
+          <a href="#" class="nav-item">
+            <span>Accounting</span>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="invoices.html" class="nav-dropdown-item">
+              <span>Invoices</span>
+            </a>
+            <a href="estimates.html" class="nav-dropdown-item">
+              <span>Estimates</span>
+            </a>
+          </div>
+        </div>
+        <a href="approval-requests.html" class="nav-item">
+          <span>Approval Requests</span>
+        </a>
+        <a href="client-store-info.html" class="nav-item">
+          <span>My Store List</span>
+        </a>
+        <a href="training-faqs.html" class="nav-item active">
+          <span>Training and FAQs</span>
+        </a>
+      </nav>
+    </div>
+    
+    <div class="top-nav-right">
+      <div class="top-nav-user">
+        <div class="user-avatar">MT</div>
+        <div class="user-details">
+          <div class="user-name">Mark Thomas</div>
+          <div class="user-role">Purple Corporate Manager</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-wrapper">
+  <div class="page-container">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Training and FAQs</h1>
+      <p>Select your role to get started with step-by-step walkthroughs, video tutorials, and quick answers.</p>
+    </div>
+
+    <!-- Guides Section -->
+    <div class="guides-landing">
+      <div class="section-label">Choose Your Guide</div>
+      <div class="guides-grid">
+      
+      <!-- Store Manager Guide -->
+      <div class="guide-card">
+        <div class="guide-card-header">
+          <div class="guide-icon store">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <div class="guide-title">Store Manager Guide</div>
+            <div class="guide-subtitle">7 lessons · Video walkthroughs included</div>
+          </div>
+        </div>
+        <div class="guide-card-body">
+          <p class="guide-description">Submit work orders, review requests, and communicate with your facilities team using Identiti.Connect.</p>
+          <ul class="guide-links">
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Logging into the Portal
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Submitting a Work Order
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Sending Messages with Chatter
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link" style="color: var(--sf-text-weak);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                + 4 more lessons
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="guide-card-footer">
+          <a href="#" class="btn btn-primary" onclick="window.openGuide('store'); return false;">
+            Open Guide
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Corporate Manager Guide -->
+      <div class="guide-card">
+        <div class="guide-card-header">
+          <div class="guide-icon corp">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+          </div>
+          <div>
+            <div class="guide-title">Corporate Manager Guide</div>
+            <div class="guide-subtitle">6 lessons · Video walkthroughs included</div>
+          </div>
+        </div>
+        <div class="guide-card-body">
+          <p class="guide-description">Create, approve, and manage facilities work orders across all store locations in Identiti.Connect.</p>
+          <ul class="guide-links">
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Creating a Work Order
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Submitting for Approval
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Reviewing & Approving Orders
+              </a>
+            </li>
+            <li>
+              <a href="#" class="guide-link" style="color: var(--sf-text-weak);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                + 3 more lessons
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="guide-card-footer">
+          <a href="#" class="btn btn-primary" style="background: var(--kfm-navy-light); border-color: var(--kfm-navy-light);" onclick="window.openGuide('corp'); return false;">
+            Open Guide
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Store Manager Guide Detail -->
+    <div class="guide-detail-view" id="store-guide">
+      <div class="guide-detail-header">
+        <div>
+          <h2 class="guide-detail-title">Store Manager Guide</h2>
+        </div>
+        <a href="#" class="btn-back" onclick="window.closeGuide(); return false;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Guides
+        </a>
+      </div>
+            <div class="toc-list">
+        <a href="logging-into-portal.html" class="toc-item">
+          <span class="toc-number">1.</span>
+          <span class="toc-title">Logging into the Portal</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">2.</span>
+          <span class="toc-title">Customer Portal Overview</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">3.</span>
+          <span class="toc-title">Submitting a Work Order</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">4.</span>
+          <span class="toc-title">Reviewing Your Work Orders</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">5.</span>
+          <span class="toc-title">Sending Messages with Chatter</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">6.</span>
+          <span class="toc-title">Managing Files and Attachments</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">7.</span>
+          <span class="toc-title">Frequently Asked Questions</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Corporate Manager Guide Detail -->
+    <div class="guide-detail-view" id="corp-guide">
+      <div class="guide-detail-header">
+        <div>
+          <h2 class="guide-detail-title">Corporate Manager Guide</h2>
+        </div>
+        <a href="#" class="btn-back" onclick="window.closeGuide(); return false;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Guides
+        </a>
+      </div>
+      <div class="toc-list">
+        <a href="#" class="toc-item">
+          <span class="toc-number">1.</span>
+          <span class="toc-title">Creating a Work Order</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">2.</span>
+          <span class="toc-title">Submitting for Approval</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">3.</span>
+          <span class="toc-title">Reviewing & Approving Orders</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">4.</span>
+          <span class="toc-title">Managing Work Order Status</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">5.</span>
+          <span class="toc-title">Communicating via Chatter</span>
+        </a>
+        <a href="#" class="toc-item">
+          <span class="toc-number">6.</span>
+          <span class="toc-title">Frequently Asked Questions</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simple guide navigation
+window.openGuide = function(guideType) {
+  console.log('openGuide called with:', guideType);
+  
+  // Hide the landing page
+  const landing = document.querySelector('.guides-landing');
+  if (landing) {
+    landing.classList.add('hidden');
+    console.log('Hid landing page');
+  }
+  
+  // Hide all guide detail views
+  document.querySelectorAll('.guide-detail-view').forEach(view => {
+    view.classList.remove('active');
+  });
+  
+  // Show the selected guide detail view
+  const guideView = document.getElementById(guideType + '-guide');
+  console.log('Looking for guide:', guideType + '-guide', 'Found:', guideView);
+  if (guideView) {
+    guideView.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    console.log('Showed guide view');
+  } else {
+    console.error('Guide view not found:', guideType + '-guide');
+  }
+};
+
+window.closeGuide = function() {
+  // Hide all guide detail views
+  document.querySelectorAll('.guide-detail-view').forEach(view => {
+    view.classList.remove('active');
+  });
+  
+  // Show the landing page
+  const landing = document.querySelector('.guides-landing');
+  if (landing) landing.classList.remove('hidden');
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Simple dropdown functionality (no hover, click only)
+document.addEventListener('DOMContentLoaded', function() {
+  const dropdowns = document.querySelectorAll('.nav-item-dropdown');
+  dropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.nav-item');
+    const menu = dropdown.querySelector('.nav-dropdown-menu');
+    if (trigger && menu) {
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Close all other dropdowns
+        document.querySelectorAll('.nav-dropdown-menu').forEach(m => {
+          if (m !== menu) m.style.display = 'none';
+        });
+        // Toggle this dropdown
+        if (menu.style.display === 'block') {
+          menu.style.display = 'none';
+        } else {
+          menu.style.display = 'block';
+        }
+      });
+    }
+  });
+  
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-item-dropdown')) {
+      document.querySelectorAll('.nav-dropdown-menu').forEach(m => {
+        m.style.display = 'none';
+      });
+    }
+  });
+  
+  // Add event delegation for guide buttons as backup
+  document.addEventListener('click', function(e) {
+    const guideBtn = e.target.closest('.guide-card-footer .btn-primary');
+    if (guideBtn) {
+      const guideCard = guideBtn.closest('.guide-card');
+      if (guideCard) {
+        const isStoreGuide = guideCard.querySelector('.guide-icon.store');
+        const isCorpGuide = guideCard.querySelector('.guide-icon.corp');
+        if (isStoreGuide) {
+          e.preventDefault();
+          window.openGuide('store');
+        } else if (isCorpGuide) {
+          e.preventDefault();
+          window.openGuide('corp');
+        }
+      }
+    }
+  });
+});
+
+</script>
+
+    <script src="store-time-weather.js"></script>
+</body>
+</html>

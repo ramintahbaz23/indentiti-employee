@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Store List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@salesforce-ux/design-system@2.28.1/assets/styles/salesforce-lightning-design-system.min.css">
+    <style>
+        :root {
+            --kfm-navy: #003366;
+            --kfm-navy-dark: #002347;
+            --kfm-navy-light: #004D99;
+            --kfm-accent: #E84E1B;
+            --kfm-accent-dark: #C8401A;
+            --sf-brand: #003366;
+            --sf-brand-dark: #002347;
+            --sf-brand-hover: #004D99;
+            --priority-critical: #c23934;
+            --priority-high: #E84E1B;
+            --priority-medium: #FF9800;
+            --priority-low: #90A4AE;
+            --sf-success: #2e844a;
+            --sf-warning: #fe9339;
+            --sf-error: #ea001e;
+            --sf-info: #003366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            background: #f3f2f2;
+            color: #181818;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid #dddbda;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+                .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .top-nav-left > * {
+            pointer-events: auto;
+        }        .top-nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            overflow: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-width: 100%;
+            padding-right: 0.5rem;
+        }
+            max-width: 100%;
+            padding-right: 0.5rem;
+
+        .top-nav-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--sf-brand);
+            background: #f3f2f2;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--sf-brand);
+            font-weight: 600;
+            border-bottom-color: var(--sf-brand);
+        }
+
+        .nav-item-text {
+            white-space: nowrap;
+        }
+
+        .nav-item-dropdown {
+            position: relative;
+        }
+
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            width: 180px;
+            z-index: 10001;
+            overflow: hidden;
+            pointer-events: auto;
+            margin-top: 0;
+        }
+
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .nav-dropdown-menu:hover {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .nav-item-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: transparent;
+            z-index: 10000;
+            pointer-events: auto;
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f3f2f2;
+        }
+
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-dropdown-item:hover {
+            background: #f3f2f2;
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .nav-dropdown-item.active {
+            background: #f3f2f2;
+            color: var(--sf-brand);
+            font-weight: 600;
+        }
+
+        .nav-item-dropdown .nav-item-text::after {
+            content: '';
+            display: inline-block;
+            margin-left: 0.5rem;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid currentColor;
+            vertical-align: middle;
+        }        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+            position: absolute;
+            right: 1.5rem;
+            z-index: 10;
+            background: #ffffff;
+            padding-left: 1rem;
+        }
+        @media (max-width: 768px) {
+            .top-nav-container {
+                padding: 0 1rem;
+                gap: 0.75rem;
+                justify-content: space-between;
+            }        .top-nav-left {
+                gap: 0.5rem;
+                justify-content: flex-start;
+                position: static;
+                left: auto;
+                right: auto;
+            }
+
+            .nav-logo-text {
+                display: none;
+            }
+        }
+
+        .top-nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 1rem;
+            border-left: 1px solid #dddbda;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--sf-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #181818;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.6875rem;
+            color: #706e6b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .notification-bell {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .notification-bell:hover {
+            background: #f3f2f2;
+        }
+
+        .notification-bell svg {
+            width: 18px;
+            height: 18px;
+            color: #706e6b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: var(--sf-error);
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+        }
+
+        .notification-badge.has-count {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--sf-error);
+            color: #ffffff;
+            font-size: 0.625rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 2px;
+            right: 2px;
+            border: 2px solid #ffffff;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #3e3e3c;
+            min-width: 44px;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: #f3f2f2;
+        }
+
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .mobile-nav-overlay.show {
+            display: block;
+        }
+
+        .main-wrapper {
+            margin-left: 0;
+            min-height: 100vh;
+            padding-top: 64px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            max-width: 1800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 3rem;
+            box-sizing: border-box;
+        }
+
+        .breadcrumb {
+            font-size: 0.875rem;
+            color: #706e6b;
+            margin-bottom: 1rem;
+            padding-left: 3rem;
+            padding-top: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #003366;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            padding-right: 3rem;
+        }
+
+        .page-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #181818;
+        }
+
+        .page-count {
+            font-size: 0.875rem;
+            color: #706e6b;
+            font-weight: 400;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #706e6b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .search-filters-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            padding-right: 3rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-bar-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .icon-btn.active {
+            border-color: var(--sf-brand);
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--sf-brand);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-btn-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 150px;
+            display: none;
+            z-index: 100;
+            margin-top: 4px;
+        }
+
+        .icon-btn-dropdown.show {
+            display: block;
+        }
+
+        .icon-btn-dropdown-item {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f2f2;
+        }
+
+        .icon-btn-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .icon-btn-dropdown-item:hover {
+            background: #f3f2f2;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .search-bar-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #706e6b;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-filter {
+            background: #ffffff;
+            border: 1px solid transparent;
+            padding: 0.625rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3e3e3c;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .btn-filter:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .btn-filter.active {
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--sf-brand);
+        }
+
+        .btn-filter.expanded {
+            border-color: var(--sf-brand);
+        }
+
+        .btn-filter.expanded.active {
+            border-color: var(--sf-brand);
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--sf-brand);
+        }
+
+        .filter-badge {
+            background: var(--sf-brand);
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            transition: all 0.3s ease;
+            margin-left: 3rem;
+            margin-right: 3rem;
+        }
+
+        .filters-section.expanded {
+            display: block;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .filters-actions a,
+        .filters-title a {
+            font-size: 0.875rem;
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .filters-actions a:hover,
+        .filters-title a:hover {
+            text-decoration: underline;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem 2rem 0.5rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23706e6b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .active-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f2f2;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: #e5f3ff;
+            border: 1px solid #c9e3f5;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            color: #002347;
+        }
+
+        .filter-tag-remove {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #002347;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .filter-tag-remove:hover {
+            color: var(--sf-error);
+        }
+
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin-left: 3rem;
+            margin-right: 3rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #fafaf9;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #ecebea;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            margin-left: 0.25rem;
+            color: #706e6b;
+            font-size: 0.625rem;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f3f2f2;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #fafaf9;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #706e6b;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-description {
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                height: 56px;
+            }
+
+                    .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+                @media (max-width: 1200px) {
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex: 1;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+        }
+
+                @media (max-width: 768px) {
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex: 1;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+        }
+
+            .nav-logo-text {
+                display: none;
+            }
+
+            max-width: 100%;
+            padding-right: 0.5rem;
+
+            .top-nav-menu.open {
+                transform: translateY(0);
+            }
+
+            .nav-item {
+                padding: 0.875rem 1.25rem;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                border-radius: 0;
+            }
+
+            .nav-item.active {
+                border-left-color: var(--sf-brand);
+                border-bottom-color: transparent;
+                background: #f3f2f2;
+            }
+
+            .nav-item-dropdown {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .nav-dropdown-menu {
+                position: static;
+                display: none;
+                margin-top: 0;
+                margin-left: 1rem;
+                border: none;
+                border-left: 2px solid #dddbda;
+                box-shadow: none;
+                background: #fafaf9;
+                border-radius: 0;
+            }
+
+            .nav-item-dropdown.open .nav-dropdown-menu {
+                display: block;
+            }
+
+            .nav-dropdown-item {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.8125rem;
+            }
+
+            .top-nav-user {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .main-wrapper {
+                padding-top: 56px;
+            }
+
+            .main-container {
+                padding: 1.5rem 1.5rem;
+            }
+
+            .breadcrumb,
+            .page-header,
+            .search-filters-bar {
+                padding-left: 1.5rem;
+            }
+
+            .filters-section {
+                margin-left: 1.5rem;
+                margin-right: 1.5rem;
+            }
+
+            .table-container {
+                margin-left: 1.5rem;
+                margin-right: 1.5rem;
+            }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="top-nav-container">
+            <!-- Left Section: Logo + Navigation -->
+            <div class="top-nav-left">
+                <nav class="top-nav-menu" id="topNavMenu">
+                    <a href="index.html" class="nav-item">
+                        <span class="nav-item-text">Home</span>
+                    </a>
+                    <a href="view-all.html" class="nav-item">
+                        <span class="nav-item-text">Work Orders</span>
+                    </a>
+                    <div class="nav-item-dropdown">
+                        <a href="#" class="nav-item">
+                            <span class="nav-item-text">Accounting</span>
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="invoices.html" class="nav-dropdown-item">
+                                <span>Invoices</span>
+                            </a>
+                            <a href="estimates.html" class="nav-dropdown-item">
+                                <span>Estimates</span>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="approval-requests.html" class="nav-item">
+                        <span class="nav-item-text">Approval Requests</span>
+                    </a>
+                    <a href="client-store-info.html" class="nav-item active">
+                        <span class="nav-item-text">My Store List</span>
+                    </a>
+                    <a href="training-faqs.html" class="nav-item">
+                        <span class="nav-item-text">Training and FAQs</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Right Section: User Info -->
+            <div class="top-nav-right">
+                <!-- User Info -->
+                <div class="top-nav-user">
+                    <div class="notification-bell" id="notificationBell">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge has-count" id="notificationBadge">3</span>
+                    </div>
+                    <div class="user-avatar">MT</div>
+                    <div class="user-details">
+                        <div class="user-name">Mark Thomas</div>
+                        <div class="user-role">Purple Corporate Manager</div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> > My Store List
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">My Store List</h1>
+                    <span class="page-count" id="totalCount">0 stores</span>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-action" id="printableViewBtn">Printable View</button>
+                    <button class="btn-action" id="exportListsBtn">Export Lists</button>
+                </div>
+            </div>
+
+            <!-- Search and Filters Bar -->
+            <div class="search-filters-bar">
+                <div class="search-bar">
+                    <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search this list...">
+                </div>
+                <div class="search-bar-controls">
+                    <button class="icon-btn" id="filterIconBtn" title="Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section" id="filtersSection">
+                <div class="filters-header">
+                    <div class="filters-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Filters</span>
+                        <a href="#" id="clearAll" style="margin-left: auto;">Clear All</a>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">State</label>
+                        <select class="filter-select" id="filterState">
+                            <option value="all">All States</option>
+                            <option value="CA">California</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="OR">Oregon</option>
+                            <option value="WA">Washington</option>
+                            <option value="CO">Colorado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Parent Company</label>
+                        <select class="filter-select" id="filterParentCompany">
+                            <option value="all">All Companies</option>
+                            <option value="Warhammer Corporation">Warhammer Corporation</option>
+                            <option value="Purple Corporation">Purple Corporation</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">City</label>
+                        <select class="filter-select" id="filterCity">
+                            <option value="all">All Cities</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Region</label>
+                        <select class="filter-select" id="filterRegion">
+                            <option value="all">All Regions</option>
+                            <option value="Region 1">Region 1</option>
+                            <option value="Region 2">Region 2</option>
+                            <option value="Region 3">Region 3</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-select" id="filterStatus">
+                            <option value="all">All Statuses</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Store Number</label>
+                        <select class="filter-select" id="filterStoreNumber">
+                            <option value="all">All Stores</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Zip Code</label>
+                        <select class="filter-select" id="filterZipCode">
+                            <option value="all">All Zip Codes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Account Name</label>
+                        <input type="text" class="filter-input" id="filterAccountName" placeholder="Search account name">
+                    </div>
+                </div>
+                <div class="active-filters" id="activeFilters">
+                    <!-- Active filter tags will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container" id="tableContainer">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="accountName">
+                                    Account Name
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="storeNumber">
+                                    Store Number
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="phone">
+                                    Phone
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="shippingStreet">
+                                    Shipping Street
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="city">
+                                    City
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="state">
+                                    State
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="parentCompany">
+                                    Parent Company
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="account">
+                                    Account
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="storesTableBody">
+                            <!-- Stores will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="stores-data.js"></script>
+    <script src="client-store-info-app.js"></script>
+    <script>
+        // Mobile Menu Toggle for Top Navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const topNavMenu = document.getElementById('topNavMenu');
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            
+            if (mobileMenuToggle && topNavMenu) {
+                const openMobileMenu = () => {
+                    topNavMenu.classList.add('open');
+                    if (mobileNavOverlay) {
+                        mobileNavOverlay.classList.add('show');
+                    }
+                    document.body.style.overflow = 'hidden';
+                };
+                
+                const closeMobileMenu = () => {
+                    topNavMenu.classList.remove('open');
+                    if (mobileNavOverlay) {
+                        mobileNavOverlay.classList.remove('show');
+                    }
+                    document.body.style.overflow = '';
+                };
+                
+                mobileMenuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (topNavMenu.classList.contains('open')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    });
+                
+                if (mobileNavOverlay) {
+                    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+                }
+                
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        if (topNavMenu.classList.contains('open') && 
+                            !topNavMenu.contains(e.target) && 
+                            !mobileMenuToggle.contains(e.target)) {
+                            closeMobileMenu();
+                        });
+                
+                const closeMenuOnNavClick = () => {
+                    if (window.innerWidth <= 768) {
+                        document.querySelectorAll('.top-nav-menu .nav-item').forEach(link => {
+                            link.addEventListener('click', () => {
+                                closeMobileMenu();
+                            });
+                        });
+                    };
+                
+                closeMenuOnNavClick();
+                
+                const observer = new MutationObserver(() => {
+                    closeMenuOnNavClick();
+                });
+                
+                if (topNavMenu) {
+                    observer.observe(topNavMenu, { childList: true, subtree: true });
+                }
+                
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768) {
+                        closeMobileMenu();
+                    });
+            });
+    </script>
+    <script src="store-time-weather.js"></script>
+</body>
+</html>

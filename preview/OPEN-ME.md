@@ -62,3 +62,4 @@ Simply drag the `index.html` file from Finder (macOS) or File Explorer (Windows)
 **Note:** The preview shows the visual design. For full LWC functionality, you'll need to deploy to Salesforce or use the LWC Dev Server (see main README.md).
 
 
+

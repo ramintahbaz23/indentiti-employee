@@ -46,158 +46,284 @@
             padding: 0;
         }
 
-        /* Sidebar Navigation - Tab Headers with Icons */
-        .sidebar {
+        /* Top Navigation Bar */
+        .top-nav {
             position: fixed;
-            left: 0;
             top: 0;
-            width: 240px;
-            height: 100vh;
+            left: 0;
+            right: 0;
+            height: 64px;
             background: #ffffff;
-            border-right: 1px solid #dddbda;
-            display: flex;
-            flex-direction: column;
+            border-bottom: 1px solid #dddbda;
             z-index: 1000;
-            overflow-y: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .sidebar-nav {
+                .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
             flex: 1;
-            padding: 1rem 0;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .top-nav-left > * {
+            pointer-events: auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--sf-brand);
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .nav-logo svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-logo-text {
+            white-space: nowrap;
+        }        .top-nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            overflow: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-width: 100%;
+            padding-right: 0.5rem;
+        }
+
+        .top-nav-menu::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.875rem 1.25rem;
+            padding: 0.625rem 1rem;
             color: #3e3e3c;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
             transition: all 0.2s;
-            border-left: 3px solid transparent;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
         }
 
         .nav-item:hover {
             color: var(--sf-brand);
             background: #f3f2f2;
+            text-decoration: none;
         }
 
         .nav-item.active {
             color: var(--sf-brand);
             font-weight: 600;
-            border-left-color: var(--sf-brand);
-            background: #f3f2f2;
+            border-bottom-color: var(--sf-brand);
         }
 
-        .nav-item-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        .nav-item-text {
+            white-space: nowrap;
         }
 
-        .nav-item-icon svg {
-            width: 100%;
-            height: 100%;
+        /* Dropdown Navigation */
+        .nav-item-dropdown {
+            position: relative;
         }
 
-        /* Nested Navigation */
-        .nav-item-group {
-            display: flex;
-            flex-direction: column;
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
         }
 
-        .nav-item-parent {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.25rem;
+        .nav-dropdown-menu {
+            display: none;
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            width: 180px;
+            z-index: 10001;
+            overflow: hidden;
+            pointer-events: auto;
+            margin-top: 0;
+        }
+
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .nav-dropdown-menu:hover {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Bridge to keep dropdown open when moving mouse */
+        .nav-item-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: transparent;
+            z-index: 10000;
+            pointer-events: auto;
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
             color: #3e3e3c;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
             transition: all 0.2s;
+            border-bottom: 1px solid #f3f2f2;
         }
 
-        .nav-item-parent:hover {
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-dropdown-item:hover {
+            background: #f3f2f2;
             color: var(--sf-brand);
+            text-decoration: none;
         }
 
-        .nav-item-parent.active {
+        .nav-dropdown-item.active {
+            background: #f3f2f2;
             color: var(--sf-brand);
             font-weight: 600;
         }
 
-        .nav-item-parent.has-children {
+        /* Arrow indicator for dropdown */
+        .nav-item-dropdown .nav-item-text::after {
+            content: '';
+            display: inline-block;
+            margin-left: 0.5rem;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid currentColor;
+            vertical-align: middle;
+        }        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+            position: absolute;
+            right: 1.5rem;
+            z-index: 10;
+            background: #ffffff;
+            padding-left: 1rem;
+        }
+        @media (max-width: 768px) {
+            .top-nav-container {
+                padding: 0 1rem;
+                gap: 0.75rem;
+                justify-content: space-between;
+            }
+
+            .top-nav-left {
+                gap: 0.5rem;
+                justify-content: flex-start;
+                position: static;
+                left: auto;
+                right: auto;
+            }
+
+            .nav-logo-text {
+                display: none;
+            }
+        }
+
+        .top-nav-search {
             position: relative;
         }
 
-        .nav-item-children {
-            display: none;
-            flex-direction: column;
-            margin-left: 1.25rem;
-        }
-
-        .nav-item-parent.active .nav-item-children {
-            display: flex;
-        }
-
-        .nav-item-child {
+        .top-nav-search-wrapper {
+            position: relative;
             display: flex;
             align-items: center;
-            padding: 0.625rem 1.25rem 0.625rem 2.5rem;
-            color: #3e3e3c;
-            text-decoration: none;
-            font-size: 0.8125rem;
-            font-weight: 400;
+        }
+
+        .top-nav-search-input {
+            width: 240px;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background: #ffffff;
             transition: all 0.2s;
         }
 
-        .nav-item-child:hover {
-            color: var(--sf-brand);
+        .top-nav-search-input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+            width: 300px;
         }
 
-        .nav-item-child.active {
-            color: var(--sf-brand);
-            font-weight: 600;
-        }
-
-        .nav-item-child-icon {
-            width: 12px;
-            height: 12px;
-            margin-right: 0.5rem;
-            opacity: 0.6;
-        }
-
-        .recent-work-orders-label {
-            padding: 0.5rem 1.25rem 0.25rem 2.5rem;
-            font-size: 0.6875rem;
+        .top-nav-search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
             color: #706e6b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
         }
 
-        /* Sidebar Footer - User Info */
-        .sidebar-footer {
-            margin-top: auto;
-            padding: 1rem 1.25rem;
-            border-top: 1px solid #dddbda;
-            background: #ffffff;
+        .btn-icon-only {
+            padding: 0.625rem;
+            min-width: 44px;
         }
 
-        .user-info {
+        .top-nav-user {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            padding-left: 1rem;
+            border-left: 1px solid #dddbda;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--sf-brand);
             display: flex;
@@ -205,37 +331,39 @@
             justify-content: center;
             color: #ffffff;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             flex-shrink: 0;
         }
 
         .user-details {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
             min-width: 0;
         }
 
         .user-name {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             color: #181818;
-            margin-bottom: 0.125rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.2;
         }
 
         .user-role {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             color: #706e6b;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.2;
         }
 
         .notification-bell {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -250,15 +378,15 @@
         }
 
         .notification-bell svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             color: #706e6b;
         }
 
         .notification-badge {
             position: absolute;
-            top: 6px;
-            right: 6px;
+            top: 4px;
+            right: 4px;
             width: 8px;
             height: 8px;
             background: var(--sf-error);
@@ -267,8 +395,8 @@
         }
 
         .notification-badge.has-count {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: var(--sf-error);
             color: #ffffff;
@@ -277,50 +405,62 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            top: 4px;
-            right: 4px;
+            top: 2px;
+            right: 2px;
             border: 2px solid #ffffff;
         }
 
-        .sidebar-search {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid #dddbda;
-        }
-
-        .sidebar-search-input {
-            width: 100%;
-            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-            border: 1px solid #dddbda;
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #3e3e3c;
+            min-width: 44px;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
             border-radius: 0.25rem;
-            font-size: 0.875rem;
-            background: #ffffff;
+            transition: all 0.2s;
         }
 
-        .sidebar-search-input:focus {
-            outline: none;
-            border-color: var(--sf-brand);
-            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        .mobile-menu-toggle:hover {
+            background: #f3f2f2;
         }
 
-        .sidebar-search-wrapper {
-            position: relative;
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
         }
 
-        .sidebar-search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #706e6b;
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .mobile-nav-overlay.show {
+            display: block;
         }
 
         /* Main Content Area */
         .main-wrapper {
-            margin-left: 240px;
+            margin-left: 0;
             min-height: 100vh;
+            padding-top: 64px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .top-bar {
+        /* Removed top-bar - using top-nav instead */
+        /* .top-bar { */
             background: #ffffff;
             border-bottom: 1px solid #dddbda;
             padding: 1rem 1.5rem;
@@ -332,30 +472,109 @@
         /* Main Container */
         .main-container {
             max-width: 1600px;
+            width: 100%;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 3rem;
+            box-sizing: border-box;
+        }
+        
+        /* Ensure all direct children respect container padding */
+        .main-container > * {
+            max-width: 100%;
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
+            .top-nav {
+                height: 56px;
             }
 
-            .sidebar.open {
-                transform: translateX(0);
+            .top-nav-container {
+                padding: 0 1rem;
+                gap: 0.75rem;
+                justify-content: space-between;
             }
 
-            .main-wrapper {
-                margin-left: 0;
+            .top-nav-left {
+                gap: 0.5rem;
+                justify-content: flex-start;
+                position: static;
+                left: auto;
+                right: auto;
+            }
+
+            .top-nav-right {
+                position: static;
+                right: auto;
+            }
+
+            .nav-logo-text {
+                display: none;
+            }
+
+            .top-nav-search {
+                display: none;
+            }
+
+            .top-nav-user {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
             }
         }
+
+            .main-wrapper {
+                padding-top: 56px;
+            }
+
+            .main-container {
+                padding: 1.5rem 1.5rem;
+            }
+            
+            .breadcrumb,
+            .page-header,
+            .search-filters-bar {
+                padding-left: 1.5rem;
+            }
+            
+            .page-actions {
+                padding-right: 1.5rem;
+            }
+            
+            .search-filters-bar {
+                padding-right: 1.5rem;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+
+            .search-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .btn-filter {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .filters-section {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+            
+            .pagination {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
 
         /* Breadcrumb */
         .breadcrumb {
             font-size: 0.875rem;
             color: #706e6b;
             margin-bottom: 1rem;
+            padding-left: 3rem;
+            padding-top: 1rem;
         }
 
         .breadcrumb a {
@@ -373,6 +592,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            padding-left: 3rem;
         }
 
         .page-title-section {
@@ -397,6 +617,7 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            padding-right: 3rem;
         }
 
         .btn-icon {
@@ -441,11 +662,19 @@
             gap: 1rem;
             align-items: center;
             margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            padding-right: 3rem;
         }
 
         .search-bar {
             flex: 1;
             position: relative;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .view-toggle {
@@ -505,7 +734,7 @@
 
         .btn-filter {
             background: #ffffff;
-            border: 1px solid #dddbda;
+            border: 1px solid transparent;
             padding: 0.625rem 1rem;
             border-radius: 0.25rem;
             font-size: 0.875rem;
@@ -515,11 +744,40 @@
             align-items: center;
             gap: 0.5rem;
             color: #3e3e3c;
+            position: relative;
+            transition: all 0.2s;
         }
 
         .btn-filter:hover {
             border-color: var(--sf-brand);
             color: var(--sf-brand);
+        }
+
+        .btn-filter.active {
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--sf-brand);
+        }
+
+        .btn-filter.expanded {
+            border-color: var(--sf-brand);
+        }
+
+        .btn-filter.expanded.active {
+            border-color: var(--sf-brand);
+            background: rgba(0, 51, 102, 0.05);
+            color: var(--sf-brand);
+        }
+
+        .filter-badge {
+            background: var(--sf-brand);
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
         }
 
         .view-toggle {
@@ -553,6 +811,14 @@
             border-radius: 0.25rem;
             padding: 1.25rem;
             margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            padding-right: 3rem;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .filters-section.expanded {
+            display: block;
         }
 
         .filters-header {
@@ -573,15 +839,18 @@
         .filters-actions {
             display: flex;
             gap: 1rem;
+            margin-left: auto;
         }
 
-        .filters-actions a {
+        .filters-actions a,
+        .filters-title a {
             font-size: 0.875rem;
             color: var(--sf-brand);
             text-decoration: none;
         }
 
-        .filters-actions a:hover {
+        .filters-actions a:hover,
+        .filters-title a:hover {
             text-decoration: underline;
         }
 
@@ -679,8 +948,8 @@
         }
 
         thead {
-            background: #f3f2f2;
-            border-bottom: 2px solid #dddbda;
+            background: #fafaf9;
+            border-bottom: 1px solid #dddbda;
         }
 
         th {
@@ -737,6 +1006,36 @@
         .priority-dot.high { background: var(--priority-high); }
         .priority-dot.medium { background: var(--priority-medium); }
         .priority-dot.low { background: var(--priority-low); }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .priority-badge.priority-critical {
+            background: rgba(194, 57, 52, 0.1);
+            color: var(--priority-critical);
+        }
+
+        .priority-badge.priority-high {
+            background: rgba(232, 78, 27, 0.1);
+            color: var(--priority-high);
+        }
+
+        .priority-badge.priority-medium {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--priority-medium);
+        }
+
+        .priority-badge.priority-low {
+            background: rgba(144, 164, 174, 0.1);
+            color: var(--priority-low);
+        }
 
         .wo-number {
             color: var(--sf-brand);
@@ -860,6 +1159,21 @@
             box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
         }
 
+        /* Action Needed badge: red background for card and table row */
+        tr.row-action-needed {
+            background-color: #ffebee;
+        }
+        tr.row-action-needed:hover {
+            background-color: #ffcdd2;
+        }
+        .work-order-card.action-needed {
+            background-color: #ffebee;
+            border-left: 4px solid #c23934;
+        }
+        .work-order-card.action-needed:hover {
+            background-color: #ffcdd2;
+        }
+
         .work-order-header {
             padding: 0.75rem 1rem;
             border-bottom: 1px solid #dddbda;
@@ -908,7 +1222,6 @@
         .status-badge.status-new-badge {
             background: #f3e5f5;
             color: #9065b0;
-        }
         }
 
         .status-badge.status-on-hold {
@@ -1062,7 +1375,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
+            padding: 1rem 3rem;
             background: #ffffff;
             border-top: 1px solid #dddbda;
         }
@@ -1126,77 +1439,646 @@
             color: #ffffff;
             border-color: var(--sf-brand);
         }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 2001;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #dddbda;
+            background: #fafaf9;
+        }
+
+        .modal-header-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 200px;
+            text-align: right;
+        }
+
+        .header-field label {
+            font-size: 0.6875rem;
+            color: #706e6b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-value {
+            font-size: 0.9375rem;
+            color: #181818;
+            font-weight: 600;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #181818;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .modal-subtitle {
+            font-size: 0.75rem;
+            color: #706e6b;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #706e6b;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover {
+            background: #f3f2f2;
+            color: #181818;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #181818;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .form-row.full-width {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group .required {
+            color: #ea001e;
+        }
+
+        .input-with-clear {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-clear input {
+            padding-right: 60px;
+            flex: 1;
+        }
+
+        .input-clear {
+            position: absolute;
+            right: 30px;
+            background: none;
+            border: none;
+            color: #706e6b;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .input-clear:hover {
+            color: #181818;
+        }
+
+        .input-dropdown {
+            position: absolute;
+            right: 12px;
+            width: 12px;
+            height: 12px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-dropdown svg {
+            width: 100%;
+            height: 100%;
+            color: #706e6b;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #181818;
+            background: #ffffff;
+            transition: all 0.2s;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            width: 100%;
+        }
+        
+        .form-row.full-width .form-group {
+            width: 100%;
+        }
+        
+        .form-row.full-width .form-group input,
+        .form-row.full-width .form-group textarea {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .form-group select {
+            padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #181818;
+            background: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23706e6b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            appearance: none;
+            transition: all 0.2s;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #003366;
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #706e6b;
+        }
+
+        .dependency-link {
+            font-size: 0.75rem;
+            color: #003366;
+            text-decoration: none;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+
+        .dependency-link:hover {
+            text-decoration: underline;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            border-top: 1px solid #dddbda;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #3e3e3c;
+            border: 1px solid #dddbda;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+            min-width: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f2f2;
+            border-color: #c9c9c9;
+        }
+
+        /* File Upload Area */
+        .file-upload-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #dddbda;
+            border-radius: 0.25rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            background: #ffffff;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--sf-brand);
+            background: #fafaf9;
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--sf-brand);
+            background: #fafaf9;
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 0.5rem;
+            color: #706e6b;
+        }
+
+        .file-upload-text {
+            color: #706e6b;
+            font-size: 0.875rem;
+            margin: 0.25rem 0;
+        }
+
+        .file-upload-text:last-child {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .uploaded-files-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .uploaded-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #f3f2f2;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .uploaded-file-name {
+            color: #181818;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .uploaded-file-remove {
+            background: none;
+            border: none;
+            color: #ea001e;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .uploaded-file-remove:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+                height: 100vh;
+            }
+
+            .modal-header {
+                padding: 1rem 1.25rem;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+
+            .modal-header-right {
+                width: 100%;
+                justify-content: space-between;
+                order: 2;
+            }
+
+            .header-field {
+                min-width: auto;
+                text-align: left;
+            }
+
+            .modal-body {
+                padding: 1rem 1.25rem;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .modal-footer {
+                padding: 1rem 1.25rem;
+                flex-direction: column-reverse;
+                gap: 0.75rem;
+                border-top: 1px solid #dddbda;
+            }
+
+            .modal-footer .btn-primary,
+            .modal-footer .btn-secondary {
+                width: 100%;
+                margin: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                min-height: 44px;
+                padding: 0.75rem 0.875rem;
+                font-size: 16px;
+            }
+
+            .form-group select {
+                padding-right: 2.5rem;
+            }
+
+            .form-group textarea {
+                min-height: 120px;
+                padding: 0.75rem 0.875rem;
+            }
+
+            .input-with-clear input {
+                padding-right: 3.5rem;
+            }
+
+            .input-clear {
+                min-width: 44px;
+                min-height: 44px;
+                right: 2.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+                line-height: 1.3;
+            }
+
+            .modal-subtitle {
+                font-size: 0.8125rem;
+            }
+
+            .modal-close {
+                min-width: 44px;
+                min-height: 44px;
+                font-size: 1.75rem;
+            }
+
+            .header-field {
+                font-size: 0.875rem;
+            }
+
+            .header-value {
+                font-size: 0.875rem;
+            }
+
+            .file-upload-area {
+                padding: 1.5rem 1rem;
+                min-height: 120px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .file-upload-icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 0.75rem;
+            }
+
+            .file-upload-text {
+                font-size: 0.875rem;
+            }
+
+            .file-upload-area:active {
+                border-color: var(--sf-brand);
+                background: #fafaf9;
+                transform: scale(0.98);
+            }
+
+            .file-item:active {
+                border-color: var(--sf-brand);
+                transform: scale(0.98);
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-        <div class="sidebar-search">
-            <div class="sidebar-search-wrapper">
-                <svg class="sidebar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                <input type="text" class="sidebar-search-input" placeholder="Search...">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="top-nav-container">
+            <!-- Left Section: Logo + Navigation -->
+            <div class="top-nav-left">
+                <nav class="top-nav-menu" id="topNavMenu">
+                    <a href="index.html" class="nav-item">
+                        <span class="nav-item-text">Home</span>
+                    </a>
+                    <a href="view-all.html" class="nav-item active">
+                        <span class="nav-item-text">Work Orders</span>
+                    </a>
+                    <div class="nav-item-dropdown">
+                        <a href="#" class="nav-item">
+                            <span class="nav-item-text">Accounting</span>
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="invoices.html" class="nav-dropdown-item">
+                                <span>Invoices</span>
+                            </a>
+                            <a href="estimates.html" class="nav-dropdown-item">
+                                <span>Estimates</span>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="approval-requests.html" class="nav-item">
+                        <span class="nav-item-text">Approval Requests</span>
+                    </a>
+                    <a href="client-store-info.html" class="nav-item">
+                        <span class="nav-item-text">My Store List</span>
+                    </a>
+                    <a href="training-faqs.html" class="nav-item">
+                        <span class="nav-item-text">Training and FAQs</span>
+                    </a>
+                </nav>
             </div>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="index.html" class="nav-item">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                </span>
-                Home
-            </a>
-            <a href="view-all.html" class="nav-item active">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                </span>
-                Work Orders
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><path d="M10 9.5h4"></path></svg>
-                </span>
-                Invoices
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                </span>
-                Approval Requests
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                </span>
-                Client and Store Information
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-                </span>
-                Training and FAQs
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">MT</div>
-                <div class="user-details">
-                    <div class="user-name">Mark Thomas</div>
-                    <div class="user-role">Purple Corporate Manager</div>
+            
+            <!-- Right Section: User Info -->
+            <div class="top-nav-right">
+                <!-- User Info -->
+                <div class="top-nav-user">
+                    <div class="notification-bell" id="notificationBell">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge has-count" id="notificationBadge">3</span>
+                    </div>
+                    <div class="user-avatar">MT</div>
+                    <div class="user-details">
+                        <div class="user-name">Mark Thomas</div>
+                        <div class="user-role">Purple Corporate Manager</div>
+                    </div>
                 </div>
-                <div class="notification-bell" id="notificationBell">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
-                    <span class="notification-badge has-count" id="notificationBadge">3</span>
-                </div>
+                </button>
             </div>
         </div>
-    </aside>
+        
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </header>
 
     <!-- Main Content -->
     <div class="main-wrapper">
-        <div class="top-bar"></div>
-        
         <main class="main-container">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
@@ -1210,7 +2092,7 @@
                 <span class="page-count" id="totalCount">0 work orders</span>
             </div>
             <div class="page-actions">
-                <button class="btn-primary">
+                <button class="btn-primary" id="newWorkOrderBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     New Work Order
                 </button>
@@ -1223,22 +2105,31 @@
                 <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input type="text" id="searchInput" placeholder="Search...">
             </div>
-            <div class="view-toggle">
-                <button class="view-toggle-btn" id="cardViewBtn" title="Card View">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <div class="search-actions">
+                <button class="btn-filter" id="filterToggleBtn" title="Filters">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span>Filters</span>
+                    <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
                 </button>
-                <button class="view-toggle-btn active" id="tableViewBtn" title="Table View">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                </button>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn" id="cardViewBtn" title="Card View">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </button>
+                    <button class="view-toggle-btn active" id="tableViewBtn" title="Table View">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Filters Section -->
         <div class="filters-section" id="filtersSection">
             <div class="filters-header">
-                <div class="filters-title">Filters</div>
-                <div class="filters-actions">
-                    <a href="#" id="clearAll">Clear All</a>
+                <div class="filters-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span>Filters</span>
+                    <a href="#" id="clearAll" style="margin-left: auto;">Clear All</a>
                 </div>
             </div>
             <div class="filters-row">
@@ -1253,6 +2144,16 @@
                         <option value="Proposal Submitted">Proposal Submitted</option>
                         <option value="Work Complete">Work Complete</option>
                         <option value="Invoice Submitted">Invoice Submitted</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Priority</label>
+                    <select class="filter-select" id="filterPriority">
+                        <option value="all">All Priorities</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -1315,7 +2216,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 40px;"><input type="checkbox" id="selectAll"></th>
                             <th class="sortable" data-sort="woNumber">
                                 Work Order #
                                 <span class="sort-icon">⇅</span>
@@ -1324,12 +2224,16 @@
                                 Status
                                 <span class="sort-icon">⇅</span>
                             </th>
+                            <th class="sortable" data-sort="priority">
+                                Priority
+                                <span class="sort-icon">⇅</span>
+                            </th>
                             <th class="sortable" data-sort="issue">
                                 Issue
                                 <span class="sort-icon">⇅</span>
                             </th>
-                            <th class="sortable" data-sort="dueDate">
-                                Due Date
+                            <th class="sortable" data-sort="created">
+                                Created
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th class="sortable" data-sort="trade">
@@ -1342,10 +2246,6 @@
                             </th>
                             <th class="sortable" data-sort="contractor">
                                 Contractor
-                                <span class="sort-icon">⇅</span>
-                            </th>
-                            <th class="sortable" data-sort="created">
-                                Created
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th class="sortable" data-sort="nte">
@@ -1365,6 +2265,216 @@
 
     <script src="demo-data.js"></script>
     <script src="view-all-app.js"></script>
+    <script>
+        // Mobile Menu Toggle for Top Navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const topNavMenu = document.getElementById('topNavMenu');
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            
+            if (mobileMenuToggle && topNavMenu) {
+                const openMobileMenu = () => {
+                    topNavMenu.classList.add('open');
+                    if (mobileNavOverlay) {
+                        mobileNavOverlay.classList.add('show');
+                    }
+                    document.body.style.overflow = 'hidden';
+                };
+                
+                const closeMobileMenu = () => {
+                    topNavMenu.classList.remove('open');
+                    if (mobileNavOverlay) {
+                        mobileNavOverlay.classList.remove('show');
+                    }
+                    document.body.style.overflow = '';
+                };
+                
+                mobileMenuToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (topNavMenu.classList.contains('open')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    });
+                
+                if (mobileNavOverlay) {
+                    mobileNavOverlay.addEventListener('click', closeMobileMenu);
+                }
+                
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        if (topNavMenu.classList.contains('open') && 
+                            !topNavMenu.contains(e.target) && 
+                            !mobileMenuToggle.contains(e.target)) {
+                            closeMobileMenu();
+                        });
+                
+                const closeMenuOnNavClick = () => {
+                    if (window.innerWidth <= 768) {
+                        document.querySelectorAll('.top-nav-menu .nav-item').forEach(link => {
+                            link.addEventListener('click', () => {
+                                closeMobileMenu();
+                            });
+                        });
+                    };
+                
+                closeMenuOnNavClick();
+                
+                const observer = new MutationObserver(() => {
+                    closeMenuOnNavClick();
+                });
+                
+                if (topNavMenu) {
+                    observer.observe(topNavMenu, { childList: true, subtree: true });
+                }
+                
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768) {
+                        closeMobileMenu();
+                    });
+            });
+    </script>
+    
+    <!-- New Work Order Modal -->
+    <div id="newWorkOrderModal" class="modal" style="display: none;">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <h2 class="modal-title">Work Order Number</h2>
+                    <div class="modal-subtitle">Create or edit work order details</div>
+                </div>
+                <div class="modal-header-right">
+                    <div class="header-field">
+                        <label>Owner</label>
+                        <div class="header-value">Purple Corporate Manager</div>
+                    </div>
+                    <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+                </div>
+            </div>
+            <form id="newWorkOrderForm" class="modal-body">
+                <div class="form-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="account">Account <span class="required">*</span></label>
+                            <div class="input-with-clear">
+                                <input type="text" id="account" name="account" required placeholder="Search accounts..." />
+                                <button type="button" class="input-clear" id="clearAccount" style="display: none;" aria-label="Clear account">&times;</button>
+                                <span class="input-dropdown">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                        <path d="M6 9L1 4h10L6 9z" fill="currentColor"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="originalNTE">Original NTE <span class="required">*</span></label>
+                            <input type="number" id="originalNTE" name="originalNTE" required step="0.01" min="0" placeholder="0.00" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priority">Priority <span class="required">*</span></label>
+                            <select id="priority" name="priority" required>
+                                <option value="">Select Priority</option>
+                                <option value="P1 - Priority 1 Hour">P1 - Priority 1 Hour</option>
+                                <option value="P2 - Priority 2 Hours">P2 - Priority 2 Hours</option>
+                                <option value="P3 - Priority 3 Hours">P3 - Priority 3 Hours</option>
+                                <option value="P4 - Priority 4 Hours" selected>P4 - Priority 4 Hours</option>
+                                <option value="P5 - Priority 5 Hours">P5 - Priority 5 Hours</option>
+                                <option value="P6 - Priority 6 Hours">P6 - Priority 6 Hours</option>
+                                <option value="P7 - Priority 7 Hours">P7 - Priority 7 Hours</option>
+                                <option value="P8 - Priority 8 Hours">P8 - Priority 8 Hours</option>
+                                <option value="P9 - Priority 9 Hours">P9 - Priority 9 Hours</option>
+                                <option value="P10 - Priority 10 Hours">P10 - Priority 10 Hours</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="trade">Trade <span class="required">*</span></label>
+                            <select id="trade" name="trade" required>
+                                <option value="">Select Trade</option>
+                                <option value="Awnings">Awnings</option>
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="HVAC-R">HVAC-R</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Fire Services">Fire Services</option>
+                                <option value="Janitorial/Cleaning Services">Janitorial/Cleaning Services</option>
+                                <option value="Pest Control">Pest Control</option>
+                                <option value="Locks/Safes/Security">Locks/Safes/Security</option>
+                                <option value="Lighting">Lighting</option>
+                                <option value="General Maintenance">General Maintenance</option>
+                            </select>
+                            <a href="#" class="dependency-link">View all dependencies</a>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="issue">Issue Type</label>
+                            <select id="issue" name="issue">
+                                <option value="">Select Issue Type</option>
+                                <option value="Awnings">Awnings</option>
+                                <option value="Toilet Repair">Toilet Repair</option>
+                                <option value="HVAC Repair">HVAC Repair</option>
+                                <option value="Electrical Repair">Electrical Repair</option>
+                                <option value="Fire System Inspection">Fire System Inspection</option>
+                                <option value="Cleaning Service">Cleaning Service</option>
+                                <option value="Pest Control">Pest Control</option>
+                                <option value="Lock Replacement">Lock Replacement</option>
+                                <option value="Lighting Upgrade">Lighting Upgrade</option>
+                                <option value="General Maintenance">General Maintenance</option>
+                            </select>
+                            <a href="#" class="dependency-link">View all dependencies</a>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="isRecall">Is this a recall?</label>
+                            <select id="isRecall" name="isRecall">
+                                <option value="No" selected>No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">Description</h3>
+                    <div class="form-row full-width">
+                        <div class="form-group">
+                            <label for="description">Description <span class="required">*</span></label>
+                            <textarea id="description" name="description" required rows="5" placeholder="Enter description"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section file-upload-section">
+                    <h3 class="section-title">Attachments</h3>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
+                        <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p class="file-upload-text">Click to upload files or drag and drop</p>
+                        <p class="file-upload-text">Images, PDFs, Documents (Max 10MB per file)</p>
+                    </div>
+                    <div class="uploaded-files-list" id="uploadedFilesList"></div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="cancelWorkOrder">Cancel</button>
+                <button type="button" class="btn-secondary" id="saveAndNewWorkOrder">Save & New</button>
+                <button type="submit" class="btn-primary" id="saveWorkOrder">Save</button>
+            </div>
+        </div>
+    </div>
+    <script src="store-time-weather.js"></script>
 </body>
 </html>
 

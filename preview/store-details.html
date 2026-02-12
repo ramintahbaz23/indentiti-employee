@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/salesforce-lightning-design-system/2.22.2/styles/salesforce-lightning-design-system.min.css">
+    <style>
+        :root {
+            --sf-brand: #003366;
+            --sf-brand-dark: #002347;
+            --sf-brand-hover: #004D99;
+            --sf-success: #2e844a;
+            --sf-warning: #fe9339;
+            --sf-error: #ea001e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            background: #f3f2f2;
+            color: #181818;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid #dddbda;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: visible;
+        }
+
+        .top-nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex: 1;
+            min-width: 0;
+            position: absolute;
+            left: 0;
+            right: 400px; /* Reserve space for right section */
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .top-nav-left > * {
+            pointer-events: auto;
+        }
+
+        .nav-item-dropdown {
+            pointer-events: auto;
+        }
+
+        .nav-dropdown-menu {
+            pointer-events: auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--sf-brand);
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .nav-logo svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-logo-text {
+            white-space: nowrap;
+        }
+
+        .top-nav-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .top-nav-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.625rem 1rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--sf-brand);
+            background: #f3f2f2;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--sf-brand);
+            font-weight: 600;
+            border-bottom-color: var(--sf-brand);
+        }
+
+        .nav-item-text {
+            white-space: nowrap;
+        }
+
+        .nav-item-dropdown {
+            position: relative;
+        }
+
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            width: 180px;
+            z-index: 10001;
+            overflow: hidden;
+            pointer-events: auto;
+            margin-top: 0;
+        }
+
+        .nav-item-dropdown:hover .nav-dropdown-menu {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .nav-dropdown-menu:hover {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .nav-item-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: transparent;
+            z-index: 10000;
+            pointer-events: auto;
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #3e3e3c;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f3f2f2;
+        }
+
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-dropdown-item:hover {
+            background: #f3f2f2;
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .nav-item-dropdown .nav-item-text::after {
+            content: '';
+            display: inline-block;
+            margin-left: 0.5rem;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid currentColor;
+            vertical-align: middle;
+        }
+
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+            position: absolute;
+            right: 1.5rem;
+            z-index: 10;
+            background: #ffffff;
+            padding-left: 1rem;
+        }
+
+        .top-nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 1rem;
+            border-left: 1px solid #dddbda;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--sf-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #181818;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .user-role {
+            font-size: 0.6875rem;
+            color: #706e6b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .notification-bell {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .notification-bell:hover {
+            background: #f3f2f2;
+        }
+
+        .notification-bell svg {
+            width: 18px;
+            height: 18px;
+            color: #706e6b;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: var(--sf-error);
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+        }
+
+        .notification-badge.has-count {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--sf-error);
+            color: #ffffff;
+            font-size: 0.625rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 2px;
+            right: 2px;
+            border: 2px solid #ffffff;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #3e3e3c;
+            min-width: 44px;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: #f3f2f2;
+        }
+
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .mobile-nav-overlay.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                height: 56px;
+            }
+
+            .top-nav-container {
+                padding: 0 1rem;
+                gap: 0.75rem;
+                justify-content: space-between;
+            }
+
+            .top-nav-left {
+                gap: 0.5rem;
+                justify-content: flex-start;
+                position: static;
+                left: auto;
+                right: auto;
+            }
+
+            .top-nav-right {
+                position: static;
+                right: auto;
+            }
+
+            .nav-logo-text {
+                display: none;
+            }
+
+            .top-nav-menu {
+                position: fixed;
+                top: 56px;
+                left: 0;
+                right: 0;
+                background: #ffffff;
+                border-bottom: 1px solid #dddbda;
+                flex-direction: column;
+                align-items: stretch;
+                max-height: calc(100vh - 56px);
+                overflow-y: auto;
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 998;
+                padding: 0.5rem 0;
+            }
+
+            .nav-item-dropdown {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .nav-dropdown-menu {
+                position: static;
+                display: none;
+                margin-top: 0;
+                margin-left: 1rem;
+                border: none;
+                border-left: 2px solid #dddbda;
+                box-shadow: none;
+                background: #fafaf9;
+                border-radius: 0;
+            }
+
+            .nav-item-dropdown.open .nav-dropdown-menu {
+                display: block;
+            }
+
+            .nav-item {
+                padding: 0.875rem 1.25rem;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                border-radius: 0;
+            }
+
+            .nav-item.active {
+                border-left-color: var(--sf-brand);
+                border-bottom-color: transparent;
+                background: #f3f2f2;
+            }
+
+            .top-nav-user {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .main-wrapper {
+                padding-top: 56px;
+            }
+        }
+
+        .main-wrapper {
+            padding-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem 3rem;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #706e6b;
+        }
+
+        .breadcrumb a {
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Store Info Sections */
+        .store-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-panel {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+        }
+
+        .info-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .info-panel-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .edit-icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            color: #706e6b;
+        }
+
+        .edit-icon:hover {
+            color: var(--sf-brand);
+        }
+
+        /* Map Section */
+        .map-container {
+            width: 100%;
+            height: 300px;
+            background: #e5e5e5;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e5e5e5 0%, #d0d0d0 100%);
+            color: #706e6b;
+            font-size: 0.875rem;
+        }
+
+        .map-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .map-links a {
+            color: var(--sf-brand);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .map-links a:hover {
+            text-decoration: underline;
+        }
+
+        .address-details {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+            line-height: 1.6;
+        }
+
+        .address-line {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Store Details Section */
+        .status-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge.active {
+            background: #cdefc4;
+            color: #2e844a;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f2f2;
+            font-size: 0.875rem;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #706e6b;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #181818;
+            text-align: right;
+        }
+
+        .detail-value.empty {
+            color: #ea001e;
+            font-style: italic;
+        }
+
+        .detail-value.active-icon {
+            color: var(--sf-brand);
+        }
+
+        /* Work Orders Section */
+        .work-orders-section {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+        }
+
+        .work-orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .work-orders-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #181818;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #706e6b;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab:hover {
+            color: var(--sf-brand);
+        }
+
+        .tab.active {
+            color: var(--sf-brand);
+            border-bottom-color: var(--sf-brand);
+            background: rgba(0, 51, 102, 0.05);
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .btn-export {
+            padding: 0.5rem 1rem;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #3e3e3c;
+            cursor: pointer;
+        }
+
+        .btn-export:hover {
+            border-color: var(--sf-brand);
+            color: var(--sf-brand);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #fafaf9;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #ecebea;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            margin-left: 0.25rem;
+            color: #706e6b;
+            font-size: 0.625rem;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f3f2f2;
+        }
+
+        tbody tr:hover {
+            background: #fafaf9;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+        }
+
+        .ticket-link {
+            color: var(--sf-brand);
+            text-decoration: none;
+        }
+
+        .ticket-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #706e6b;
+        }
+
+        @media (max-width: 1200px) {
+            .store-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="top-nav-container">
+            <div class="top-nav-left">
+                <nav class="top-nav-menu" id="topNavMenu">
+                    <a href="index.html" class="nav-item">
+                        <span class="nav-item-text">Home</span>
+                    </a>
+                    <a href="view-all.html" class="nav-item">
+                        <span class="nav-item-text">Work Orders</span>
+                    </a>
+                    <div class="nav-item-dropdown">
+                        <a href="#" class="nav-item">
+                            <span class="nav-item-text">Accounting</span>
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="invoices.html" class="nav-dropdown-item">
+                                <span>Invoices</span>
+                            </a>
+                            <a href="estimates.html" class="nav-dropdown-item">
+                                <span>Estimates</span>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="approval-requests.html" class="nav-item">
+                        <span class="nav-item-text">Approval Requests</span>
+                    </a>
+                    <a href="client-store-info.html" class="nav-item active">
+                        <span class="nav-item-text">My Store List</span>
+                    </a>
+                    <a href="training-faqs.html" class="nav-item">
+                        <span class="nav-item-text">Training and FAQs</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Right Section: User Info -->
+            <div class="top-nav-right">
+                <div class="top-nav-user">
+                    <div class="notification-bell" id="notificationBell">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge has-count" id="notificationBadge">3</span>
+                    </div>
+                    <div class="user-avatar">MT</div>
+                    <div class="user-details">
+                        <div class="user-name">Mark Thomas</div>
+                        <div class="user-role">Purple Corporate Manager</div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <main class="main-container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> > <a href="client-store-info.html">My Store List</a> > Store Details
+            </div>
+
+            <!-- Store Info Grid -->
+            <div class="store-info-grid">
+                <!-- Location Panel -->
+                <div class="info-panel">
+                    <div class="info-panel-header">
+                        <h2 class="info-panel-title">Location</h2>
+                        <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="map-container">
+                        <div class="map-placeholder">Map Placeholder</div>
+                    </div>
+                    <div class="map-links">
+                        <a href="#" id="viewLargerMap">View larger map</a>
+                        <a href="#" id="directions">Directions</a>
+                    </div>
+                    <div class="address-details" id="addressDetails">
+                        <!-- Address will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Store Details Panel -->
+                <div class="info-panel">
+                    <div class="info-panel-header">
+                        <h2 class="info-panel-title">Store Details</h2>
+                        <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </div>
+                    <div id="storeDetailsContent">
+                        <!-- Store details will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Orders Section -->
+            <div class="work-orders-section">
+                <div class="work-orders-header">
+                    <h2 class="work-orders-title">Work Orders</h2>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" data-tab="active">Active</button>
+                    <button class="tab" data-tab="inactive">Inactive</button>
+                </div>
+
+                <div class="filters-bar">
+                    <input type="text" class="filter-input search-input" id="workOrderSearch" placeholder="Search">
+                    <div class="export-buttons">
+                        <button class="btn-export">CSV (ALL)</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="id">
+                                    Ticket # <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="status">
+                                    Status <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="completedDate">
+                                    Completed <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="nteAmount">
+                                    NTE <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="trade">
+                                    Classification <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="issue">
+                                    Issue <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="storeName">
+                                    Client <span class="sort-icon">⇅</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="workOrdersTableBody">
+                            <!-- Work orders will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="stores-data.js"></script>
+    <script src="demo-data.js"></script>
+    <script src="store-details-app.js"></script>
+</body>
+</html>

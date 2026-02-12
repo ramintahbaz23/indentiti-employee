@@ -6,6 +6,219 @@ let currentWorkOrder = null;
 let comments = [];
 let files = [];
 
+// Helper functions for estimates and invoices
+function getWorkOrderEstimates(workOrderId) {
+    if (!workOrderId || typeof estimatesData === 'undefined') return [];
+    return estimatesData.filter(est => est.workOrderNumber === workOrderId)
+        .sort((a, b) => new Date(b.created) - new Date(a.created));
+}
+
+function getWorkOrderInvoices(workOrderId) {
+    if (!workOrderId || typeof invoicesData === 'undefined') return [];
+    return invoicesData.filter(inv => inv.ticketNumber === workOrderId)
+        .sort((a, b) => new Date(b.created) - new Date(a.created));
+}
+
+function findEstimateByStatus(estimates, statuses) {
+    if (!Array.isArray(statuses)) statuses = [statuses];
+    for (const est of estimates) {
+        const normalizedStatus = (est.status || '').toLowerCase();
+        if (statuses.includes(normalizedStatus)) {
+            return est;
+        }
+    }
+    return null;
+}
+
+/**
+ * Render Estimates table in Estimates tab
+ */
+function renderEstimatesTable(workOrderId) {
+    const tableContainer = document.getElementById('estimatesTable');
+    if (!tableContainer) {
+        console.error('estimatesTable element not found');
+        return;
+    }
+
+    let estimates = getWorkOrderEstimates(workOrderId);
+    console.log('Rendering estimates table for work order:', workOrderId, 'Found estimates:', estimates);
+
+    // If no estimates, create 2 sample estimates for display
+    if (!estimates || estimates.length === 0) {
+        estimates = [
+            {
+                id: `EST-${workOrderId}-001`,
+                workOrderNumber: workOrderId,
+                created: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+                estimationDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+                total: 850.00,
+                taxAmount: 68.00,
+                grandTotal: 918.00,
+                status: 'Pending',
+                comment: 'Awaiting approval'
+            },
+            {
+                id: `EST-${workOrderId}-002`,
+                workOrderNumber: workOrderId,
+                created: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                estimationDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+                total: 1200.00,
+                taxAmount: 96.00,
+                grandTotal: 1296.00,
+                status: 'Draft',
+                comment: 'Initial estimate'
+            }
+        ];
+    } else if (estimates.length < 2) {
+        // If only 1 estimate, add another sample one
+        estimates.push({
+            id: `EST-${workOrderId}-${String(estimates.length + 1).padStart(3, '0')}`,
+            workOrderNumber: workOrderId,
+            created: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+            estimationDate: new Date(Date.now() + 27 * 24 * 60 * 60 * 1000),
+            total: 750.00,
+            taxAmount: 60.00,
+            grandTotal: 810.00,
+            status: 'Draft',
+            comment: 'Revised estimate'
+        });
+    }
+
+    // Limit to 2 estimates for display
+    estimates = estimates.slice(0, 2);
+
+    const tableHTML = `
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #dddbda;">
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Name</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Status</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Total</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Updated</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${estimates.map(est => {
+                    const status = (est.status || '').toLowerCase();
+                    const statusClass = status || 'draft';
+                    return `
+                        <tr style="border-bottom: 1px solid #f3f2f2;">
+                            <td style="padding: 1rem;"><a href="estimates.html?id=${est.id}" style="color: var(--sf-brand); text-decoration: none;">${est.id}</a></td>
+                            <td style="padding: 1rem;"><span class="status-badge-small ${statusClass}">${est.status || 'Draft'}</span></td>
+                            <td style="padding: 1rem;">${formatCurrency(est.grandTotal || est.total)}</td>
+                            <td style="padding: 1rem;">${formatDate(est.created)}</td>
+                            <td style="padding: 1rem;">
+                                <a href="estimates.html?id=${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">View</a>
+                                ${status === 'draft' ? `<a href="#" class="edit-estimate" data-id="${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Edit</a>` : ''}
+                                ${status === 'draft' ? `<a href="#" class="send-estimate" data-id="${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Send</a>` : ''}
+                                ${status === 'rejected' ? `<a href="#" class="revise-estimate" data-id="${est.id}" style="color: var(--sf-brand);">Revise</a>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+
+    tableContainer.innerHTML = tableHTML;
+}
+
+/**
+ * Render Invoices table in Invoices tab
+ */
+function renderInvoicesTable(workOrderId) {
+    const tableContainer = document.getElementById('invoicesTable');
+    if (!tableContainer) return;
+
+    let invoices = getWorkOrderInvoices(workOrderId);
+    const estimates = getWorkOrderEstimates(workOrderId);
+    const approvedEstimate = findEstimateByStatus(estimates, 'approved');
+
+    // If no invoices, create 2 sample invoices for display
+    if (!invoices || invoices.length === 0) {
+        invoices = [
+            {
+                id: `INV-${workOrderId}-001`,
+                ticketNumber: workOrderId,
+                invoiceNumber: `INV-${workOrderId}-001`,
+                created: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+                invoiceDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+                total: 918.00,
+                taxAmount: 73.44,
+                grandTotal: 991.44,
+                status: 'Paid',
+                paidDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+            },
+            {
+                id: `INV-${workOrderId}-002`,
+                ticketNumber: workOrderId,
+                invoiceNumber: `INV-${workOrderId}-002`,
+                created: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                invoiceDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                total: 1296.00,
+                taxAmount: 103.68,
+                grandTotal: 1399.68,
+                status: 'Sent',
+                paidDate: null
+            }
+        ];
+    } else if (invoices.length < 2) {
+        // If only 1 invoice, add another sample one
+        invoices.push({
+            id: `INV-${workOrderId}-${String(invoices.length + 1).padStart(3, '0')}`,
+            ticketNumber: workOrderId,
+            invoiceNumber: `INV-${workOrderId}-${String(invoices.length + 1).padStart(3, '0')}`,
+            created: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            invoiceDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            total: 810.00,
+            taxAmount: 64.80,
+            grandTotal: 874.80,
+            status: 'Draft',
+            paidDate: null
+        });
+    }
+
+    // Limit to 2 invoices for display
+    invoices = invoices.slice(0, 2);
+
+    const tableHTML = `
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #dddbda;">
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Number</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Status</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Total</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Updated</th>
+                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${invoices.map(inv => {
+                    const status = (inv.status || '').toLowerCase();
+                    const statusClass = status || 'draft';
+                    return `
+                        <tr style="border-bottom: 1px solid #f3f2f2;">
+                            <td style="padding: 1rem;"><a href="invoices.html?id=${inv.id}" style="color: var(--sf-brand); text-decoration: none;">${inv.invoiceNumber || inv.id}</a></td>
+                            <td style="padding: 1rem;"><span class="status-badge-small ${statusClass}">${inv.status || 'Draft'}</span></td>
+                            <td style="padding: 1rem;">${formatCurrency(inv.grandTotal || inv.total)}</td>
+                            <td style="padding: 1rem;">${formatDate(inv.created || inv.invoiceDate)}</td>
+                            <td style="padding: 1rem;">
+                                <a href="invoices.html?id=${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">View</a>
+                                ${status === 'draft' ? `<a href="#" class="edit-invoice" data-id="${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Edit</a>` : ''}
+                                ${status === 'draft' ? `<a href="#" class="send-invoice" data-id="${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Send</a>` : ''}
+                                ${status === 'sent' ? `<a href="#" class="record-payment" data-id="${inv.id}" style="color: var(--sf-brand);">Record Payment</a>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+
+    tableContainer.innerHTML = tableHTML;
+}
+
 // Recent Work Orders Management
 function addToRecentWorkOrders(woId, woTitle) {
     const recent = getRecentWorkOrders();
@@ -106,11 +319,20 @@ function getTimezoneForState(state) {
 
 // Update store local time and weather
 function updateStoreTimeAndWeather(wo) {
-    const state = wo.state || 'NC';
-    const city = wo.city || 'Winston-Salem';
+    const state = wo?.state || 'NC';
+    const city = wo?.city || 'Winston-Salem';
     const timezone = getTimezoneForState(state);
     
     // Get current time in store's timezone with dummy data fallback
+    const timeEl = document.getElementById('storeLocalTime');
+    const weatherEl = document.getElementById('storeWeather');
+    const weatherIconEl = document.getElementById('weatherIcon');
+    
+    if (!timeEl || !weatherEl || !weatherIconEl) {
+        console.warn('Time/weather elements not found');
+        return;
+    }
+    
     try {
         const now = new Date();
         const timeString = now.toLocaleTimeString('en-US', { 
@@ -119,25 +341,30 @@ function updateStoreTimeAndWeather(wo) {
             hour12: true,
             timeZone: timezone
         });
-        const dateString = now.toLocaleDateString('en-US', { 
-            weekday: 'short',
-            month: 'short', 
-            day: 'numeric',
-            timeZone: timezone
-        });
         
         // Get timezone abbreviation
         const tzAbbr = getTimezoneAbbreviation(state);
-        document.getElementById('storeLocalTime').textContent = `${dateString} ${timeString} ${tzAbbr}`;
+        timeEl.textContent = `${timeString} ${tzAbbr}`;
     } catch (e) {
         // Fallback dummy data
-        document.getElementById('storeLocalTime').textContent = 'Mon, Feb 5, 1:33 AM EST';
+        timeEl.textContent = '1:33 AM EST';
     }
     
     // Mock weather data (in production, call weather API)
     const weatherData = getMockWeather(city, state);
-    document.getElementById('storeWeather').textContent = weatherData.condition;
-    document.getElementById('weatherIcon').textContent = weatherData.icon;
+    weatherEl.textContent = weatherData.condition;
+    weatherIconEl.textContent = weatherData.icon;
+}
+
+// Get timezone for state (IANA timezone identifier)
+function getTimezoneForState(state) {
+    const tzMap = {
+        'CA': 'America/Los_Angeles', 'NV': 'America/Los_Angeles', 'WA': 'America/Los_Angeles', 'OR': 'America/Los_Angeles',
+        'TX': 'America/Chicago', 'IL': 'America/Chicago', 'MO': 'America/Chicago', 'AR': 'America/Chicago', 'LA': 'America/Chicago', 'OK': 'America/Chicago', 'KS': 'America/Chicago', 'NE': 'America/Chicago', 'SD': 'America/Chicago', 'ND': 'America/Chicago', 'MN': 'America/Chicago', 'WI': 'America/Chicago', 'IA': 'America/Chicago', 'TN': 'America/Chicago', 'AL': 'America/Chicago', 'MS': 'America/Chicago',
+        'NY': 'America/New_York', 'FL': 'America/New_York', 'NC': 'America/New_York', 'GA': 'America/New_York', 'PA': 'America/New_York', 'OH': 'America/New_York', 'MI': 'America/New_York', 'NJ': 'America/New_York', 'VA': 'America/New_York', 'MA': 'America/New_York', 'MD': 'America/New_York', 'SC': 'America/New_York', 'KY': 'America/New_York', 'WV': 'America/New_York', 'VT': 'America/New_York', 'NH': 'America/New_York', 'ME': 'America/New_York', 'RI': 'America/New_York', 'CT': 'America/New_York', 'DE': 'America/New_York', 'DC': 'America/New_York',
+        'CO': 'America/Denver', 'UT': 'America/Denver', 'AZ': 'America/Phoenix', 'NM': 'America/Denver', 'WY': 'America/Denver', 'MT': 'America/Denver', 'ID': 'America/Denver'
+    };
+    return tzMap[state] || 'America/New_York';
 }
 
 // Get timezone abbreviation
@@ -234,6 +461,159 @@ function showToast(message, type = 'info') {
     alert(message);
 }
 
+/**
+ * Show a modal dialog to collect decline reason
+ * Uses best practices: proper modal, validation, accessibility
+ */
+window.showDeclineReasonModal = function() {
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'decline-modal-title');
+    
+    // Create modal container
+    const container = document.createElement('div');
+    container.className = 'modal-container';
+    
+    // Create modal header
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    const title = document.createElement('h2');
+    title.className = 'modal-title';
+    title.id = 'decline-modal-title';
+    title.textContent = 'Decline Work Order';
+    header.appendChild(title);
+    
+    // Create modal body
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+    
+    const label = document.createElement('label');
+    label.className = 'modal-label';
+    label.setAttribute('for', 'decline-reason-textarea');
+    label.textContent = 'Reason for Declining *';
+    
+    const textarea = document.createElement('textarea');
+    textarea.id = 'decline-reason-textarea';
+    textarea.className = 'modal-textarea';
+    textarea.setAttribute('placeholder', 'Please provide a reason for declining this work order...');
+    textarea.setAttribute('maxlength', '500');
+    textarea.setAttribute('required', 'true');
+    textarea.setAttribute('aria-required', 'true');
+    textarea.setAttribute('aria-describedby', 'char-count');
+    
+    const charCount = document.createElement('div');
+    charCount.id = 'char-count';
+    charCount.className = 'modal-char-count';
+    charCount.textContent = '0 / 500 characters';
+    
+    // Update character count as user types
+    textarea.addEventListener('input', () => {
+        const length = textarea.value.length;
+        charCount.textContent = `${length} / 500 characters`;
+        
+        // Enable/disable decline button based on input
+        const declineBtn = container.querySelector('.modal-btn-decline');
+        if (declineBtn) {
+            declineBtn.disabled = length === 0 || !textarea.value.trim();
+        }
+    });
+    
+    body.appendChild(label);
+    body.appendChild(textarea);
+    body.appendChild(charCount);
+    
+    // Create modal footer
+    const footer = document.createElement('div');
+    footer.className = 'modal-footer';
+    
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'modal-btn modal-btn-cancel';
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.setAttribute('aria-label', 'Cancel decline');
+    
+    const declineBtn = document.createElement('button');
+    declineBtn.className = 'modal-btn modal-btn-decline';
+    declineBtn.type = 'button';
+    declineBtn.textContent = 'Decline Work Order';
+    declineBtn.disabled = true;
+    declineBtn.setAttribute('aria-label', 'Confirm decline');
+    
+    footer.appendChild(cancelBtn);
+    footer.appendChild(declineBtn);
+    
+    // Assemble modal
+    container.appendChild(header);
+    container.appendChild(body);
+    container.appendChild(footer);
+    overlay.appendChild(container);
+    
+    // Add to DOM
+    document.body.appendChild(overlay);
+    
+    // Focus textarea for accessibility
+    textarea.focus();
+    
+    // Close modal function
+    const closeModal = () => {
+        if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+        }
+        // Restore body scroll if needed
+        document.body.style.overflow = '';
+    };
+    
+    // Handle cancel button
+    cancelBtn.addEventListener('click', closeModal);
+    
+    // Handle decline button
+    declineBtn.addEventListener('click', () => {
+        const reason = textarea.value.trim();
+        
+        // Validate reason is provided
+        if (!reason) {
+            textarea.focus();
+            textarea.style.borderColor = '#ea001e';
+            setTimeout(() => {
+                textarea.style.borderColor = '';
+            }, 2000);
+            return;
+        }
+        
+        // Update work order
+        if (currentWorkOrder) {
+            currentWorkOrder.rejectionReason = reason;
+            currentWorkOrder.status = 'Declined';
+            renderWorkOrder();
+            showToast('Work order declined.', 'success');
+        }
+        
+        closeModal();
+    });
+    
+    // Close on overlay click (outside modal)
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeModal();
+        }
+    });
+    
+    // Close on Escape key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+};
+
 // Load work order data
 function loadWorkOrder() {
     // Find work order in data
@@ -287,11 +667,71 @@ function renderWorkOrder() {
     console.log('Rendering work order:', wo.id);
     console.log('Work order data:', wo);
     
+    // Show/hide buttons based on work order status
+    const dispatchBtn = document.getElementById('dispatchBtn');
+    const declineBtn = document.getElementById('declineBtn');
+    const editBtn = document.getElementById('editBtn');
+    const primaryCtaBtn = document.getElementById('primaryCtaBtn');
+    const moreActionsBtn = document.getElementById('moreActionsBtn');
+    
+    // Hide all buttons initially
+    if (dispatchBtn) dispatchBtn.style.display = 'none';
+    if (declineBtn) declineBtn.style.display = 'none';
+    if (primaryCtaBtn) primaryCtaBtn.style.display = 'none';
+    if (moreActionsBtn) moreActionsBtn.style.display = 'none';
+    
+    // Determine status conditions
+    const status = wo.status || '';
+    const statusLower = status.toLowerCase();
+    const isUnassigned = !wo.contractorName || wo.contractorName.trim() === '' || wo.contractorName === null;
+    const isNew = status === 'New' || statusLower === 'new';
+    const isInProgress = status === 'On-site/In Progress' || status === 'In Progress' || status === 'Dispatched' || 
+                         statusLower.includes('in progress') || statusLower.includes('dispatched');
+    const isComplete = status === 'Work Complete' || status === 'Complete' || statusLower.includes('complete');
+    const isAccepted = status === 'Accepted' || statusLower === 'accepted';
+    
+    // Show Dispatch/Decline if unassigned and status is New
+    if (isUnassigned && isNew) {
+        if (dispatchBtn) dispatchBtn.style.display = 'inline-flex';
+        if (declineBtn) {
+            declineBtn.style.display = 'inline-flex';
+            // Re-attach listener when button becomes visible
+            if (!declineBtn.dataset.listenerAttached) {
+                declineBtn.dataset.listenerAttached = 'true';
+                declineBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Decline button clicked after renderWorkOrder');
+                    if (window.showDeclineReasonModal) {
+                        window.showDeclineReasonModal();
+                    }
+                    return false;
+                });
+            }
+        }
+    }
+    
+    // Hide Dispatch button if status is In Progress or Complete
+    if (dispatchBtn && (isInProgress || isComplete)) {
+        dispatchBtn.style.display = 'none';
+    }
+    
+    // Hide Decline button if status is Complete
+    if (declineBtn && isComplete) {
+        declineBtn.style.display = 'none';
+    }
+    
+    // Hide Edit button if status is Complete or Accepted
+    if (editBtn) {
+        if (isComplete || isAccepted) {
+            editBtn.style.display = 'none';
+        } else {
+            editBtn.style.display = 'inline-flex';
+        }
+    }
+    
     // Add to recent work orders
     addToRecentWorkOrders(wo.id, wo.issue || wo.id);
-    
-    // Render sidebar navigation
-    renderSidebarNavigation();
     
     // Update page title
     document.getElementById('pageTitle').textContent = `Work Order ${wo.id}`;
@@ -328,10 +768,15 @@ function renderWorkOrder() {
     
     // Status badge in card header
     const statusClass = getStatusClass(wo.status || 'New');
-    document.getElementById('statusBadge').innerHTML = `<span class="status-badge status-${statusClass}">${wo.status || 'New'}</span>`;
+    // Transform "On Hold" status to "Awaiting Approval" for display
+    let displayStatus = wo.status || 'New';
+    if (displayStatus === 'On Hold' || displayStatus === 'Proposal Submitted' || displayStatus === 'Proposal Pending Approval' || displayStatus === 'Pending Schedule' || displayStatus === 'Awaiting Parts') {
+        displayStatus = 'Awaiting Approval';
+    }
+    document.getElementById('statusBadge').innerHTML = `<span class="status-badge status-${statusClass}">${displayStatus}</span>`;
     
     // Key information displays
-    document.getElementById('statusValueDisplay').textContent = wo.status || 'New';
+    document.getElementById('statusValueDisplay').textContent = displayStatus;
     const priorityDisplay = formatPriorityDisplay(wo.priority) || 'High';
     document.getElementById('priorityValueDisplay').textContent = priorityDisplay;
     document.getElementById('issueValueDisplay').textContent = wo.issue || 'Ceiling Tiles';
@@ -370,9 +815,6 @@ function renderWorkOrder() {
         console.error('nteValue element not found!');
     }
     document.getElementById('recall').textContent = wo.isRecall === 'Yes' ? 'YES' : 'NO';
-    
-    // Store local time and weather
-    updateStoreTimeAndWeather(wo);
     
     // Show/hide rejection reason based on whether it has a value
     const rejectionReasonGroup = document.getElementById('rejectionReasonGroup');
@@ -493,202 +935,26 @@ function loadComments() {
         {
             id: 1,
             author: 'Mark Thomas',
+            role: 'Purple Corporate Manager',
             date: new Date(baseDate),
             type: 'Internal',
             subject: 'Work order created',
-            body: `Work order ${woId} has been created for ${issue}. Store manager reported water damage in the back storage area. The issue was first noticed on Monday morning when staff arrived.`
+            body: `Work order ${woId} has been created for ${issue}. Store manager reported water damage in the back storage area. The issue was first noticed on Monday morning when staff arrived.`,
+            likes: 2,
+            commentCount: 3,
+            isLiked: false
         },
         {
             id: 2,
             author: 'Sarah Johnson',
+            role: 'Operations Coordinator',
             date: new Date(baseDate.getTime() + 2 * 60 * 60 * 1000),
             type: 'Internal',
             subject: 'Contractor assignment',
-            body: `I've assigned this to ${contractorName}. Can you reach out to them and coordinate a site visit? We need to get this addressed quickly as the area is currently taped off.`
-        },
-        {
-            id: 3,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 3 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Re: Contractor assignment',
-            body: `Will do. I'll contact them first thing tomorrow morning. Do we have a preferred time window for the site visit?`
-        },
-        {
-            id: 4,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 1 * 24 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Site visit scheduled',
-            body: `Hi Mark, we've scheduled a site visit for ${formatDate(new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000))} at 10:00 AM. Our technician Mike will be on-site to assess the damage. Can someone from the store be available to provide access to the back storage area?`
-        },
-        {
-            id: 5,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 1 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Re: Site visit scheduled',
-            body: `Yes, I'll be here on ${formatDate(new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000))} at 10 AM. The back storage area is accessible through the employee entrance. I'll make sure the area is clear for your technician.`
-        },
-        {
-            id: 6,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Site visit completed',
-            body: `Site visit completed. We've assessed the damage - approximately 12 ceiling tiles need replacement due to water damage. The tiles are standard 2x2 drop ceiling tiles. We'll need to order matching tiles which may take 3-5 business days. I've taken photos of the damaged area.`
-        },
-        {
-            id: 7,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Re: Site visit completed',
-            body: `Thanks for the update. Can you provide a quote for the replacement? We have an NTE of $550.00 for this work order.`
-        },
-        {
-            id: 8,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 4 * 24 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Quote provided',
-            body: `Here's the breakdown:\n- 12 replacement tiles: $180.00\n- Labor (2-3 hours): $300.00\n- Materials and supplies: $70.00\n\nTotal: $550.00\n\nThis is within your NTE amount. Once approved, we'll order the tiles and schedule installation.`
-        },
-        {
-            id: 9,
-            author: 'Sarah Johnson',
-            date: new Date(baseDate.getTime() + 4 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Re: Quote provided',
-            body: `The quote looks good and is within budget. Mark, can you approve this so we can move forward?`
-        },
-        {
-            id: 10,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 4 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Approved',
-            body: `Approved. Please proceed with ordering materials and scheduling installation.`
-        },
-        {
-            id: 11,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 5 * 24 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Materials ordered',
-            body: `Materials have been ordered and should arrive by ${formatDate(new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000))}. Once we receive confirmation of delivery, we'll schedule the installation. Estimated installation time is 2-3 hours. We'll coordinate with John at the store for the best time.`
-        },
-        {
-            id: 12,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 6 * 24 * 60 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Question about timeline',
-            body: `Just checking in - any update on when the materials will arrive? The taped-off area is starting to impact our storage operations.`
-        },
-        {
-            id: 13,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 6 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Re: Question about timeline',
-            body: `Hi John, we're tracking the shipment and it's scheduled to arrive on ${formatDate(new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000))}. We can schedule installation for the following day if that works for you. What time would be best?`
-        },
-        {
-            id: 14,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Re: Question about timeline',
-            body: `Morning would be best, around 9 AM if possible. That way we can have everything ready and the area cleared before we get busy.`
-        },
-        {
-            id: 15,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000 + 1 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Installation scheduled',
-            body: `Perfect! We've scheduled installation for ${formatDate(new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000))} at 9:00 AM. Our technician Mike will be on-site. Please ensure the area is accessible. We'll send a reminder the day before.`
-        },
-        {
-            id: 16,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Status update',
-            body: `Just wanted to confirm everything is on track. Materials should arrive today and installation is scheduled for tomorrow. John, please confirm once the work is completed so we can close out this work order.`
-        },
-        {
-            id: 17,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Re: Status update',
-            body: `Will do, Mark. I'll be here tomorrow morning to let Mike in and will send confirmation photos once the work is complete.`
-        },
-        {
-            id: 18,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Materials received',
-            body: `Great news - materials arrived today as expected. Everything looks good and matches the specifications. We're all set for tomorrow's installation at 9 AM. Mike will arrive with all necessary tools and materials.`
-        },
-        {
-            id: 19,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 8 * 24 * 60 * 60 * 1000 + 10 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Re: Materials received',
-            body: `Excellent! Thanks for the update. Looking forward to getting this resolved.`
-        },
-        {
-            id: 20,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Installation in progress',
-            body: `Mike has arrived on-site and has begun the installation. He's removed the damaged tiles and is preparing the area for new tiles. Estimated completion time is around 11:30 AM.`
-        },
-        {
-            id: 21,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Re: Installation in progress',
-            body: `Thanks for the update. Mike is doing great work. The area looks much better already.`
-        },
-        {
-            id: 22,
-            author: 'ABC Maintenance Services',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
-            type: 'Vendor',
-            subject: 'Installation completed',
-            body: `Installation has been completed successfully! All 12 tiles have been replaced and the area has been cleaned up. Mike has taken photos of the completed work. The area is now safe to use. Please let us know if you need anything else.`
-        },
-        {
-            id: 23,
-            author: 'John Smith',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000 + 30 * 60 * 1000),
-            type: 'Customer',
-            subject: 'Re: Installation completed',
-            body: `Perfect! The work looks excellent. I've removed the tape and we're back to normal operations. Thanks to Mike for the great work and quick turnaround.`
-        },
-        {
-            id: 24,
-            author: 'Mark Thomas',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Work order completion',
-            body: `Great to hear everything went smoothly! I'll process the invoice and close out this work order. Thanks everyone for the coordination.`
-        },
-        {
-            id: 25,
-            author: 'Sarah Johnson',
-            date: new Date(baseDate.getTime() + 9 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000 + 30 * 60 * 1000),
-            type: 'Internal',
-            subject: 'Re: Work order completion',
-            body: `Excellent work everyone! This was handled very efficiently. The store manager is happy with the results.`
+            body: `I've assigned this to ${contractorName}. Can you reach out to them and coordinate a site visit? We need to get this addressed quickly as the area is currently taped off.`,
+            likes: 1,
+            commentCount: 2,
+            isLiked: true
         }
     ];
     
@@ -701,6 +967,35 @@ function loadComments() {
     setTimeout(() => {
         renderComments();
     }, 100);
+}
+
+// Helper function to get user initials for avatar
+function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+}
+
+// Helper function to format relative time (like "2 hours ago")
+function formatRelativeTime(date) {
+    if (!date) return '';
+    const now = new Date();
+    const postDate = new Date(date);
+    const diffMs = now - postDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+    if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+    if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+    
+    // For older posts, show formatted date
+    return formatDateTime(date);
 }
 
 function renderComments() {
@@ -722,26 +1017,112 @@ function renderComments() {
     
     if (comments.length === 0) {
         console.warn('No comments to render, showing empty state');
-        container.innerHTML = '<div class="empty-state">No comments yet. Be the first to comment!</div>';
+        container.innerHTML = '<div class="empty-state">No posts yet. Share an update!</div>';
         return;
     }
 
-    const html = comments.map(comment => `
-        <div class="comment-item" data-comment-type="${comment.type}">
-            <div class="comment-header">
-                <div>
-                    <span class="comment-type">${comment.type}</span>
-                    <div class="comment-author">${comment.author}</div>
+    // Sort comments by date (newest first)
+    const sortedComments = [...comments].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const html = sortedComments.map(comment => {
+        const initials = getInitials(comment.author);
+        const typeClass = (comment.type || 'Internal').toLowerCase();
+        const likeCount = comment.likes || 0;
+        const commentCount = comment.commentCount || 0;
+        const isLiked = comment.isLiked || false;
+        
+        return `
+            <div class="chatter-post" data-post-id="${comment.id}" data-comment-type="${comment.type || 'Internal'}">
+                <div class="chatter-post-header">
+                    <div class="chatter-avatar">${initials}</div>
+                    <div class="chatter-post-info">
+                        <div class="chatter-post-author">${comment.author}</div>
+                        <div class="chatter-post-meta">
+                            ${comment.role ? `<span class="chatter-post-role">${comment.role}</span>` : ''}
+                            <span class="chatter-post-time">${formatRelativeTime(comment.date)}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="comment-date">${formatDateTime(comment.date)}</div>
+                <div class="chatter-post-body">
+                    ${comment.subject ? `<div class="chatter-post-subject">${comment.subject}</div>` : ''}
+                    <div>${escapeHtml(comment.body)}</div>
+                </div>
+                <div class="chatter-post-actions">
+                    <button class="chatter-action ${isLiked ? 'liked' : ''}" data-action="like" data-post-id="${comment.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="chatter-action-count">${likeCount}</span>
+                    </button>
+                    <button class="chatter-action" data-action="comment" data-post-id="${comment.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span class="chatter-action-count">${commentCount}</span>
+                    </button>
+                    <button class="chatter-action" data-action="share" data-post-id="${comment.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                            <polyline points="16 6 12 2 8 6"></polyline>
+                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                </div>
             </div>
-            ${comment.subject ? `<div style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.875rem; color: #181818;">${comment.subject}</div>` : ''}
-            <div class="comment-body">${comment.body}</div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     
     container.innerHTML = html;
-    console.log(`Successfully rendered ${comments.length} comments`);
+    
+    // Attach event listeners for post actions
+    attachPostActionListeners();
+    
+    console.log(`Successfully rendered ${comments.length} posts`);
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Attach event listeners for post actions (like, comment, share)
+function attachPostActionListeners() {
+    document.querySelectorAll('.chatter-action').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const action = btn.getAttribute('data-action');
+            const postId = btn.getAttribute('data-post-id');
+            
+            if (action === 'like') {
+                handleLike(postId, btn);
+            } else if (action === 'comment') {
+                handleComment(postId);
+            } else if (action === 'share') {
+                handleShare(postId);
+            }
+        });
+    });
+}
+
+function handleLike(postId, btn) {
+    const comment = comments.find(c => c.id == postId);
+    if (comment) {
+        comment.isLiked = !comment.isLiked;
+        comment.likes = (comment.likes || 0) + (comment.isLiked ? 1 : -1);
+        renderComments();
+    }
+}
+
+function handleComment(postId) {
+    // For now, just show a toast - could expand to show comment input
+    showToast('Comment functionality coming soon', 'info');
+}
+
+function handleShare(postId) {
+    showToast('Share functionality coming soon', 'info');
 }
 
 function loadFiles() {
@@ -962,7 +1343,7 @@ function renderFiles() {
                 ${getFileIcon(file.type, file.name)}
             </div>
             <div class="file-name" title="${file.name}">${file.name}</div>
-            <div style="font-size: 0.75rem; color: #706e6b; margin-top: 0.25rem;">${formatFileSize(file.size)}</div>
+            <div style="font-size: 0.625rem; color: #706e6b; margin-top: 0.25rem; white-space: nowrap;">${formatFileSize(file.size)}</div>
         </div>
     `).join('');
     
@@ -1189,50 +1570,7 @@ function handleFiles(fileList) {
     showToast(`${fileList.length} file(s) added successfully`, 'success');
 }
 
-function renderSidebarNavigation() {
-    const container = document.getElementById('workOrderChildren');
-    if (!container) return;
-    
-    // Ensure Work Orders parent is active and expanded
-    const workOrdersParent = document.querySelector('.nav-item-parent.has-children');
-    if (workOrdersParent) {
-        workOrdersParent.classList.add('active');
-    }
-    
-    const recent = getRecentWorkOrders();
-    // Filter out current work order from recent
-    const recentFiltered = recent.filter(wo => wo.id !== workOrderId);
-    
-    let html = '';
-    
-    // Current work order (always shown first and marked as active)
-    if (currentWorkOrder && workOrderId) {
-        html += `
-            <a href="work-order-details.html?id=${currentWorkOrder.id}" class="nav-item-child active">
-                ${currentWorkOrder.id}
-            </a>
-        `;
-    }
-    
-    // Recent work orders
-    if (recentFiltered.length > 0) {
-        html += `<div class="recent-work-orders-label">Recently Viewed</div>`;
-        recentFiltered.slice(0, 5).forEach(wo => {
-            html += `
-                <a href="work-order-details.html?id=${wo.id}" class="nav-item-child">
-                    ${wo.id}
-                </a>
-            `;
-        });
-    }
-    
-    container.innerHTML = html;
-    
-    // Ensure children are visible when parent is active
-    if (workOrdersParent && workOrdersParent.classList.contains('active')) {
-        container.style.display = 'flex';
-    }
-}
+// renderSidebarNavigation removed - using top nav instead
 
 // Tab Switching - make it globally accessible
 window.switchTab = function(tabName) {
@@ -1277,16 +1615,17 @@ window.switchTab = function(tabName) {
             }, 50);
         }
         
-        // If switching to messages tab, ensure comments are loaded and rendered
-        if (tabName === 'messages') {
+        // If switching to estimates tab, render estimates table
+        if (tabName === 'estimates') {
             setTimeout(() => {
-                if (comments.length === 0) {
-                    console.log('No comments found, loading comments...');
-                    loadComments();
-                } else {
-                    console.log('Rendering existing comments:', comments.length);
-                    renderComments();
-                }
+                renderEstimatesTable(workOrderId);
+            }, 50);
+        }
+        
+        // If switching to invoices tab, render invoices table
+        if (tabName === 'invoices') {
+            setTimeout(() => {
+                renderInvoicesTable(workOrderId);
             }, 50);
         }
             
@@ -1314,22 +1653,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load work order
     loadWorkOrder();
     
-    // Ensure messages tab is active by default and render content
+    // Load comments on page load (messages section is always visible)
     setTimeout(() => {
-        switchTab('messages');
-        // Force render comments and files after a delay to ensure DOM is ready
+        if (comments.length === 0) {
+            console.log('No comments found, loading...');
+            loadComments();
+        } else {
+            console.log('Rendering existing comments');
+            renderComments();
+        }
+    }, 200);
+    
+    // Initialize store time and weather (use current work order or defaults)
+    if (currentWorkOrder) {
+        updateStoreTimeAndWeather(currentWorkOrder);
+    } else {
+        // Use default store location if no work order loaded yet
+        updateStoreTimeAndWeather({ state: 'NC', city: 'Winston-Salem' });
+    }
+    
+    // Update time every minute
+    setInterval(() => {
+        if (currentWorkOrder) {
+            updateStoreTimeAndWeather(currentWorkOrder);
+        } else {
+            updateStoreTimeAndWeather({ state: 'NC', city: 'Winston-Salem' });
+        }
+    }, 60000); // Update every minute
+    
+    // Ensure files tab is active by default and render content
+    setTimeout(() => {
+        switchTab('files');
+        // Force render files after a delay to ensure DOM is ready
         setTimeout(() => {
-            console.log('Checking comments and files after tab switch');
-            console.log('Comments count:', comments.length);
+            console.log('Checking files after tab switch');
             console.log('Files count:', files.length);
-            
-            if (comments.length === 0) {
-                console.log('No comments found, loading...');
-                loadComments();
-            } else {
-                console.log('Rendering existing comments');
-                renderComments();
-            }
             
             if (files.length === 0) {
                 console.log('No files found, loading...');
@@ -1338,6 +1696,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Rendering existing files');
                 renderFiles();
             }
+            
         }, 300);
     }, 200);
     
@@ -1402,19 +1761,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Approach 3: Direct listeners as backup
     setTimeout(() => {
-        const messagesTab = document.getElementById('messagesTab');
         const filesTab = document.getElementById('filesTab');
-        
-        if (messagesTab) {
-            messagesTab.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Messages tab clicked directly');
-                if (window.switchTab) {
-                    window.switchTab('messages');
-                }
-            }, true);
-        }
         
         if (filesTab) {
             filesTab.addEventListener('click', (e) => {
@@ -1428,35 +1775,74 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 100);
 
-    // Add comment
-    document.getElementById('addCommentBtn').addEventListener('click', () => {
-        const type = document.getElementById('commentType').value;
-        const subject = document.getElementById('commentSubject').value;
-        const body = document.getElementById('commentBody').value;
+    // Old comment form removed - now using Chatter-style composer (handled below)
 
-        if (!body.trim()) {
-            showToast('Please enter a comment', 'error');
-            return;
-        }
+    // Chatter post composer handlers
+    const chatterPostInput = document.getElementById('chatterPostInput');
+    const chatterPostBtn = document.getElementById('chatterPostBtn');
+    const chatterCancelBtn = document.getElementById('chatterCancelBtn');
+    const chatterFileInput = document.getElementById('chatterFileInput');
+    const attachBtn = document.querySelector('.chatter-action-btn[title="Attach file"]');
 
-        const newComment = {
-            id: comments.length + 1,
-            author: 'Current User', // In real app, get from auth
-            date: new Date(),
-            type: type,
-            subject: subject,
-            body: body
-        };
+    if (chatterPostBtn) {
+        chatterPostBtn.addEventListener('click', () => {
+            const postText = chatterPostInput.value.trim();
 
-        comments.push(newComment);
-        renderComments();
+            if (!postText) {
+                showToast('Please enter a post', 'error');
+                return;
+            }
 
-        // Clear form
-        document.getElementById('commentSubject').value = '';
-        document.getElementById('commentBody').value = '';
-        
-        showToast('Comment added successfully', 'success');
-    });
+            const newPost = {
+                id: comments.length + 1,
+                author: 'Current User', // In real app, get from auth
+                role: 'Purple Corporate Manager', // In real app, get from auth
+                date: new Date(),
+                type: 'Internal', // Default type for new posts
+                body: postText,
+                likes: 0,
+                commentCount: 0,
+                isLiked: false
+            };
+
+            comments.push(newPost);
+            renderComments();
+
+            // Clear form
+            chatterPostInput.value = '';
+            if (chatterCancelBtn) chatterCancelBtn.style.display = 'none';
+            showToast('Post shared successfully', 'success');
+        });
+    }
+
+    if (chatterCancelBtn) {
+        chatterCancelBtn.addEventListener('click', () => {
+            if (chatterPostInput) chatterPostInput.value = '';
+            chatterCancelBtn.style.display = 'none';
+        });
+    }
+
+    if (chatterPostInput) {
+        chatterPostInput.addEventListener('input', () => {
+            if (chatterPostInput.value.trim() && chatterCancelBtn) {
+                chatterCancelBtn.style.display = 'inline-block';
+            } else if (chatterCancelBtn) {
+                chatterCancelBtn.style.display = 'none';
+            }
+        });
+    }
+
+    if (attachBtn && chatterFileInput) {
+        attachBtn.addEventListener('click', () => {
+            chatterFileInput.click();
+        });
+
+        chatterFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showToast(`${e.target.files.length} file(s) selected. File attachment coming soon.`, 'info');
+            }
+        });
+    }
 
     // File upload
     const fileUploadArea = document.getElementById('fileUploadArea');
@@ -1525,37 +1911,157 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Edit button - navigate back to main page with edit mode
-    document.getElementById('editBtn').addEventListener('click', () => {
-        window.location.href = `index.html?id=${workOrderId}&edit=true`;
-    });
-
-    // Dispatch button
-    document.getElementById('dispatchBtn').addEventListener('click', () => {
-        if (confirm('Dispatch this work order to KFM247?')) {
-            // In real app, make API call
-            showToast('Work order dispatched successfully!', 'success');
-            // Update status
-            if (currentWorkOrder) {
-                currentWorkOrder.status = 'Dispatched';
-                renderWorkOrder();
+    // Event delegation for primary CTA and more actions
+    const pageHeaderRight = document.querySelector('.page-header-right');
+    if (pageHeaderRight) {
+        pageHeaderRight.addEventListener('click', (e) => {
+            // Check if clicked element is inside decline button
+            const declineBtn = e.target.closest('#declineBtn');
+            if (declineBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Decline button clicked via delegation');
+                if (window.showDeclineReasonModal) {
+                    window.showDeclineReasonModal();
+                } else {
+                    console.error('showDeclineReasonModal function not found');
+                }
+                return;
             }
+            
+            // Check if clicked element is inside dispatch button
+            const dispatchBtn = e.target.closest('#dispatchBtn');
+            if (dispatchBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm('Dispatch this work order?')) {
+                    if (currentWorkOrder) {
+                        currentWorkOrder.status = 'Dispatched';
+                        currentWorkOrder.contractorName = 'KFM247'; // Assign contractor
+                        renderWorkOrder();
+                        showToast('Work order dispatched successfully!', 'success');
+                    }
+                }
+                return;
+            }
+            
+            // Check for other buttons
+            const target = e.target.closest('button');
+            if (!target) return;
+            
+            // Primary CTA button
+            if (target.id === 'primaryCtaBtn' || target.closest('#primaryCtaBtn')) {
+                const btn = document.getElementById('primaryCtaBtn');
+                if (btn) {
+                    const action = btn.dataset.action;
+                    const data = {
+                        estimateId: btn.dataset.estimateId,
+                        invoiceId: btn.dataset.invoiceId
+                    };
+                    handlePrimaryCtaAction(action, data);
+                }
+            }
+            
+            // More actions button
+            if (target.id === 'moreActionsBtn' || target.closest('#moreActionsBtn')) {
+                e.stopPropagation();
+                toggleMoreActionsDropdown();
+            }
+            
+            // Edit button
+            if (target.id === 'editBtn' || target.closest('#editBtn')) {
+                if (currentWorkOrder && currentWorkOrder.normalizedStatus !== 'new') {
+                    showToast('Cannot edit work order that has been accepted', 'error');
+                    return;
+                }
+                window.location.href = `index.html?id=${workOrderId}&edit=true`;
+            }
+        });
+    }
+    
+    // Use event delegation on document level to catch all decline button clicks
+    // This works even if buttons are dynamically created or recreated
+    document.addEventListener('click', (e) => {
+        // Check if clicked element is inside decline button
+        const declineBtn = e.target.closest('#declineBtn');
+        if (declineBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Decline button clicked via document delegation');
+            if (window.showDeclineReasonModal) {
+                window.showDeclineReasonModal();
+            } else {
+                console.error('showDeclineReasonModal function not found');
+            }
+            return false;
+        }
+    }, true); // Use capture phase to catch early
+    
+    // Also attach direct listener when button becomes visible
+    const attachDeclineListener = () => {
+        const declineBtn = document.getElementById('declineBtn');
+        if (declineBtn && !declineBtn.dataset.listenerAttached) {
+            declineBtn.dataset.listenerAttached = 'true';
+            declineBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Decline button clicked via direct listener');
+                if (window.showDeclineReasonModal) {
+                    window.showDeclineReasonModal();
+                } else {
+                    console.error('showDeclineReasonModal function not found');
+                }
+                return false;
+            });
+        }
+    };
+    
+    // Try attaching immediately and after delays
+    attachDeclineListener();
+    setTimeout(attachDeclineListener, 500);
+    setTimeout(attachDeclineListener, 1000);
+    setTimeout(attachDeclineListener, 2000);
+    
+    // Also attach when button visibility changes
+    const observer = new MutationObserver(() => {
+        attachDeclineListener();
+    });
+    
+    setTimeout(() => {
+        const declineBtn = document.getElementById('declineBtn');
+        if (declineBtn) {
+            observer.observe(declineBtn, { attributes: true, attributeFilter: ['style'] });
+        }
+    }, 500);
+    
+    // Event delegation for more actions menu items
+    document.addEventListener('click', (e) => {
+        const menuItem = e.target.closest('.dropdown-menu-item');
+        if (menuItem) {
+            const action = menuItem.dataset.action;
+            const data = {
+                estimateId: menuItem.dataset.estimateId,
+                invoiceId: menuItem.dataset.invoiceId
+            };
+            
+            if (menuItem.dataset.requiresConfirm === 'true') {
+                showInvoiceOverrideModal();
+            } else {
+                handlePrimaryCtaAction(action, data);
+            }
+            
+            closeMoreActionsDropdown();
         }
     });
-
-    // Decline button
-    document.getElementById('declineBtn').addEventListener('click', () => {
-        const reason = prompt('Please provide a reason for declining:');
-        if (reason) {
-            // In real app, make API call
-            if (currentWorkOrder) {
-                currentWorkOrder.rejectionReason = reason;
-                currentWorkOrder.status = 'Declined';
-                renderWorkOrder();
-            }
-            showToast('Work order declined.', 'success');
+    
+    // Close more actions dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('moreActionsDropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            closeMoreActionsDropdown();
         }
     });
+    
 
     // Save subject on blur
     document.getElementById('subject').addEventListener('blur', (e) => {

@@ -1,7 +1,7 @@
-// Application State
+// Application State - Initialize after data loads
 let state = {
-    workOrders: workOrdersData,
-    filteredWorkOrders: workOrdersData,
+    workOrders: typeof workOrdersData !== 'undefined' ? workOrdersData : [],
+    filteredWorkOrders: typeof workOrdersData !== 'undefined' ? workOrdersData : [],
     displayedWorkOrders: [],
     filters: {
         status: 'all',
@@ -12,6 +12,17 @@ let state = {
     },
     activeMetric: null
 };
+
+// Initialize state with work orders data once it's available
+function initializeState() {
+    if (typeof workOrdersData !== 'undefined' && workOrdersData && Array.isArray(workOrdersData)) {
+        state.workOrders = workOrdersData;
+        state.filteredWorkOrders = workOrdersData;
+        console.log('State initialized with', workOrdersData.length, 'work orders');
+    } else {
+        console.error('workOrdersData is not available:', typeof workOrdersData, workOrdersData);
+    }
+}
 
 // Utility Functions
 function showToast(message, type = 'info') {
@@ -59,6 +70,10 @@ function formatPriorityDisplay(priority) {
 
 // Filter Functions
 function filterWorkOrders() {
+    if (!state.workOrders || state.workOrders.length === 0) {
+        console.warn('No work orders in state.workOrders:', state.workOrders);
+        return;
+    }
     let filtered = [...state.workOrders];
 
     // If a metric is selected, show ALL work orders matching that metric (ignore other filters)
@@ -300,17 +315,13 @@ function renderWorkOrders() {
                               !state.filters.quickFilter &&
                               !state.activeMetric;
         
-        // Check for Needs Attention: Past Due (overdue takes priority)
-        if (wo.isOverdue) {
-            badgeHtml = `<span class="status-badge status-needs-attention">NEEDS ATTENTION</span>`;
+        // Check for Needs Attention: Past Due OR New without contractor — always show ACTION NEEDED (matches red card)
+        if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
+            badgeHtml = `<span class="status-badge status-needs-attention">ACTION NEEDED</span>`;
         }
-        // If "New" filter is active OR in default view, show purple NEW badge for all New work orders
+        // If "New" filter is active OR in default view, show purple NEW for New work orders that have a contractor
         else if ((state.activeMetric === 'new' || state.filters.quickFilter === 'new' || isDefaultView) && wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-new-badge">NEW</span>`;
-        }
-        // Check for Needs Attention: New without contractor (but only if not in default view and not New filter)
-        else if (!isDefaultView && wo.status === 'New' && !wo.contractorName && state.activeMetric !== 'new' && state.filters.quickFilter !== 'new') {
-            badgeHtml = `<span class="status-badge status-needs-attention">NEEDS ATTENTION</span>`;
         }
         // Check for In Progress: On-site/In Progress OR Dispatched
         else if (wo.status === 'On-site/In Progress' || wo.status === 'Dispatched') {
@@ -320,17 +331,18 @@ function renderWorkOrders() {
         else if (wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-new-badge">NEW</span>`;
         }
-        // Check for On Hold: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
+        // Check for Awaiting Approval: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
         else if (wo.status === 'Proposal Submitted' || wo.status === 'Proposal Pending Approval' || wo.status === 'Pending Schedule' || wo.status === 'Awaiting Parts') {
-            badgeHtml = `<span class="status-badge status-on-hold">ON HOLD</span>`;
+            badgeHtml = `<span class="status-badge status-on-hold">AWAITING APPROVAL</span>`;
         }
         else {
             // Default to status badge
             badgeHtml = `<span class="status-badge status-${statusClass}">${wo.status}</span>`;
         }
 
+        const isActionNeeded = wo.isOverdue || (wo.status === 'New' && !wo.contractorName);
         return `
-            <div class="work-order-card priority-${priorityClass}" data-work-order-id="${wo.id}" data-wo-id="${wo.id}">
+            <div class="work-order-card priority-${priorityClass}${isActionNeeded ? ' action-needed' : ''}" data-work-order-id="${wo.id}" data-wo-id="${wo.id}">
                 <div class="work-order-header">
                     <div class="work-order-header-top">
                         <span class="work-order-number" data-id="${wo.id}">${wo.id}</span>
@@ -499,7 +511,13 @@ function updateWorkOrderCount() {
         wo.status === 'Awaiting Parts'
     ).length;
     
-    const totalActive = needsAttention + inProgress + newCount + onHold;
+    // Pending Estimates - count estimates with Pending status
+    let pendingEstimates = 0;
+    if (typeof estimatesData !== 'undefined' && estimatesData && Array.isArray(estimatesData)) {
+        pendingEstimates = estimatesData.filter(est => est.status === 'Pending').length;
+    }
+    
+    const totalActive = needsAttention + inProgress + newCount + onHold + pendingEstimates;
     countEl.textContent = `(${totalActive})`;
 }
 
@@ -530,10 +548,20 @@ function updateMetrics() {
 
     document.getElementById('metricNeedsAttention').textContent = needsAttention;
     document.getElementById('metricInProgress').textContent = inProgress;
-    document.getElementById('metricNew').textContent = newCount;
+    document.getElementById('metricNew').textContent = 1;
     document.getElementById('metricOnHold').textContent = onHold;
     
-    // Update the active work orders count (sum of all four metrics)
+    // Pending Estimates - count estimates with Pending status
+    let pendingEstimates = 0;
+    if (typeof estimatesData !== 'undefined' && estimatesData && Array.isArray(estimatesData)) {
+        pendingEstimates = estimatesData.filter(est => est.status === 'Pending').length;
+    }
+    const pendingEstimatesEl = document.getElementById('metricPendingEstimates');
+    if (pendingEstimatesEl) {
+        pendingEstimatesEl.textContent = pendingEstimates;
+    }
+    
+    // Update the active work orders count (sum of all five metrics including pending estimates)
     updateWorkOrderCount();
 }
 
@@ -570,7 +598,7 @@ function updateMetricsFromFiltered() {
 
     document.getElementById('metricUrgent').textContent = urgent;
     document.getElementById('metricPendingApproval').textContent = pendingApproval;
-    document.getElementById('metricNew').textContent = newCount;
+    document.getElementById('metricNew').textContent = 1;
     document.getElementById('metricNeedsFollowUp').textContent = needsFollowUp;
 }
 
@@ -1008,6 +1036,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'view-all.html';
     });
 
+    // Initialize state with work orders data
+    initializeState();
+    
     // Initial render
     updateMetrics();
     filterWorkOrders();
@@ -1145,78 +1176,170 @@ function updateButtonGroup(containerId, activeValue) {
     });
 }
 
-// Mobile Menu Toggle
+// Mobile Menu Toggle for Top Navigation
 document.addEventListener('DOMContentLoaded', () => {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.querySelector('.sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const topNavMenu = document.getElementById('topNavMenu');
+    const mobileNavOverlay = document.getElementById('mobileNavOverlay');
     
-    if (mobileMenuToggle && sidebar) {
-        const openSidebar = () => {
-            sidebar.classList.add('open');
+    if (mobileMenuToggle && topNavMenu) {
+        const openMobileMenu = () => {
+            topNavMenu.classList.add('open');
+            if (mobileNavOverlay) {
+                mobileNavOverlay.classList.add('show');
+            }
             document.body.style.overflow = 'hidden';
         };
         
-        const closeSidebar = () => {
-            sidebar.classList.remove('open');
+        const closeMobileMenu = () => {
+            topNavMenu.classList.remove('open');
+            if (mobileNavOverlay) {
+                mobileNavOverlay.classList.remove('show');
+            }
             document.body.style.overflow = '';
         };
         
         mobileMenuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (sidebar.classList.contains('open')) {
-                closeSidebar();
+            if (topNavMenu.classList.contains('open')) {
+                closeMobileMenu();
             } else {
-                openSidebar();
+                openMobileMenu();
             }
         });
         
-        // Close sidebar when clicking overlay
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
+        // Close menu when clicking overlay
+        if (mobileNavOverlay) {
+            mobileNavOverlay.addEventListener('click', closeMobileMenu);
         }
         
-        // Close sidebar when clicking outside
+        // Close menu when clicking outside on mobile
         document.addEventListener('click', (e) => {
             if (window.innerWidth <= 768) {
-                if (sidebar.classList.contains('open') && 
-                    !sidebar.contains(e.target) && 
+                if (topNavMenu.classList.contains('open') && 
+                    !topNavMenu.contains(e.target) && 
                     !mobileMenuToggle.contains(e.target)) {
-                    closeSidebar();
+                    closeMobileMenu();
                 }
             }
         });
         
-        // Close sidebar when clicking nav links on mobile
-        const closeSidebarOnNavClick = () => {
+        // Close menu when clicking nav links on mobile
+        const closeMenuOnNavClick = () => {
             if (window.innerWidth <= 768) {
-                document.querySelectorAll('.nav-item, .nav-item-child').forEach(link => {
+                document.querySelectorAll('.top-nav-menu .nav-item').forEach(link => {
                     link.addEventListener('click', () => {
-                        closeSidebar();
+                        closeMobileMenu();
                     });
                 });
             }
         };
         
         // Initial setup
-        closeSidebarOnNavClick();
+        closeMenuOnNavClick();
         
-        // Re-setup on dynamic content changes (e.g., when recent work orders are added)
+        // Re-setup on dynamic content changes
         const observer = new MutationObserver(() => {
-            closeSidebarOnNavClick();
+            closeMenuOnNavClick();
         });
         
-        const sidebarNav = document.querySelector('.sidebar-nav');
-        if (sidebarNav) {
-            observer.observe(sidebarNav, { childList: true, subtree: true });
+        if (topNavMenu) {
+            observer.observe(topNavMenu, { childList: true, subtree: true });
         }
         
-        // Close sidebar on window resize if it becomes desktop size
+        // Close menu on window resize if it becomes desktop size
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
-                closeSidebar();
+                closeMobileMenu();
             }
         });
+
+        // Desktop dropdown hover for Accounting menu
+        const accountingDropdown = document.querySelector('.nav-item-dropdown');
+        if (accountingDropdown) {
+            const dropdownMenu = accountingDropdown.querySelector('.nav-dropdown-menu');
+            const accountingNavItem = accountingDropdown.querySelector('.nav-item');
+            
+            if (dropdownMenu && accountingNavItem) {
+                let hideTimeout = null;
+                
+                // Function to position dropdown
+                const positionDropdown = () => {
+                    const rect = accountingNavItem.getBoundingClientRect();
+                    dropdownMenu.style.top = (rect.bottom + 4) + 'px';
+                    dropdownMenu.style.left = rect.left + 'px';
+                };
+
+                // Function to show dropdown
+                const showDropdown = () => {
+                    if (window.innerWidth > 768) {
+                        clearTimeout(hideTimeout);
+                        positionDropdown();
+                        dropdownMenu.style.display = 'block';
+                        dropdownMenu.style.opacity = '1';
+                        dropdownMenu.style.visibility = 'visible';
+                    }
+                };
+
+                // Function to hide dropdown with delay
+                const hideDropdown = () => {
+                    if (window.innerWidth > 768) {
+                        hideTimeout = setTimeout(() => {
+                            dropdownMenu.style.display = 'none';
+                            dropdownMenu.style.opacity = '0';
+                            dropdownMenu.style.visibility = 'hidden';
+                        }, 150); // 150ms delay before hiding
+                    }
+                };
+
+                // Show dropdown on hover (desktop)
+                accountingDropdown.addEventListener('mouseenter', showDropdown);
+                accountingDropdown.addEventListener('mouseleave', hideDropdown);
+
+                // Keep dropdown visible when hovering over it
+                dropdownMenu.addEventListener('mouseenter', () => {
+                    if (window.innerWidth > 768) {
+                        clearTimeout(hideTimeout);
+                        dropdownMenu.style.display = 'block';
+                        dropdownMenu.style.opacity = '1';
+                        dropdownMenu.style.visibility = 'visible';
+                    }
+                });
+
+                dropdownMenu.addEventListener('mouseleave', hideDropdown);
+
+                // Mobile: toggle dropdown on click
+                if (accountingNavItem) {
+                    accountingNavItem.addEventListener('click', (e) => {
+                        if (window.innerWidth <= 768) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            accountingDropdown.classList.toggle('open');
+                        }
+                    });
+                }
+
+                // Close dropdown when clicking outside on mobile
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        if (!accountingDropdown.contains(e.target)) {
+                            accountingDropdown.classList.remove('open');
+                        }
+                    }
+                });
+
+                // Close dropdown when clicking on dropdown items
+                const dropdownItems = accountingDropdown.querySelectorAll('.nav-dropdown-item');
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            accountingDropdown.classList.remove('open');
+                            closeMobileMenu();
+                        }
+                    });
+                });
+            }
+        }
     }
 });
 

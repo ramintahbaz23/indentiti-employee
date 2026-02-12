@@ -8,6 +8,7 @@ let state = {
     currentView: 'table', // 'table' or 'card'
     filters: {
         status: 'all',
+        priority: 'all',
         trade: 'all',
         dateRange: 'all',
         location: 'all',
@@ -78,6 +79,17 @@ function filterWorkOrders() {
         filtered = filtered.filter(wo => wo.status === state.filters.status);
     }
 
+    // Priority filter
+    if (state.filters.priority !== 'all') {
+        filtered = filtered.filter(wo => {
+            // Handle NPW1 mapping - it should match Medium priority
+            if (state.filters.priority === 'Medium') {
+                return wo.priority === 'Medium' || wo.priority === 'NPW1';
+            }
+            return wo.priority === state.filters.priority;
+        });
+    }
+
     // Trade filter
     if (state.filters.trade !== 'all') {
         filtered = filtered.filter(wo => wo.trade === state.filters.trade);
@@ -145,6 +157,12 @@ function filterWorkOrders() {
                     aVal = a.status;
                     bVal = b.status;
                     break;
+                case 'priority':
+                    // Priority order: Critical > High > Medium/NPW1 > Low
+                    const priorityOrder = { 'Critical': 4, 'High': 3, 'Medium': 2, 'NPW1': 2, 'Low': 1 };
+                    aVal = priorityOrder[a.priority] || 0;
+                    bVal = priorityOrder[b.priority] || 0;
+                    break;
                 case 'issue':
                     aVal = a.issue;
                     bVal = b.issue;
@@ -160,10 +178,6 @@ function filterWorkOrders() {
                 case 'created':
                     aVal = new Date(a.createdDate);
                     bVal = new Date(b.createdDate);
-                    break;
-                case 'dueDate':
-                    aVal = a.dueDate ? new Date(a.dueDate) : new Date(0);
-                    bVal = b.dueDate ? new Date(b.dueDate) : new Date(0);
                     break;
                 case 'contractor':
                     aVal = a.contractorName || '';
@@ -206,6 +220,9 @@ function updateActiveFilterTags() {
     if (state.filters.status !== 'all') {
         tags.push({ type: 'status', label: `Status: ${state.filters.status}`, value: state.filters.status });
     }
+    if (state.filters.priority !== 'all') {
+        tags.push({ type: 'priority', label: `Priority: ${state.filters.priority}`, value: state.filters.priority });
+    }
     if (state.filters.trade !== 'all') {
         tags.push({ type: 'trade', label: `Trade: ${state.filters.trade}`, value: state.filters.trade });
     }
@@ -230,11 +247,39 @@ function updateActiveFilterTags() {
     renderActiveFilters();
 }
 
+function updateFilterBadge() {
+    const badge = document.getElementById('filterBadge');
+    const filterBtn = document.getElementById('filterToggleBtn');
+    const filtersSection = document.getElementById('filtersSection');
+    const activeCount = state.activeFilterTags.length;
+    
+    if (badge && filterBtn) {
+        if (activeCount > 0) {
+            badge.textContent = activeCount.toString();
+            badge.style.display = 'inline-block';
+            filterBtn.classList.add('active');
+            // Auto-expand filters section if filters are active
+            if (filtersSection) {
+                filtersSection.classList.add('expanded');
+                filterBtn.classList.add('expanded');
+            }
+        } else {
+            badge.style.display = 'none';
+            filterBtn.classList.remove('active');
+            // Only remove expanded class if section is actually closed
+            if (filtersSection && !filtersSection.classList.contains('expanded')) {
+                filterBtn.classList.remove('expanded');
+            }
+        }
+    }
+}
+
 function renderActiveFilters() {
     const container = document.getElementById('activeFilters');
     
     if (state.activeFilterTags.length === 0) {
         container.innerHTML = '';
+        updateFilterBadge();
         return;
     }
     
@@ -250,10 +295,13 @@ function renderActiveFilters() {
         btn.addEventListener('click', () => {
             const filterType = btn.dataset.filterType;
             state.filters[filterType] = 'all';
-            document.getElementById(`filter${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`).value = 'all';
+            const filterElement = document.getElementById(`filter${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`);
+            if (filterElement) filterElement.value = 'all';
             filterWorkOrders();
         });
     });
+    
+    updateFilterBadge();
 }
 
 function renderTable() {
@@ -278,7 +326,7 @@ function renderTable() {
         // Check for Needs Attention: Past Due OR (New without contractor)
         if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
             statusClass = 'needs-attention';
-            statusText = 'Needs Attention';
+            statusText = 'Action Needed';
         }
         // Check for In Progress: On-site/In Progress OR Dispatched
         else if (wo.status === 'On-site/In Progress' || wo.status === 'Dispatched') {
@@ -290,10 +338,10 @@ function renderTable() {
             statusClass = 'new';
             statusText = 'New';
         }
-        // Check for On Hold: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
+        // Check for Awaiting Approval: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
         else if (wo.status === 'Proposal Submitted' || wo.status === 'Proposal Pending Approval' || wo.status === 'Pending Schedule' || wo.status === 'Awaiting Parts') {
             statusClass = 'on-hold';
-            statusText = 'On Hold';
+            statusText = 'Awaiting Approval';
         }
         else {
             statusClass = getStatusClass(wo.status);
@@ -302,10 +350,10 @@ function renderTable() {
         
         const location = `${wo.city}, ${wo.state}`;
         const storeLocation = `${location} ${wo.storeName}`;
+        const isActionNeeded = statusClass === 'needs-attention';
         
         return `
-            <tr>
-                <td><input type="checkbox" class="row-checkbox" data-id="${wo.id}"></td>
+            <tr class="${isActionNeeded ? 'row-action-needed' : ''}">
                 <td>
                     <a href="#" class="wo-number" data-id="${wo.id}">${wo.id}</a>
                 </td>
@@ -321,12 +369,16 @@ function renderTable() {
                         <span class="status-text status-${statusClass}">${statusText}</span>
                     `}
                 </td>
+                <td>
+                    <span class="priority-badge priority-${getPriorityClass(wo.priority)}">
+                        ${formatPriorityDisplay(wo.priority) || '-'}
+                    </span>
+                </td>
                 <td>${wo.issue}</td>
-                <td>${formatDate(wo.dueDate)}</td>
+                <td>${formatDate(wo.createdDate)}</td>
                 <td>${wo.trade}</td>
                 <td>${storeLocation}</td>
                 <td>${wo.contractorName || '-'}</td>
-                <td>${formatDate(wo.createdDate)}</td>
                 <td>${wo.nteAmount ? formatCurrency(wo.nteAmount) : '-'}</td>
             </tr>
         `;
@@ -372,7 +424,7 @@ function renderWorkOrders() {
         
         // Check for Needs Attention: Past Due OR (New without contractor)
         if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
-            badgeHtml = `<span class="status-badge status-needs-attention">NEEDS ATTENTION</span>`;
+            badgeHtml = `<span class="status-badge status-needs-attention">ACTION NEEDED</span>`;
         }
         // Check for In Progress: On-site/In Progress OR Dispatched
         else if (wo.status === 'On-site/In Progress' || wo.status === 'Dispatched') {
@@ -382,17 +434,18 @@ function renderWorkOrders() {
         else if (wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-new-badge">NEW</span>`;
         }
-        // Check for On Hold: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
+        // Check for Awaiting Approval: Proposal Submitted, Proposal Pending Approval, Pending Schedule, or Awaiting Parts
         else if (wo.status === 'Proposal Submitted' || wo.status === 'Proposal Pending Approval' || wo.status === 'Pending Schedule' || wo.status === 'Awaiting Parts') {
-            badgeHtml = `<span class="status-badge status-on-hold">ON HOLD</span>`;
+            badgeHtml = `<span class="status-badge status-on-hold">AWAITING APPROVAL</span>`;
         }
         else {
             // Default to status badge
             badgeHtml = `<span class="status-badge status-${statusClass}">${wo.status}</span>`;
         }
 
+        const isActionNeeded = wo.isOverdue || (wo.status === 'New' && !wo.contractorName);
         return `
-            <div class="work-order-card priority-${priorityClass}" data-wo-id="${wo.id}">
+            <div class="work-order-card priority-${priorityClass}${isActionNeeded ? ' action-needed' : ''}" data-wo-id="${wo.id}">
                 <div class="work-order-header">
                     <div class="work-order-header-top">
                         <span class="work-order-number" data-id="${wo.id}">${wo.id}</span>
@@ -472,11 +525,38 @@ function updateTotalCount() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Filter toggle button
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filtersSection = document.getElementById('filtersSection');
+    
+    if (filterToggleBtn && filtersSection) {
+        filterToggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            filtersSection.classList.toggle('expanded');
+            const isExpanded = filtersSection.classList.contains('expanded');
+            filterToggleBtn.setAttribute('aria-expanded', isExpanded);
+            // Add/remove expanded class to button for border styling
+            if (isExpanded) {
+                filterToggleBtn.classList.add('expanded');
+            } else {
+                filterToggleBtn.classList.remove('expanded');
+            }
+        });
+    }
+    
     // Filter dropdowns
     document.getElementById('filterStatus').addEventListener('change', (e) => {
         state.filters.status = e.target.value;
         filterWorkOrders();
     });
+    
+    const filterPriority = document.getElementById('filterPriority');
+    if (filterPriority) {
+        filterPriority.addEventListener('change', (e) => {
+            state.filters.priority = e.target.value;
+            filterWorkOrders();
+        });
+    }
     
     document.getElementById('filterTrade').addEventListener('change', (e) => {
         state.filters.trade = e.target.value;
@@ -509,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         state.filters = {
             status: 'all',
+            priority: 'all',
             trade: 'all',
             dateRange: 'all',
             location: 'all',
@@ -517,6 +598,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.searchQuery = '';
         
         document.getElementById('filterStatus').value = 'all';
+        const filterPriorityEl = document.getElementById('filterPriority');
+        if (filterPriorityEl) filterPriorityEl.value = 'all';
         document.getElementById('filterTrade').value = 'all';
         document.getElementById('filterDateRange').value = 'all';
         document.getElementById('filterLocation').value = 'all';
@@ -568,12 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Select all checkbox
-    document.getElementById('selectAll').addEventListener('change', (e) => {
-        document.querySelectorAll('.row-checkbox').forEach(cb => {
-            cb.checked = e.target.checked;
-        });
-    });
+    // Select all checkbox - removed (checkboxes removed from table)
     
     // Initial render - show table view by default
     document.getElementById('tableContainer').style.display = 'block';
@@ -619,4 +697,351 @@ function renderSidebarNavigation() {
     
     container.innerHTML = html;
 }
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    if (!toast) {
+        // Create toast element if it doesn't exist
+        const toastEl = document.createElement('div');
+        toastEl.id = 'toast';
+        toastEl.className = 'toast';
+        document.body.appendChild(toastEl);
+    }
+    
+    const toastEl = document.getElementById('toast');
+    toastEl.textContent = message;
+    toastEl.className = `toast ${type} show`;
+    
+    setTimeout(() => {
+        toastEl.classList.remove('show');
+    }, 3000);
+}
+
+// File upload functionality
+let uploadedFiles = [];
+
+function renderUploadedFiles() {
+    const container = document.getElementById('uploadedFilesList');
+    if (!container) return;
+    
+    if (uploadedFiles.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    container.innerHTML = uploadedFiles.map((file, index) => `
+        <div class="uploaded-file-item">
+            <span class="uploaded-file-name">${file.name}</span>
+            <button type="button" class="uploaded-file-remove" data-index="${index}">Remove</button>
+        </div>
+    `).join('');
+    
+    // Add remove handlers
+    container.querySelectorAll('.uploaded-file-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            uploadedFiles.splice(index, 1);
+            renderUploadedFiles();
+        });
+    });
+}
+
+function setupFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    
+    if (!fileInput || !fileUploadArea) return;
+    
+    // Click to upload
+    fileUploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+    
+    // Drag and drop
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+}
+
+function handleFiles(fileList) {
+    Array.from(fileList).forEach(file => {
+        // Check file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            showToast(`File "${file.name}" is too large. Maximum size is 10MB.`, 'error');
+            return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['image/', '.pdf', '.doc', '.docx', '.xls', '.xlsx'];
+        const isValidType = allowedTypes.some(type => file.type.startsWith(type) || file.name.toLowerCase().endsWith(type));
+        
+        if (!isValidType) {
+            showToast(`File "${file.name}" is not a supported file type.`, 'error');
+            return;
+        }
+        
+        uploadedFiles.push(file);
+    });
+    
+    renderUploadedFiles();
+    
+    if (fileList.length > 0) {
+        showToast(`${fileList.length} file(s) added successfully`, 'success');
+    }
+}
+
+// Modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+    // New Work Order button
+    const newWorkOrderBtn = document.getElementById('newWorkOrderBtn');
+    if (newWorkOrderBtn) {
+        newWorkOrderBtn.addEventListener('click', () => {
+            // Reset form and clear edit ID
+            const form = document.getElementById('newWorkOrderForm');
+            if (form) {
+                form.reset();
+                form.removeAttribute('data-edit-id');
+                const clearAccount = document.getElementById('clearAccount');
+                if (clearAccount) clearAccount.style.display = 'none';
+                const modalTitle = document.querySelector('#newWorkOrderModal .modal-title');
+                if (modalTitle) modalTitle.textContent = 'Work Order Number';
+                // Clear uploaded files
+                uploadedFiles = [];
+                renderUploadedFiles();
+            }
+            
+            const modal = document.getElementById('newWorkOrderModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                // Prevent body scroll on mobile
+                if (window.innerWidth <= 768) {
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                }
+            }
+        });
+    }
+
+    // Close modal handlers
+    function closeModal() {
+        const modal = document.getElementById('newWorkOrderModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            // Remove any fixed positioning that might have been added
+            document.body.style.position = '';
+            document.body.style.width = '';
+            const form = document.getElementById('newWorkOrderForm');
+            if (form) {
+                form.reset();
+                form.removeAttribute('data-edit-id');
+                const clearAccount = document.getElementById('clearAccount');
+                if (clearAccount) clearAccount.style.display = 'none';
+                const modalTitle = document.querySelector('#newWorkOrderModal .modal-title');
+                if (modalTitle) modalTitle.textContent = 'Work Order Number';
+                // Clear uploaded files
+                uploadedFiles = [];
+                renderUploadedFiles();
+            }
+        }
+    }
+
+    const modalClose = document.getElementById('modalClose');
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+    
+    const cancelWorkOrder = document.getElementById('cancelWorkOrder');
+    if (cancelWorkOrder) cancelWorkOrder.addEventListener('click', closeModal);
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('newWorkOrderModal');
+            if (modal && modal.style.display === 'flex') {
+                closeModal();
+            }
+        }
+    });
+
+    // Clear account input
+    const accountInput = document.getElementById('account');
+    if (accountInput) {
+        accountInput.addEventListener('input', (e) => {
+            const clearBtn = document.getElementById('clearAccount');
+            if (clearBtn) {
+                clearBtn.style.display = e.target.value ? 'flex' : 'none';
+            }
+        });
+    }
+
+    const clearAccount = document.getElementById('clearAccount');
+    if (clearAccount) {
+        clearAccount.addEventListener('click', () => {
+            const account = document.getElementById('account');
+            if (account) {
+                account.value = '';
+                clearAccount.style.display = 'none';
+            }
+        });
+    }
+
+    // Helper function to map priority from form format to display format
+    function mapPriorityToDisplay(priorityFormValue) {
+        if (!priorityFormValue) return 'Medium';
+        
+        const priorityMap = {
+            'P1 - Priority 1 Hour': 'Critical',
+            'P2 - Priority 2 Hours': 'Critical',
+            'P3 - Priority 3 Hours': 'High',
+            'P4 - Priority 4 Hours': 'High',
+            'P5 - Priority 5 Hours': 'Medium',
+            'P6 - Priority 6 Hours': 'Medium',
+            'P7 - Priority 7 Hours': 'Low',
+            'P8 - Priority 8 Hours': 'Low',
+            'P9 - Priority 9 Hours': 'Low',
+            'P10 - Priority 10 Hours': 'Low'
+        };
+        
+        return priorityMap[priorityFormValue] || 'Medium';
+    }
+
+    // Save Work Order
+    function saveWorkOrder(closeAfterSave = true) {
+        const form = document.getElementById('newWorkOrderForm');
+        if (!form) return;
+        
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // Get form values
+        const formData = new FormData(form);
+        const priorityFormValue = formData.get('priority');
+        const priorityDisplay = mapPriorityToDisplay(priorityFormValue);
+        
+        // Check if we're editing an existing work order
+        const editId = form.dataset.editId;
+        const isEdit = !!editId;
+        
+        let workOrderId;
+        let workOrder;
+        
+        if (isEdit) {
+            // Update existing work order
+            workOrderId = editId;
+            workOrder = state.workOrders.find(wo => wo.id === workOrderId);
+            if (!workOrder) {
+                showToast('Work order not found', 'error');
+                return;
+            }
+            
+            // Update existing work order
+            workOrder.priority = priorityDisplay;
+            workOrder.trade = formData.get('trade');
+            workOrder.issue = formData.get('issue') || 'Work Order';
+            workOrder.storeName = formData.get('account') || null;
+            workOrder.nteAmount = formData.get('originalNTE') ? parseFloat(formData.get('originalNTE')) : null;
+            workOrder.status = 'New';
+            
+            showToast(`Work order ${workOrderId} updated successfully!`, 'success');
+        } else {
+            // Create new work order
+            workOrderId = 'WO-' + String(Math.floor(Math.random() * 1000000)).padStart(8, '0');
+            
+            workOrder = {
+                id: workOrderId,
+                status: 'New',
+                priority: priorityDisplay,
+                trade: formData.get('trade'),
+                issue: formData.get('issue') || 'Work Order',
+                storeName: formData.get('account') || null,
+                nteAmount: formData.get('originalNTE') ? parseFloat(formData.get('originalNTE')) : null,
+                dueDate: null,
+                scheduledDate: null,
+                completedDate: null,
+                invoiceAmount: null,
+                createdDate: new Date(),
+                isOverdue: false,
+                daysOverdue: 0,
+                city: '',
+                state: '',
+                contractorName: null
+            };
+            
+            // Add to the beginning of work orders array (most recent first)
+            state.workOrders.unshift(workOrder);
+            
+            showToast(`Work order ${workOrderId} created successfully!`, 'success');
+        }
+        
+        // Refresh the filtered work orders and re-render
+        filterWorkOrders();
+        renderTable();
+        updateTotalCount();
+        
+        if (closeAfterSave) {
+            // Close modal and reset form
+            closeModal();
+        } else {
+            // Reset form but keep modal open for "Save & New"
+            form.reset();
+            form.removeAttribute('data-edit-id');
+            const clearAccount = document.getElementById('clearAccount');
+            if (clearAccount) clearAccount.style.display = 'none';
+            const modalTitle = document.querySelector('#newWorkOrderModal .modal-title');
+            if (modalTitle) modalTitle.textContent = 'Work Order Number';
+            // Clear uploaded files
+            uploadedFiles = [];
+            renderUploadedFiles();
+            
+            // Focus on first field for quick entry
+            setTimeout(() => {
+                const account = document.getElementById('account');
+                if (account) account.focus();
+            }, 100);
+        }
+    }
+
+    // Save button - closes modal after saving
+    const saveWorkOrderBtn = document.getElementById('saveWorkOrder');
+    if (saveWorkOrderBtn) {
+        saveWorkOrderBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveWorkOrder(true);
+        });
+    }
+
+    // Save & New button - keeps modal open for another entry
+    const saveAndNewWorkOrderBtn = document.getElementById('saveAndNewWorkOrder');
+    if (saveAndNewWorkOrderBtn) {
+        saveAndNewWorkOrderBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            saveWorkOrder(false);
+        });
+    }
+    
+    // Setup file upload
+    setupFileUpload();
+});
 
