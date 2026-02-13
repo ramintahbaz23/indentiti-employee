@@ -1029,7 +1029,7 @@
 
         .page-search-wrapper {
             position: relative;
-            max-width: 500px;
+            width: 100%;
         }
 
         .page-search-input {
@@ -1360,13 +1360,13 @@
             box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
         }
 
-        /* Action Needed badge: red background for card */
+        /* Action Needed: white card with red left border only */
         .work-order-card.action-needed {
-            background-color: #ffebee;
+            background-color: #ffffff;
             border-left: 4px solid #c23934;
         }
         .work-order-card.action-needed:hover {
-            background-color: #ffcdd2;
+            background-color: #ffffff;
         }
 
         .work-order-header {
@@ -1424,31 +1424,29 @@
             white-space: nowrap;
         }
 
-        .status-badge.status-new { background: #e3f2fd; color: #003366; }
-        .status-badge.status-assigned { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-scheduled { background: #e3f2fd; color: #003366; }
-        .status-badge.status-in-progress { background: #e3f2fd; color: #003366; }
-        .status-badge.status-on-site-in-progress { background: #e3f2fd; color: #003366; }
-        .status-badge.status-completed { background: #d4edda; color: #2e844a; }
-        .status-badge.status-work-complete { background: #d4edda; color: #2e844a; }
-        .status-badge.status-dispatched { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-proposal-submitted { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-bid-out { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-awaiting-parts { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-on-hold { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-follow-up-required { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-quote-requested { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-needs-attention { background: #ffebee; color: #c23934; }
-        .status-badge.status-in-progress { background: #e3f2fd; color: #003366; }
-        .status-badge.status-new-badge { background: #f3e5f5; color: #9065b0; }
-        .status-badge.status-on-hold { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-urgent { background: #ffebee; color: #c23934; }
-        .status-badge.status-pending-approval { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-needs-follow-up { background: #f3e5f5; color: #9065b0; }
-        .status-badge.status-past-due { background: #ffebee; color: #c23934; }
-        .status-badge.status-need-assignment { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-in-progress-badge { background: #e3f2fd; color: #003366; }
-        .status-badge.status-completed-badge { background: #d4edda; color: #2e844a; }
+        .status-badge.status-new { background: transparent; color: #003366; }
+        .status-badge.status-assigned { background: transparent; color: #fe9339; }
+        .status-badge.status-scheduled { background: transparent; color: #003366; }
+        .status-badge.status-in-progress { background: transparent; color: #003366; }
+        .status-badge.status-on-site-in-progress { background: transparent; color: #003366; }
+        .status-badge.status-completed { background: transparent; color: #2e844a; }
+        .status-badge.status-work-complete { background: transparent; color: #2e844a; }
+        .status-badge.status-dispatched { background: transparent; color: #fe9339; }
+        .status-badge.status-proposal-submitted { background: transparent; color: #fe9339; }
+        .status-badge.status-bid-out { background: transparent; color: #fe9339; }
+        .status-badge.status-awaiting-parts { background: transparent; color: #fe9339; }
+        .status-badge.status-on-hold { background: transparent; color: #fe9339; }
+        .status-badge.status-follow-up-required { background: transparent; color: #fe9339; }
+        .status-badge.status-quote-requested { background: transparent; color: #fe9339; }
+        .status-badge.status-needs-attention { background: transparent; color: #c23934; }
+        .status-badge.status-new-badge { background: transparent; color: #9065b0; }
+        .status-badge.status-urgent { background: transparent; color: #c23934; }
+        .status-badge.status-pending-approval { background: transparent; color: #fe9339; }
+        .status-badge.status-needs-follow-up { background: transparent; color: #9065b0; }
+        .status-badge.status-past-due { background: transparent; color: #c23934; }
+        .status-badge.status-need-assignment { background: transparent; color: #fe9339; }
+        .status-badge.status-in-progress-badge { background: transparent; color: #003366; }
+        .status-badge.status-completed-badge { background: transparent; color: #2e844a; }
 
         .work-order-title {
             font-size: 0.875rem;

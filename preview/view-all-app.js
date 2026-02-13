@@ -6,6 +6,8 @@ let state = {
     sortColumn: null,
     sortDirection: 'asc',
     currentView: 'table', // 'table' or 'card'
+    currentPage: 1,
+    pageSize: 10,
     filters: {
         status: 'all',
         priority: 'all',
@@ -201,6 +203,7 @@ function filterWorkOrders() {
     });
 
     state.filteredWorkOrders = filtered;
+    state.currentPage = 1;
     updateActiveFilterTags();
     renderCurrentView();
 }
@@ -304,6 +307,11 @@ function renderActiveFilters() {
     updateFilterBadge();
 }
 
+function getPaginatedWorkOrders() {
+    const start = (state.currentPage - 1) * state.pageSize;
+    return state.filteredWorkOrders.slice(start, start + state.pageSize);
+}
+
 function renderTable() {
     const tbody = document.getElementById('workOrdersTableBody');
     
@@ -315,10 +323,12 @@ function renderTable() {
                 </td>
             </tr>
         `;
+        renderPagination();
         return;
     }
     
-    tbody.innerHTML = state.filteredWorkOrders.map(wo => {
+    const pageWorkOrders = getPaginatedWorkOrders();
+    tbody.innerHTML = pageWorkOrders.map(wo => {
         // Determine status class and text based on metrics
         let statusClass = 'new';
         let statusText = wo.status;
@@ -384,7 +394,7 @@ function renderTable() {
         `;
     }).join('');
     
-    // Attach event listeners
+    renderPagination();
     attachTableListeners();
 }
 
@@ -523,6 +533,61 @@ function updateTotalCount() {
     }
 }
 
+function getTotalPages() {
+    return Math.max(1, Math.ceil(state.filteredWorkOrders.length / state.pageSize));
+}
+
+function renderPagination() {
+    const total = state.filteredWorkOrders.length;
+    const totalPages = getTotalPages();
+    const start = total === 0 ? 0 : (state.currentPage - 1) * state.pageSize + 1;
+    const end = Math.min(state.currentPage * state.pageSize, total);
+
+    const infoEl = document.getElementById('paginationInfo');
+    const prevBtn = document.getElementById('paginationPrev');
+    const nextBtn = document.getElementById('paginationNext');
+    const numbersEl = document.getElementById('paginationNumbers');
+    const pageSizeSelect = document.getElementById('pageSizeSelect');
+
+    if (infoEl) {
+        infoEl.textContent = total === 0 ? '0 work orders' : `${start}–${end} of ${total} work orders`;
+    }
+    if (prevBtn) {
+        prevBtn.disabled = state.currentPage <= 1;
+    }
+    if (nextBtn) {
+        nextBtn.disabled = state.currentPage >= totalPages;
+    }
+    if (pageSizeSelect) {
+        pageSizeSelect.value = String(state.pageSize);
+    }
+
+    // Page number buttons (show up to 5 pages around current)
+    if (numbersEl) {
+        if (totalPages <= 1) {
+            numbersEl.innerHTML = '';
+            return;
+        }
+        const maxButtons = 5;
+        let firstPage = Math.max(1, state.currentPage - Math.floor(maxButtons / 2));
+        let lastPage = Math.min(totalPages, firstPage + maxButtons - 1);
+        if (lastPage - firstPage + 1 < maxButtons) {
+            firstPage = Math.max(1, lastPage - maxButtons + 1);
+        }
+        numbersEl.innerHTML = Array.from({ length: lastPage - firstPage + 1 }, (_, i) => {
+            const p = firstPage + i;
+            const active = p === state.currentPage ? ' active' : '';
+            return `<button type="button" class="pagination-number${active}" data-page="${p}">${p}</button>`;
+        }).join('');
+        numbersEl.querySelectorAll('.pagination-number').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.currentPage = parseInt(btn.dataset.page, 10);
+                renderTable();
+            });
+        });
+    }
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Filter toggle button
@@ -609,27 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filterWorkOrders();
     });
     
-    // View toggle
-    document.getElementById('cardViewBtn').addEventListener('click', () => {
-        state.currentView = 'card';
-        document.getElementById('cardViewBtn').classList.add('active');
-        document.getElementById('tableViewBtn').classList.remove('active');
-        document.getElementById('workOrdersGrid').style.display = 'grid';
-        document.getElementById('tableContainer').style.display = 'none';
-        renderWorkOrders();
-        updateTotalCount();
-    });
-    
-    document.getElementById('tableViewBtn').addEventListener('click', () => {
-        state.currentView = 'table';
-        document.getElementById('tableViewBtn').classList.add('active');
-        document.getElementById('cardViewBtn').classList.remove('active');
-        document.getElementById('tableContainer').style.display = 'block';
-        document.getElementById('workOrdersGrid').style.display = 'none';
-        renderTable();
-        updateTotalCount();
-    });
-    
     // Sortable columns
     document.querySelectorAll('.sortable').forEach(th => {
         th.addEventListener('click', () => {
@@ -651,7 +695,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Select all checkbox - removed (checkboxes removed from table)
+    // Pagination
+    const pageSizeSelect = document.getElementById('pageSizeSelect');
+    if (pageSizeSelect) {
+        pageSizeSelect.addEventListener('change', (e) => {
+            state.pageSize = parseInt(e.target.value, 10);
+            state.currentPage = 1;
+            renderTable();
+        });
+    }
+    const paginationPrev = document.getElementById('paginationPrev');
+    if (paginationPrev) {
+        paginationPrev.addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                state.currentPage--;
+                renderTable();
+            }
+        });
+    }
+    const paginationNext = document.getElementById('paginationNext');
+    if (paginationNext) {
+        paginationNext.addEventListener('click', () => {
+            if (state.currentPage < getTotalPages()) {
+                state.currentPage++;
+                renderTable();
+            }
+        });
+    }
     
     // Initial render - show table view by default
     document.getElementById('tableContainer').style.display = 'block';

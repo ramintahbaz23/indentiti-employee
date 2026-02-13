@@ -95,7 +95,6 @@ function renderEstimatesTable(workOrderId) {
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Status</th>
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Total</th>
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Updated</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -108,12 +107,6 @@ function renderEstimatesTable(workOrderId) {
                             <td style="padding: 1rem;"><span class="status-badge-small ${statusClass}">${est.status || 'Draft'}</span></td>
                             <td style="padding: 1rem;">${formatCurrency(est.grandTotal || est.total)}</td>
                             <td style="padding: 1rem;">${formatDate(est.created)}</td>
-                            <td style="padding: 1rem;">
-                                <a href="estimates.html?id=${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">View</a>
-                                ${status === 'draft' ? `<a href="#" class="edit-estimate" data-id="${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Edit</a>` : ''}
-                                ${status === 'draft' ? `<a href="#" class="send-estimate" data-id="${est.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Send</a>` : ''}
-                                ${status === 'rejected' ? `<a href="#" class="revise-estimate" data-id="${est.id}" style="color: var(--sf-brand);">Revise</a>` : ''}
-                            </td>
                         </tr>
                     `;
                 }).join('')}
@@ -190,7 +183,6 @@ function renderInvoicesTable(workOrderId) {
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Status</th>
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Total</th>
                     <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Updated</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #3e3e3c; text-transform: uppercase;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -203,12 +195,6 @@ function renderInvoicesTable(workOrderId) {
                             <td style="padding: 1rem;"><span class="status-badge-small ${statusClass}">${inv.status || 'Draft'}</span></td>
                             <td style="padding: 1rem;">${formatCurrency(inv.grandTotal || inv.total)}</td>
                             <td style="padding: 1rem;">${formatDate(inv.created || inv.invoiceDate)}</td>
-                            <td style="padding: 1rem;">
-                                <a href="invoices.html?id=${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">View</a>
-                                ${status === 'draft' ? `<a href="#" class="edit-invoice" data-id="${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Edit</a>` : ''}
-                                ${status === 'draft' ? `<a href="#" class="send-invoice" data-id="${inv.id}" style="color: var(--sf-brand); margin-right: 0.5rem;">Send</a>` : ''}
-                                ${status === 'sent' ? `<a href="#" class="record-payment" data-id="${inv.id}" style="color: var(--sf-brand);">Record Payment</a>` : ''}
-                            </td>
                         </tr>
                     `;
                 }).join('')}
@@ -916,6 +902,10 @@ function renderWorkOrder() {
             loadFiles();
         }
     }, 500);
+
+    // Pre-render estimates and invoices tables so they're ready when user opens those tabs
+    renderEstimatesTable(wo.id);
+    renderInvoicesTable(wo.id);
 }
 
 function loadComments() {
@@ -1617,15 +1607,17 @@ window.switchTab = function(tabName) {
         
         // If switching to estimates tab, render estimates table
         if (tabName === 'estimates') {
+            const woId = workOrderId || (currentWorkOrder && currentWorkOrder.id) || 'WO-00149331';
             setTimeout(() => {
-                renderEstimatesTable(workOrderId);
+                renderEstimatesTable(woId);
             }, 50);
         }
         
         // If switching to invoices tab, render invoices table
         if (tabName === 'invoices') {
+            const woId = workOrderId || (currentWorkOrder && currentWorkOrder.id) || 'WO-00149331';
             setTimeout(() => {
-                renderInvoicesTable(workOrderId);
+                renderInvoicesTable(woId);
             }, 50);
         }
             
@@ -1652,6 +1644,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load work order
     loadWorkOrder();
+    
+    // Print View button
+    const printViewBtn = document.getElementById('printViewBtn');
+    if (printViewBtn) {
+        printViewBtn.addEventListener('click', () => {
+            window.print();
+        });
+    }
     
     // Load comments on page load (messages section is always visible)
     setTimeout(() => {

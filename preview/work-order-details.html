@@ -723,13 +723,14 @@
             letter-spacing: 0.025em;
         }
 
-        .status-badge-small.draft { background: #fff4e5; color: #fe9339; }
-        .status-badge-small.sent { background: #e3f2fd; color: #003366; }
-        .status-badge-small.approved { background: #d4edda; color: #2e844a; }
-        .status-badge-small.rejected { background: #ffebee; color: #c23934; }
-        .status-badge-small.expired { background: #f3e5f5; color: #9065b0; }
-        .status-badge-small.paid { background: #d4edda; color: #2e844a; }
-        .status-badge-small.void { background: #f3e5f5; color: #9065b0; }
+        .status-badge-small.draft { background: transparent; color: #fe9339; }
+        .status-badge-small.sent { background: transparent; color: #003366; }
+        .status-badge-small.approved { background: transparent; color: #2e844a; }
+        .status-badge-small.pending { background: transparent; color: #fe9339; }
+        .status-badge-small.rejected { background: transparent; color: #c23934; }
+        .status-badge-small.expired { background: transparent; color: #9065b0; }
+        .status-badge-small.paid { background: transparent; color: #2e844a; }
+        .status-badge-small.void { background: transparent; color: #9065b0; }
 
         .btn-primary {
             background: var(--sf-brand);
@@ -874,23 +875,67 @@
             margin: 0;
         }
 
+        .btn-icon-pencil {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #ffffff;
+            color: #706e6b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon-pencil:hover {
+            border-color: var(--sf-brand, #003366);
+            color: var(--sf-brand, #003366);
+            background: #f3f2f2;
+        }
+
+        .btn-icon-pencil:focus {
+            outline: 2px solid var(--sf-brand, #003366);
+            outline-offset: 2px;
+        }
+
+        /* Salesforce-style highlight banner */
         .wo-details-content {
-            padding: 1.5rem;
+            padding: 0;
+            background: #f3f2f2;
+            border-left: 4px solid var(--sf-brand, #003366);
+            border-radius: 0 0.25rem 0.25rem 0;
+            overflow: hidden;
+        }
+
+        .wo-details-content .wo-key-info {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .wo-highlight-banner-inner {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 0;
+            padding: 1rem 1.5rem;
         }
 
         .wo-key-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid #f3f2f2;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem 1.5rem;
+            flex: 1;
+            min-width: 0;
         }
 
         .wo-info-group {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.25rem;
         }
 
         .wo-info-label {
@@ -911,48 +956,55 @@
         }
 
         .wo-info-value {
-            font-size: 1rem;
+            font-size: 0.9375rem;
             color: #181818;
             font-weight: 600;
             line-height: 1.4;
         }
 
         .wo-info-value-large {
-            font-size: 1.25rem;
+            font-size: 1.0625rem;
             font-weight: 700;
         }
 
         .wo-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem 1.25rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .wo-details-content .wo-details-grid {
+            padding: 0;
+            margin: 0;
         }
 
         .store-detail-item {
             display: flex;
             flex-direction: column;
-            gap: 0.375rem;
-            padding: 0.75rem;
-            background: #fafaf9;
-            border-radius: 0.25rem;
-            border-left: 3px solid transparent;
+            gap: 0.25rem;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            border-left: none;
         }
 
         .store-detail-item.important {
-            border-left-color: var(--sf-brand);
-            background: #f3f2f2;
+            border-left: none;
+            background: transparent;
         }
 
         .store-detail-label {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             color: #706e6b;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.025em;
+            letter-spacing: 0.05em;
         }
 
         .store-detail-value {
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             color: #181818;
             font-weight: 600;
         }
@@ -961,6 +1013,17 @@
             color: #706e6b;
             font-style: italic;
             font-weight: 400;
+        }
+
+        .wo-details-content .weather-time-card {
+            margin-top: 0;
+            margin-left: 1.5rem;
+            padding: 0 1.5rem;
+            border: none;
+            border-left: 1px solid #dddbda;
+            border-radius: 0;
+            background: transparent;
+            flex-shrink: 0;
         }
 
         .weather-time-card {
@@ -1010,6 +1073,19 @@
         }
 
         @media (max-width: 768px) {
+            .wo-details-content .wo-highlight-banner-inner {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .wo-details-content .weather-time-card {
+                margin-left: 0;
+                padding: 1rem 0;
+                border-left: none;
+                border-top: 1px solid #dddbda;
+                padding-top: 1rem;
+            }
+
             .wo-key-info,
             .wo-details-grid {
                 grid-template-columns: 1fr;
@@ -1032,17 +1108,17 @@
             display: inline-block;
         }
 
-        .status-badge.status-new { background: #e3f2fd; color: #003366; }
-        .status-badge.status-assigned { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-scheduled { background: #e3f2fd; color: #003366; }
-        .status-badge.status-in-progress { background: #e3f2fd; color: #003366; }
-        .status-badge.status-on-site-in-progress { background: #e3f2fd; color: #003366; }
-        .status-badge.status-completed { background: #d4edda; color: #2e844a; }
-        .status-badge.status-work-complete { background: #d4edda; color: #2e844a; }
-        .status-badge.status-dispatched { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-proposal-submitted { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-on-hold { background: #fff4e5; color: #fe9339; }
-        .status-badge.status-needs-attention { background: #ffebee; color: #c23934; }
+        .status-badge.status-new { background: transparent; color: #003366; }
+        .status-badge.status-assigned { background: transparent; color: #fe9339; }
+        .status-badge.status-scheduled { background: transparent; color: #003366; }
+        .status-badge.status-in-progress { background: transparent; color: #003366; }
+        .status-badge.status-on-site-in-progress { background: transparent; color: #003366; }
+        .status-badge.status-completed { background: transparent; color: #2e844a; }
+        .status-badge.status-work-complete { background: transparent; color: #2e844a; }
+        .status-badge.status-dispatched { background: transparent; color: #fe9339; }
+        .status-badge.status-proposal-submitted { background: transparent; color: #fe9339; }
+        .status-badge.status-on-hold { background: transparent; color: #fe9339; }
+        .status-badge.status-needs-attention { background: transparent; color: #c23934; }
 
         .priority-badge {
             padding: 0.25rem 0.75rem;
@@ -1188,6 +1264,8 @@
             background: #ffffff;
             border: 1px solid #dddbda;
             border-radius: 0.25rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
             margin-bottom: 1.5rem;
         }
 
@@ -1215,7 +1293,8 @@
             background: #ffffff;
             border: 1px solid #dddbda;
             border-radius: 0.25rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
         }
 
         .tabs-header {
@@ -2141,6 +2220,10 @@
                 </div>
                 <div class="page-header-right">
                     <div class="cta-buttons-group">
+                        <button type="button" class="btn-secondary" id="printViewBtn" title="Print view">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path></svg>
+                            Print View
+                        </button>
                         <button class="btn-success" id="dispatchBtn" style="display: none;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             Dispatch
@@ -2162,10 +2245,6 @@
                                 <div class="dropdown-menu-content" id="moreActionsContent"></div>
                             </div>
                         </div>
-                        <button class="btn-secondary" id="editBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            Edit
-                        </button>
                     </div>
                 </div>
             </div>
@@ -2174,8 +2253,12 @@
             <div class="store-details-section">
                 <div class="wo-details-header">
                     <h2 class="store-details-title">Work Order Details</h2>
+                    <button type="button" class="btn-icon-pencil" id="editBtn" title="Edit" aria-label="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
                 </div>
                 <div class="wo-details-content">
+                    <div class="wo-highlight-banner-inner">
                     <!-- Key Information Row -->
                     <div class="wo-key-info">
                         <div class="wo-info-group">
@@ -2226,7 +2309,7 @@
                         </div>
                     </div>
 
-                    <!-- Weather & Local Time (in card) -->
+                    <!-- Weather & Local Time -->
                     <div class="weather-time-card">
                         <div class="weather-time-info">
                             <div class="weather-time-label">Weather</div>
@@ -2240,7 +2323,7 @@
                             <div class="weather-time-value" id="storeLocalTime">1:33 AM EST</div>
                         </div>
                     </div>
-
+                    </div>
                 </div>
             </div>
 
@@ -2293,53 +2376,6 @@
                 </div>
             </div>
 
-            <!-- Messages Section (Separate) -->
-            <div class="messages-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        Messages
-                    </h2>
-                </div>
-                <div class="messages-content">
-                    <div class="chatter-feed">
-                        <!-- Post Composer -->
-                        <div class="chatter-composer">
-                            <textarea 
-                                id="chatterPostInput" 
-                                class="chatter-composer-textarea" 
-                                placeholder="Share an update..."
-                                rows="3"
-                            ></textarea>
-                            <div class="chatter-composer-actions">
-                                <div class="chatter-composer-left">
-                                    <button class="chatter-action-btn" type="button" title="Attach file">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                        <span>Attach</span>
-                                    </button>
-                                    <input type="file" id="chatterFileInput" style="display: none;" multiple>
-                                </div>
-                                <div class="chatter-composer-right">
-                                    <button class="btn-secondary" type="button" id="chatterCancelBtn" style="display: none;">Cancel</button>
-                                    <button class="btn-primary" type="button" id="chatterPostBtn">Post</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Feed Posts -->
-                        <div class="chatter-feed-list" id="commentsList">
-                            <div class="empty-state">No posts yet. Share an update!</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Tabs Section (Files, Estimates, Invoices) -->
             <div class="tabs-section">
                 <div class="tabs-header">
@@ -2377,15 +2413,13 @@
                             <p style="color: #706e6b; font-size: 0.75rem; margin-top: 0.25rem;">Images, PDFs, Documents</p>
                         </div>
                     </div>
+                </div>
 
                 <!-- Estimates Tab Content -->
                 <div class="tab-content" id="estimatesContent">
                     <div class="related-list-section">
                         <div class="related-list-header">
                             <h3 class="related-list-title">Estimates</h3>
-                            <div class="related-list-actions">
-                                <a href="estimates.html" class="link-view-all">View All</a>
-                            </div>
                         </div>
                         <div class="related-list-table" id="estimatesTable">
                             <div class="empty-state">No estimates found.</div>
@@ -2398,16 +2432,51 @@
                     <div class="related-list-section">
                         <div class="related-list-header">
                             <h3 class="related-list-title">Invoices</h3>
-                            <div class="related-list-actions">
-                                <a href="invoices.html" class="link-view-all">View All</a>
-                            </div>
                         </div>
                         <div class="related-list-table" id="invoicesTable">
                             <div class="empty-state">No invoices found.</div>
                         </div>
                     </div>
                 </div>
-</div>
+            </div>
+
+            <!-- Messages / Chatter Section -->
+            <div class="messages-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Messages
+                    </h2>
+                </div>
+                <div class="messages-content">
+                    <div class="chatter-feed">
+                        <div class="chatter-composer">
+                            <textarea id="chatterPostInput" class="chatter-composer-textarea" placeholder="Share an update..." rows="3"></textarea>
+                            <div class="chatter-composer-actions">
+                                <div class="chatter-composer-left">
+                                    <button class="chatter-action-btn" type="button" title="Attach file">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span>Attach</span>
+                                    </button>
+                                    <input type="file" id="chatterFileInput" style="display: none;" multiple>
+                                </div>
+                                <div class="chatter-composer-right">
+                                    <button class="btn-secondary" type="button" id="chatterCancelBtn" style="display: none;">Cancel</button>
+                                    <button class="btn-primary" type="button" id="chatterPostBtn">Post</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chatter-feed-list" id="commentsList">
+                            <div class="empty-state">No posts yet. Share an update!</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

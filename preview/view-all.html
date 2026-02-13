@@ -532,30 +532,9 @@
                 padding: 1.5rem 1.5rem;
             }
             
-            .breadcrumb,
-            .page-header,
             .search-filters-bar {
-                padding-left: 1.5rem;
-            }
-            
-            .page-actions {
-                padding-right: 1.5rem;
-            }
-            
-            .search-filters-bar {
-                padding-right: 1.5rem;
                 flex-wrap: wrap;
                 gap: 0.75rem;
-            }
-
-            .search-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .btn-filter {
-                flex: 1;
-                justify-content: center;
             }
             
             .filters-section {
@@ -563,17 +542,11 @@
                 padding-right: 1.5rem;
             }
             
-            .pagination {
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-
         /* Breadcrumb */
         .breadcrumb {
             font-size: 0.875rem;
             color: #706e6b;
             margin-bottom: 1rem;
-            padding-left: 3rem;
             padding-top: 1rem;
         }
 
@@ -586,13 +559,12 @@
             text-decoration: underline;
         }
 
-        /* Page Header */
+        /* Page Header - align with table (use main-container padding only) */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-left: 3rem;
         }
 
         .page-title-section {
@@ -617,7 +589,6 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
-            padding-right: 3rem;
         }
 
         .btn-icon {
@@ -656,18 +627,18 @@
             background: var(--sf-brand-dark);
         }
 
-        /* Search and Filters Bar */
+        /* Search and Filters Bar - align with table (use main-container padding only) */
         .search-filters-bar {
             display: flex;
             gap: 1rem;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-left: 3rem;
-            padding-right: 3rem;
+            flex-wrap: nowrap;
         }
 
         .search-bar {
             flex: 1;
+            min-width: 0;
             position: relative;
         }
 
@@ -675,38 +646,7 @@
             display: flex;
             gap: 0.5rem;
             align-items: center;
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 0.25rem;
-            border: 1px solid #dddbda;
-            border-radius: 0.25rem;
-            padding: 0.25rem;
-            background: #ffffff;
-        }
-
-        .view-toggle-btn {
-            padding: 0.5rem;
-            border: none;
-            background: transparent;
-            color: #706e6b;
-            cursor: pointer;
-            border-radius: 0.125rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .view-toggle-btn:hover {
-            background: #f3f2f2;
-            color: #181818;
-        }
-
-        .view-toggle-btn.active {
-            background: #e5f3ff;
-            color: var(--sf-brand);
+            flex-shrink: 0;
         }
 
         .search-bar input {
@@ -740,12 +680,14 @@
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             color: #3e3e3c;
             position: relative;
             transition: all 0.2s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .btn-filter:hover {
@@ -778,30 +720,6 @@
             min-width: 18px;
             text-align: center;
             line-height: 1.2;
-        }
-
-        .view-toggle {
-            display: flex;
-            background: #ffffff;
-            border: 1px solid #dddbda;
-            border-radius: 0.25rem;
-            overflow: hidden;
-        }
-
-        .view-toggle-btn {
-            padding: 0.5rem;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .view-toggle-btn.active {
-            background: var(--sf-brand);
-            color: #ffffff;
         }
 
         /* Filters Section */
@@ -1161,17 +1079,17 @@
 
         /* Action Needed badge: red background for card and table row */
         tr.row-action-needed {
-            background-color: #ffebee;
+            background-color: #ffffff;
         }
         tr.row-action-needed:hover {
-            background-color: #ffcdd2;
+            background-color: #fafaf9;
         }
         .work-order-card.action-needed {
-            background-color: #ffebee;
+            background-color: #ffffff;
             border-left: 4px solid #c23934;
         }
         .work-order-card.action-needed:hover {
-            background-color: #ffcdd2;
+            background-color: #ffffff;
         }
 
         .work-order-header {
@@ -1210,52 +1128,47 @@
         }
 
         .status-badge.status-needs-attention {
-            background: #ffebee;
+            background: transparent;
             color: #c23934;
         }
 
         .status-badge.status-in-progress {
-            background: #e3f2fd;
+            background: transparent;
             color: #003366;
         }
 
         .status-badge.status-new-badge {
-            background: #f3e5f5;
+            background: transparent;
             color: #9065b0;
         }
 
         .status-badge.status-on-hold {
-            background: #fff4e5;
+            background: transparent;
             color: #fe9339;
         }
 
         .status-badge.status-new {
-            background: #e3f2fd;
+            background: transparent;
             color: #003366;
         }
 
         .status-badge.status-assigned {
-            background: #fff4e5;
+            background: transparent;
             color: #fe9339;
         }
 
         .status-badge.status-scheduled {
-            background: #e3f2fd;
-            color: #003366;
-        }
-
-        .status-badge.status-in-progress {
-            background: #e3f2fd;
+            background: transparent;
             color: #003366;
         }
 
         .status-badge.status-dispatched {
-            background: #fff4e5;
+            background: transparent;
             color: #fe9339;
         }
 
         .status-badge.status-completed {
-            background: #d4edda;
+            background: transparent;
             color: #2e844a;
         }
 
@@ -1370,13 +1283,13 @@
             }
         }
 
-        /* Pagination */
+        /* Pagination - inside table container */
         .pagination {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 3rem;
-            background: #ffffff;
+            padding: 1rem 1rem;
+            background: #fafaf9;
             border-top: 1px solid #dddbda;
         }
 
@@ -1388,6 +1301,13 @@
         .pagination-controls {
             display: flex;
             gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pagination-numbers {
+            display: inline-flex;
+            gap: 0.25rem;
             align-items: center;
         }
 
@@ -2089,9 +2009,12 @@
         <div class="page-header">
             <div class="page-title-section">
                 <h1 class="page-title">All Work Orders</h1>
-                <span class="page-count" id="totalCount">0 work orders</span>
             </div>
             <div class="page-actions">
+                <button class="btn-secondary" id="exportBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export
+                </button>
                 <button class="btn-primary" id="newWorkOrderBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     New Work Order
@@ -2113,14 +2036,6 @@
                     <span>Filters</span>
                     <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
                 </button>
-                <div class="view-toggle">
-                    <button class="view-toggle-btn" id="cardViewBtn" title="Card View">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    </button>
-                    <button class="view-toggle-btn active" id="tableViewBtn" title="Table View">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -2258,6 +2173,21 @@
                         <!-- Work orders will be rendered here -->
                     </tbody>
                 </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <div class="pagination-info" id="paginationInfo">0–0 of 0 work orders</div>
+                <div class="pagination-controls">
+                    <select class="pagination-select" id="pageSizeSelect" aria-label="Rows per page">
+                        <option value="10">10 per page</option>
+                        <option value="25">25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                    <button type="button" class="pagination-btn" id="paginationPrev" aria-label="Previous page">Previous</button>
+                    <span class="pagination-numbers" id="paginationNumbers"></span>
+                    <button type="button" class="pagination-btn" id="paginationNext" aria-label="Next page">Next</button>
+                </div>
             </div>
         </div>
         </main>

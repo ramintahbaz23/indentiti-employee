@@ -232,6 +232,7 @@ function filterEstimates() {
     }
 
     state.filteredEstimates = filtered;
+    state.currentPage = 1;
     
     // Pagination
     const startIndex = (state.currentPage - 1) * state.pageSize;
@@ -240,7 +241,7 @@ function filterEstimates() {
     
     updateActiveFilterTags();
     renderTable();
-    updatePagination();
+    renderPagination();
     updateTotalCount();
     updateSummary();
     updateCardActiveStates();
@@ -303,6 +304,7 @@ function renderTable() {
                 </td>
             </tr>
         `;
+        renderPagination();
         return;
     }
     
@@ -503,23 +505,59 @@ function updateCardActiveStates() {
     }
 }
 
-function updatePagination() {
-    const totalPages = Math.ceil(state.filteredEstimates.length / state.pageSize);
-    const pageInfo = document.getElementById('pageInfo');
-    const prevBtn = document.getElementById('prevPageBtn');
-    const nextBtn = document.getElementById('nextPageBtn');
-    
-    if (pageInfo) {
-        pageInfo.textContent = `Page ${state.currentPage} of ${totalPages || 1}`;
+function getTotalPages() {
+    return Math.max(1, Math.ceil(state.filteredEstimates.length / state.pageSize));
+}
+
+function renderPagination() {
+    const total = state.filteredEstimates.length;
+    const totalPages = getTotalPages();
+    const start = total === 0 ? 0 : (state.currentPage - 1) * state.pageSize + 1;
+    const end = Math.min(state.currentPage * state.pageSize, total);
+
+    const infoEl = document.getElementById('paginationInfo');
+    const prevBtn = document.getElementById('paginationPrev');
+    const nextBtn = document.getElementById('paginationNext');
+    const numbersEl = document.getElementById('paginationNumbers');
+    const pageSizeSelect = document.getElementById('pageSizeSelect');
+
+    if (infoEl) {
+        infoEl.textContent = total === 0 ? '0 requests' : `${start}–${end} of ${total} requests`;
     }
-    
-    if (prevBtn) {
-        prevBtn.disabled = state.currentPage <= 1;
+    if (prevBtn) prevBtn.disabled = state.currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = state.currentPage >= totalPages;
+    if (pageSizeSelect) pageSizeSelect.value = String(state.pageSize);
+
+    if (numbersEl) {
+        if (totalPages <= 1) {
+            numbersEl.innerHTML = '';
+            return;
+        }
+        const maxButtons = 5;
+        let firstPage = Math.max(1, state.currentPage - Math.floor(maxButtons / 2));
+        let lastPage = Math.min(totalPages, firstPage + maxButtons - 1);
+        if (lastPage - firstPage + 1 < maxButtons) {
+            firstPage = Math.max(1, lastPage - maxButtons + 1);
+        }
+        numbersEl.innerHTML = Array.from({ length: lastPage - firstPage + 1 }, (_, i) => {
+            const p = firstPage + i;
+            const active = p === state.currentPage ? ' active' : '';
+            return `<button type="button" class="pagination-number${active}" data-page="${p}">${p}</button>`;
+        }).join('');
+        numbersEl.querySelectorAll('.pagination-number').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.currentPage = parseInt(btn.dataset.page, 10);
+                refreshPaginationView();
+            });
+        });
     }
-    
-    if (nextBtn) {
-        nextBtn.disabled = state.currentPage >= totalPages || totalPages === 0;
-    }
+}
+
+function refreshPaginationView() {
+    const startIndex = (state.currentPage - 1) * state.pageSize;
+    state.displayedEstimates = state.filteredEstimates.slice(startIndex, startIndex + state.pageSize);
+    renderTable();
+    renderPagination();
 }
 
 // Estimate Actions
@@ -807,23 +845,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    const prevPageBtn = document.getElementById('prevPageBtn');
-    if (prevPageBtn) {
-        prevPageBtn.addEventListener('click', () => {
+    const paginationPrev = document.getElementById('paginationPrev');
+    if (paginationPrev) {
+        paginationPrev.addEventListener('click', () => {
             if (state.currentPage > 1) {
                 state.currentPage--;
-                filterEstimates();
+                refreshPaginationView();
             }
         });
     }
-    
-    const nextPageBtn = document.getElementById('nextPageBtn');
-    if (nextPageBtn) {
-        nextPageBtn.addEventListener('click', () => {
-            const totalPages = Math.ceil(state.filteredEstimates.length / state.pageSize);
-            if (state.currentPage < totalPages) {
+    const paginationNext = document.getElementById('paginationNext');
+    if (paginationNext) {
+        paginationNext.addEventListener('click', () => {
+            if (state.currentPage < getTotalPages()) {
                 state.currentPage++;
-                filterEstimates();
+                refreshPaginationView();
             }
         });
     }
