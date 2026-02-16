@@ -64,7 +64,7 @@ function getStatusColor(status) {
 function getApproverRole(approvedBy) {
     // Map approver names to roles
     const roleMap = {
-        'Mark Thomas': 'Manager Approved',
+        'Mark Johnson': 'Manager Approved',
         'John Smith': 'Client Approved',
         'Sarah Johnson': 'Client Approved',
         'Manager': 'Manager Approved',
@@ -540,7 +540,7 @@ function approveInvoice(invoiceId) {
     const invoice = state.invoices.find(inv => inv.id === invoiceId);
     if (invoice) {
         invoice.status = 'Approved';
-        invoice.approvedBy = 'Mark Thomas'; // Set approver when approving
+        invoice.approvedBy = 'Mark Johnson'; // Set approver when approving
         filterInvoices();
     }
 }

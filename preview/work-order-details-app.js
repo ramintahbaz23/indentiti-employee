@@ -816,12 +816,12 @@ function renderWorkOrder() {
     const requestedByEl = document.getElementById('requestedByValue');
     if (requestedByEl) {
         // Use contractor name if available, otherwise use realistic dummy data
-        let requestedBy = 'Mark Thomas';
+        let requestedBy = 'Mark Johnson';
         if (wo && wo.contractorName && wo.contractorName.trim() !== '') {
             requestedBy = wo.contractorName;
         } else if (wo && wo.storeName) {
             // Extract store manager name from store name or use default
-            requestedBy = 'Mark Thomas';
+            requestedBy = 'Mark Johnson';
         }
         requestedByEl.textContent = requestedBy;
         // Remove empty class if it exists
@@ -924,7 +924,7 @@ function loadComments() {
     comments = [
         {
             id: 1,
-            author: 'Mark Thomas',
+            author: 'Mark Johnson',
             role: 'Purple Corporate Manager',
             date: new Date(baseDate),
             type: 'Internal',
@@ -1730,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (requestedByEl && (requestedByEl.textContent === '-' || !requestedByEl.textContent || requestedByEl.textContent.trim() === '')) {
             console.log('Requested By still showing "-" or empty, setting default...');
-            requestedByEl.textContent = 'Mark Thomas';
+            requestedByEl.textContent = 'Mark Johnson';
         }
         
         if (descriptionEl && (!descriptionEl.value || descriptionEl.value.trim() === '')) {

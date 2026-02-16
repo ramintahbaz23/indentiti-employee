@@ -23,7 +23,7 @@ const approvalRequestsData = [
         taxAmount: 32.80,
         grandTotal: 442.80,
         status: 'Approved',
-        approvedBy: 'Mark Thomas',
+        approvedBy: 'Mark Johnson',
         comment: 'Approved by manager',
         hasPdf: true
     },

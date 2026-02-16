@@ -121,7 +121,7 @@ function getStatusColor(status) {
 function getApproverRole(approvedBy) {
     // Map approver names to roles
     const roleMap = {
-        'Mark Thomas': 'Manager Approved',
+        'Mark Johnson': 'Manager Approved',
         'John Smith': 'Client Approved',
         'Sarah Johnson': 'Client Approved',
         'Manager': 'Manager Approved',
@@ -566,7 +566,7 @@ function approveEstimate(estimateId) {
     const estimate = state.estimates.find(est => est.id === estimateId);
     if (estimate) {
         estimate.status = 'Approved';
-        estimate.approvedBy = 'Mark Thomas';
+        estimate.approvedBy = 'Mark Johnson';
         estimate.approvedDate = new Date();
         filterEstimates();
     }
@@ -626,7 +626,7 @@ function confirmRejection() {
     const estimate = state.estimates.find(est => est.id === currentRejectionEstimateId);
     if (estimate) {
         estimate.status = 'Rejected';
-        estimate.rejectedBy = 'Mark Thomas';
+        estimate.rejectedBy = 'Mark Johnson';
         estimate.rejectedDate = new Date();
         estimate.rejectionReason = reason;
         estimate.comment = `Rejected: ${reason}`;
