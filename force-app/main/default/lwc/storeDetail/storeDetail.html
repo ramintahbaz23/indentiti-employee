@@ -1,0 +1,23 @@
+<template>
+    <template if:true={hasRecordId}>
+        <lightning-card title={storeTitle} icon-name="standard:account">
+            <div class="slds-card__body slds-card__body_inner">
+                <template if:true={isLoading}><lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner></template>
+                <template if:false={isLoading}>
+                    <template if:true={detail}>
+                        <div class="slds-box slds-m-bottom_medium">
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"><span class="slds-text-title_caps slds-text-color_weak">Account Name</span><br/>{detail.accountName}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"><span class="slds-text-title_caps slds-text-color_weak">Store Number</span><br/>{detail.storeNumber}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"><span class="slds-text-title_caps slds-text-color_weak">Phone</span><br/>{detail.phone}</div>
+                                <div class="slds-col slds-size_1-of-1"><span class="slds-text-title_caps slds-text-color_weak">Address</span><br/>{detail.shippingStreet} {detail.city} {detail.state} {detail.zipCode}</div>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:false={detail}><p class="slds-p-around_medium">Store not found.</p></template>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+    <template if:false={hasRecordId}><lightning-card title="Store Detail"><p class="slds-p-around_medium">Open a store (Account) record to view details.</p></lightning-card></template>
+</template>

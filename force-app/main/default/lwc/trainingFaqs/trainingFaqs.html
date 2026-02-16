@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Training & FAQs" icon-name="standard:knowledge_base">
+        <div class="slds-card__body slds-card__body_inner">
+            <p class="slds-p-around_medium slds-text-body_regular">Welcome to Training and FAQs. Content can be loaded from a custom object or CMS.</p>
+            <template if:true={hasFaqs}>
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+                    <template for:each={faqItems} for:item="faq">
+                        <lightning-accordion-section key={faq.id} name={faq.id} label={faq.question}>
+                            <p>{faq.answer}</p>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </template>
+            <template if:false={hasFaqs}>
+                <p class="slds-p-around_medium slds-text-color_weak">No FAQs configured yet.</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

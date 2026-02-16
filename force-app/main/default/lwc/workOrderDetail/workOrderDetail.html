@@ -1,0 +1,57 @@
+<template>
+    <template if:true={hasRecordId}>
+        <lightning-card title={workOrderTitle} icon-name="standard:work_order">
+            <div class="slds-card__body slds-card__body_inner">
+                <template if:true={isLoading}>
+                    <div class="slds-align_absolute-center slds-p-around_large">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <template if:false={isLoading}>
+                    <template if:true={detail}>
+                        <div class="slds-box slds-m-bottom_medium detail-banner">
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Work Order #</span><br/>{detail.workOrderNumber}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Status</span><br/>{detail.status}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Priority</span><br/>{detail.priority}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Trade</span><br/>{detail.trade}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Issue</span><br/>{detail.issue}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Store / Location</span><br/>{detail.storeName} {detail.city} {detail.state}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Contractor</span><br/>{detail.contractorName}</div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">NTE Amount</span><br/>{formattedNteAmount}</div>
+                            </div>
+                        </div>
+                        <lightning-tabset>
+                            <lightning-tab label="Files">
+                                <p class="slds-p-around_medium">Files tab – upload and list (ContentVersion) can be added here.</p>
+                            </lightning-tab>
+                            <lightning-tab label="Estimates">
+                                <div class="slds-p-around_medium">
+                                    <template if:true={hasEstimates}>{estimatesCount} estimate(s)</template>
+                                    <template if:false={hasEstimates}>No estimates.</template>
+                                </div>
+                            </lightning-tab>
+                            <lightning-tab label="Invoices">
+                                <div class="slds-p-around_medium">
+                                    <template if:true={hasInvoices}>{invoicesCount} invoice(s)</template>
+                                    <template if:false={hasInvoices}>No invoices.</template>
+                                </div>
+                            </lightning-tab>
+                            <lightning-tab label="Messages">
+                                <p class="slds-p-around_medium">Messages / Chatter feed can be added here.</p>
+                            </lightning-tab>
+                        </lightning-tabset>
+                    </template>
+                    <template if:false={detail}>
+                        <p class="slds-p-around_medium slds-text-color_error">Work order not found.</p>
+                    </template>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+    <template if:false={hasRecordId}>
+        <lightning-card title="Work Order Detail">
+            <p class="slds-p-around_medium">Open a work order record to view details.</p>
+        </lightning-card>
+    </template>
+</template>

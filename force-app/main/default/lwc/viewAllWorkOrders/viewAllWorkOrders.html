@@ -1,0 +1,48 @@
+<template>
+    <lightning-card title="All Work Orders" icon-name="standard:work_order">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_medium slds-gap_medium">
+                <div class="slds-col slds-grow">
+                    <lightning-input
+                        type="search"
+                        placeholder="Search work orders..."
+                        value={searchQuery}
+                        onchange={handleSearchChange}
+                        variant="label-hidden">
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button label="Export" variant="neutral" icon-name="utility:download" onclick={handleExport}></lightning-button>
+                    <lightning-button label="New Work Order" variant="brand" icon-name="utility:add" onclick={handleNewWorkOrder}></lightning-button>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-wrap slds-gap_small slds-m-bottom_medium">
+                <lightning-combobox name="status" label="Status" value={filters.status} options={statusOptions} onchange={handleFilterChange} variant="label-stacked"></lightning-combobox>
+                <lightning-combobox name="priority" label="Priority" value={filters.priority} options={priorityOptions} onchange={handleFilterChange} variant="label-stacked"></lightning-combobox>
+                <lightning-combobox name="trade" label="Trade" value={filters.trade} options={tradeOptions} onchange={handleFilterChange} variant="label-stacked"></lightning-combobox>
+                <lightning-combobox name="dateRange" label="Date Range" value={filters.dateRange} options={dateRangeOptions} onchange={handleFilterChange} variant="label-stacked"></lightning-combobox>
+            </div>
+
+            <c-data-table
+                key-field="id"
+                columns={tableColumns}
+                data={tableData}
+                sort-column={sortColumn}
+                sort-direction={sortDirection}
+                isLoading={isLoading}
+                onsort={handleSort}
+                onrowclick={handleRowClick}>
+            </c-data-table>
+
+            <c-pagination-bar
+                total-count={totalCount}
+                page-size={pageSize}
+                current-page={currentPage}
+                label="work orders"
+                onpagesizechange={handlePageSizeChange}
+                onpagechange={handlePageChange}>
+            </c-pagination-bar>
+        </div>
+    </lightning-card>
+</template>

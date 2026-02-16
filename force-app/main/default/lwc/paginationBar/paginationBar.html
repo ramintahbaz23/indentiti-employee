@@ -1,0 +1,39 @@
+<template>
+    <div class="pagination slds-grid slds-grid_vertical-align-center slds-grid_align-spread slds-p-around_medium slds-border_top">
+        <div class="pagination-info slds-text-body_small slds-text-color_weak">
+            {infoText}
+        </div>
+        <div class="pagination-controls slds-grid slds-grid_vertical-align-center slds-gap_x-small">
+            <lightning-combobox
+                name="pageSize"
+                label="Rows per page"
+                value={pageSizeValue}
+                options={pageSizeOptions}
+                onchange={handlePageSizeChange}
+                variant="label-hidden"
+                class="pagination-select">
+            </lightning-combobox>
+            <lightning-button
+                label="Previous"
+                onclick={handlePrevious}
+                disabled={isPreviousDisabled}
+                variant="neutral">
+            </lightning-button>
+            <template for:each={pageNumbers} for:item="pageItem">
+                <lightning-button
+                    key={pageItem.num}
+                    label={pageItem.num}
+                    data-page={pageItem.num}
+                    onclick={handlePageClick}
+                    variant={pageItem.variant}>
+                </lightning-button>
+            </template>
+            <lightning-button
+                label="Next"
+                onclick={handleNext}
+                disabled={isNextDisabled}
+                variant="neutral">
+            </lightning-button>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,17 @@
+<template>
+    <lightning-card title="Client Estimates" icon-name="standard:approval">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-gap_small slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4"><div class="slds-box slds-text-align_center"><div class="slds-text-title_caps slds-text-color_weak">Total</div><div class="slds-text-heading_large">{metricsTotal}</div></div></div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4"><div class="slds-box slds-text-align_center"><div class="slds-text-title_caps slds-text-color_weak">Pending</div><div class="slds-text-heading_large">{metricsPending}</div></div></div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4"><div class="slds-box slds-text-align_center"><div class="slds-text-title_caps slds-text-color_weak">Approved</div><div class="slds-text-heading_large">{metricsApproved}</div></div></div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4"><div class="slds-box slds-text-align_center"><div class="slds-text-title_caps slds-text-color_weak">Rejected</div><div class="slds-text-heading_large">{metricsRejected}</div></div></div>
+            </div>
+            <div class="slds-m-bottom_medium">
+                <lightning-input type="search" placeholder="Search estimates..." value={searchQuery} onchange={handleSearchChange} variant="label-hidden"></lightning-input>
+            </div>
+            <c-data-table key-field="id" columns={tableColumns} data={tableData} sort-column={sortColumn} sort-direction={sortDirection} isLoading={isLoading} onsort={handleSort} onrowclick={handleRowClick}></c-data-table>
+            <c-pagination-bar total-count={totalCount} page-size={pageSize} current-page={currentPage} label="estimates" onpagesizechange={handlePageSizeChange} onpagechange={handlePageChange}></c-pagination-bar>
+        </div>
+    </lightning-card>
+</template>

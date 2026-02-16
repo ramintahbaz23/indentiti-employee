@@ -1,0 +1,5 @@
+/* Minimal - SLDS handles layout */
+c-data-table,
+c-pagination-bar {
+    display: block;
+}

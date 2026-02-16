@@ -1,0 +1,11 @@
+<template>
+    <lightning-card title="Approval Requests" icon-name="standard:approval">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-m-bottom_medium">
+                <lightning-input type="search" placeholder="Search requests..." value={searchQuery} onchange={handleSearchChange} variant="label-hidden"></lightning-input>
+            </div>
+            <c-data-table key-field="id" columns={tableColumns} data={tableData} sort-column={sortColumn} sort-direction={sortDirection} isLoading={isLoading} onsort={handleSort} onrowclick={handleRowClick}></c-data-table>
+            <c-pagination-bar total-count={totalCount} page-size={pageSize} current-page={currentPage} label="requests" onpagesizechange={handlePageSizeChange} onpagechange={handlePageChange}></c-pagination-bar>
+        </div>
+    </lightning-card>
+</template>

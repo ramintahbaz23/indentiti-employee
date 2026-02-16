@@ -1,0 +1,11 @@
+.pagination {
+    background: #fafaf9;
+}
+
+.pagination-controls {
+    flex-wrap: wrap;
+}
+
+.pagination-select {
+    max-width: 8rem;
+}

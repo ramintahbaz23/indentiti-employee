@@ -1,0 +1,16 @@
+<template>
+    <lightning-card title="My Store List" icon-name="standard:account">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_medium slds-gap_medium">
+                <div class="slds-col slds-grow">
+                    <lightning-input type="search" placeholder="Search this list..." value={searchQuery} onchange={handleSearchChange} variant="label-hidden"></lightning-input>
+                </div>
+                <div class="slds-col slds-no-flex">
+                    <lightning-combobox name="state" label="State" value={filterState} options={stateOptions} onchange={handleFilterChange} variant="label-stacked"></lightning-combobox>
+                </div>
+            </div>
+            <c-data-table key-field="id" columns={tableColumns} data={tableData} sort-column={sortColumn} sort-direction={sortDirection} isLoading={isLoading} onsort={handleSort} onrowclick={handleRowClick}></c-data-table>
+            <c-pagination-bar total-count={totalCount} page-size={pageSize} current-page={currentPage} label="stores" onpagesizechange={handlePageSizeChange} onpagechange={handlePageChange}></c-pagination-bar>
+        </div>
+    </lightning-card>
+</template>
