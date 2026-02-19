@@ -2379,7 +2379,11 @@
             <!-- Tabs Section (Files, Estimates, Invoices) -->
             <div class="tabs-section">
                 <div class="tabs-header">
-                    <button class="tab-button active" id="filesTab" data-tab="files" onclick="window.switchTab('files'); return false;">
+                    <button class="tab-button active" id="messagesTab" data-tab="messages" onclick="window.switchTab('messages'); return false;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        Messages
+                    </button>
+                    <button class="tab-button" id="filesTab" data-tab="files" onclick="window.switchTab('files'); return false;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>
@@ -2396,8 +2400,39 @@
                     </button>
                 </div>
 
+                <!-- Messages Tab Content -->
+                <div class="tab-content active" id="messagesContent">
+                    <div class="messages-content">
+                        <div class="chatter-feed">
+                            <div class="chatter-composer">
+                                <textarea id="chatterPostInput" class="chatter-composer-textarea" placeholder="Share an update..." rows="3"></textarea>
+                                <div class="chatter-composer-actions">
+                                    <div class="chatter-composer-left">
+                                        <button class="chatter-action-btn" type="button" title="Attach file">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="17 8 12 3 7 8"></polyline>
+                                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                                            </svg>
+                                            <span>Attach</span>
+                                        </button>
+                                        <input type="file" id="chatterFileInput" style="display: none;" multiple>
+                                    </div>
+                                    <div class="chatter-composer-right">
+                                        <button class="btn-secondary" type="button" id="chatterCancelBtn" style="display: none;">Cancel</button>
+                                        <button class="btn-primary" type="button" id="chatterPostBtn">Post</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chatter-feed-list" id="commentsList">
+                                <div class="empty-state">No posts yet. Share an update!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Files Tab Content -->
-                <div class="tab-content active" id="filesContent">
+                <div class="tab-content" id="filesContent">
                     <div class="files-section">
                         <div class="files-list" id="filesList">
                             <div class="empty-state">No files attached yet.</div>
@@ -2435,45 +2470,6 @@
                         </div>
                         <div class="related-list-table" id="invoicesTable">
                             <div class="empty-state">No invoices found.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Messages / Chatter Section -->
-            <div class="messages-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        Messages
-                    </h2>
-                </div>
-                <div class="messages-content">
-                    <div class="chatter-feed">
-                        <div class="chatter-composer">
-                            <textarea id="chatterPostInput" class="chatter-composer-textarea" placeholder="Share an update..." rows="3"></textarea>
-                            <div class="chatter-composer-actions">
-                                <div class="chatter-composer-left">
-                                    <button class="chatter-action-btn" type="button" title="Attach file">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                        <span>Attach</span>
-                                    </button>
-                                    <input type="file" id="chatterFileInput" style="display: none;" multiple>
-                                </div>
-                                <div class="chatter-composer-right">
-                                    <button class="btn-secondary" type="button" id="chatterCancelBtn" style="display: none;">Cancel</button>
-                                    <button class="btn-primary" type="button" id="chatterPostBtn">Post</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chatter-feed-list" id="commentsList">
-                            <div class="empty-state">No posts yet. Share an update!</div>
                         </div>
                     </div>
                 </div>

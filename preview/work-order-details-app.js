@@ -1683,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Ensure files tab is active by default and render content
     setTimeout(() => {
-        switchTab('files');
+        switchTab('messages');
         // Force render files after a delay to ensure DOM is ready
         setTimeout(() => {
             console.log('Checking files after tab switch');
@@ -1769,7 +1769,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 console.log('Files tab clicked directly');
                 if (window.switchTab) {
-                    window.switchTab('files');
+                    window.switchTab('messages');
                 }
             }, true);
         }
