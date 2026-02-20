@@ -627,7 +627,6 @@ function loadWorkOrder() {
             city: 'Winston-Salem',
             state: 'NC',
             nteAmount: 750.00,
-            contractorName: 'ABC Maintenance Services',
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             scheduledDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
             createdDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
@@ -669,15 +668,14 @@ function renderWorkOrder() {
     // Determine status conditions
     const status = wo.status || '';
     const statusLower = status.toLowerCase();
-    const isUnassigned = !wo.contractorName || wo.contractorName.trim() === '' || wo.contractorName === null;
     const isNew = status === 'New' || statusLower === 'new';
     const isInProgress = status === 'On-site/In Progress' || status === 'In Progress' || status === 'Dispatched' || 
                          statusLower.includes('in progress') || statusLower.includes('dispatched');
     const isComplete = status === 'Work Complete' || status === 'Complete' || statusLower.includes('complete');
     const isAccepted = status === 'Accepted' || statusLower === 'accepted';
     
-    // Show Dispatch/Decline if unassigned and status is New
-    if (isUnassigned && isNew) {
+    // Show Dispatch/Decline when status is New
+    if (isNew) {
         if (dispatchBtn) dispatchBtn.style.display = 'inline-flex';
         if (declineBtn) {
             declineBtn.style.display = 'inline-flex';
@@ -751,15 +749,26 @@ function renderWorkOrder() {
 
     // Details card - populate with comprehensive mock data
     document.getElementById('createdOn').textContent = formatDateTime(wo.createdDate || new Date(Date.now() - 2 * 24 * 60 * 60 * 1000));
+    const originalEtaDate = wo.originalEta || wo.dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    document.getElementById('originalEta').textContent = formatDateTime(originalEtaDate);
+    const scheduledDate = wo.scheduledDate || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+    document.getElementById('scheduledDateTime').textContent = formatDateTime(scheduledDate);
+    const quoteDateEl = document.getElementById('quoteDate');
+    if (quoteDateEl) quoteDateEl.textContent = (wo.quoteDate && (wo.quoteDate instanceof Date || typeof wo.quoteDate === 'string' || typeof wo.quoteDate === 'number')) ? formatDateTime(wo.quoteDate) : '-';
+    const completeDateEl = document.getElementById('completeDate');
+    if (completeDateEl) completeDateEl.textContent = (wo.completedDate && (wo.completedDate instanceof Date || typeof wo.completedDate === 'string' || typeof wo.completedDate === 'number')) ? formatDateTime(wo.completedDate) : '-';
     
     // Status badge in card header
-    const statusClass = getStatusClass(wo.status || 'New');
+    let statusClass = getStatusClass(wo.status || 'New');
     // Transform "On Hold" status to "Awaiting Approval" for display
     let displayStatus = wo.status || 'New';
     if (displayStatus === 'On Hold' || displayStatus === 'Proposal Submitted' || displayStatus === 'Proposal Pending Approval' || displayStatus === 'Pending Schedule' || displayStatus === 'Awaiting Parts') {
         displayStatus = 'Awaiting Approval';
+    } else if (displayStatus === 'New') {
+        displayStatus = 'Action Needed';
+        statusClass = 'needs-attention';
     }
-    document.getElementById('statusBadge').innerHTML = `<span class="status-badge status-${statusClass}">${displayStatus}</span>`;
+    document.getElementById('statusBadge').innerHTML = `<span class="status-badge status-${statusClass}">${displayStatus.toUpperCase()}</span>`;
     
     // Key information displays
     document.getElementById('statusValueDisplay').textContent = displayStatus;
@@ -815,15 +824,7 @@ function renderWorkOrder() {
     // Summary card - populate with mock data (always show dummy data)
     const requestedByEl = document.getElementById('requestedByValue');
     if (requestedByEl) {
-        // Use contractor name if available, otherwise use realistic dummy data
-        let requestedBy = 'Mark Johnson';
-        if (wo && wo.contractorName && wo.contractorName.trim() !== '') {
-            requestedBy = wo.contractorName;
-        } else if (wo && wo.storeName) {
-            // Extract store manager name from store name or use default
-            requestedBy = 'Mark Johnson';
-        }
-        requestedByEl.textContent = requestedBy;
+        requestedByEl.textContent = 'Mark Johnson';
         // Remove empty class if it exists
         requestedByEl.classList.remove('empty');
     }
@@ -917,7 +918,6 @@ function loadComments() {
     const woId = currentWorkOrder?.id || workOrderId || 'WO-00149331';
     const baseDate = currentWorkOrder?.createdDate ? new Date(currentWorkOrder.createdDate) : new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
     const issue = currentWorkOrder?.issue || 'Ceiling Tiles';
-    const contractorName = currentWorkOrder?.contractorName || 'ABC Maintenance Services';
     
     console.log('Loading comments with woId:', woId, 'issue:', issue, 'Always loading dummy data');
     
@@ -940,8 +940,8 @@ function loadComments() {
             role: 'Operations Coordinator',
             date: new Date(baseDate.getTime() + 2 * 60 * 60 * 1000),
             type: 'Internal',
-            subject: 'Contractor assignment',
-            body: `I've assigned this to ${contractorName}. Can you reach out to them and coordinate a site visit? We need to get this addressed quickly as the area is currently taped off.`,
+            subject: 'Assignment',
+            body: `This has been assigned to the field team. Can you coordinate a site visit? We need to get this addressed quickly as the area is currently taped off.`,
             likes: 1,
             commentCount: 2,
             isLiked: true
@@ -1199,7 +1199,7 @@ function loadFiles() {
         },
         {
             id: 11,
-            name: `Contractor_Assessment_Notes.docx`,
+            name: `Assessment_Notes.docx`,
             size: 345678,
             type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             file: null
@@ -1937,7 +1937,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirm('Dispatch this work order?')) {
                     if (currentWorkOrder) {
                         currentWorkOrder.status = 'Dispatched';
-                        currentWorkOrder.contractorName = 'KFM247'; // Assign contractor
                         renderWorkOrder();
                         showToast('Work order dispatched successfully!', 'success');
                     }

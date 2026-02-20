@@ -18,9 +18,9 @@ export default class WorkOrderCard extends LightningElement {
     get statusBadgeClass() {
         if (!this.workOrder) return 'status-badge';
         
-        // Check for Urgent: Past Due OR (New without contractor) OR In Progress
+        // Check for Urgent: Past Due OR New OR In Progress
         if (this.workOrder.isOverdue || 
-            (this.workOrder.status === 'New' && !this.workOrder.contractorName) || 
+            this.workOrder.status === 'New' || 
             this.workOrder.status === 'On-site/In Progress') {
             return 'status-badge status-urgent';
         }
@@ -37,15 +37,14 @@ export default class WorkOrderCard extends LightningElement {
             return 'status-badge status-new-badge';
         }
         
-        // Check for Needs Follow Up: Older than 7 days, not completed/invoiced, without contractor
+        // Check for Needs Follow Up: Older than 7 days, not completed/invoiced
         if (this.workOrder.createdDate) {
             const followUpDate = new Date();
             followUpDate.setDate(followUpDate.getDate() - 7);
             const createdDate = new Date(this.workOrder.createdDate);
             if (createdDate < followUpDate &&
                 this.workOrder.status !== 'Work Complete' &&
-                this.workOrder.status !== 'Invoice Submitted' &&
-                !this.workOrder.contractorName) {
+                this.workOrder.status !== 'Invoice Submitted') {
                 return 'status-badge status-needs-follow-up';
             }
         }
@@ -56,9 +55,9 @@ export default class WorkOrderCard extends LightningElement {
     get statusBadgeText() {
         if (!this.workOrder) return '';
         
-        // Check for Urgent: Past Due OR (New without contractor) OR In Progress
+        // Check for Urgent: Past Due OR New OR In Progress
         if (this.workOrder.isOverdue || 
-            (this.workOrder.status === 'New' && !this.workOrder.contractorName) || 
+            this.workOrder.status === 'New' || 
             this.workOrder.status === 'On-site/In Progress') {
             return 'URGENT';
         }
@@ -75,15 +74,14 @@ export default class WorkOrderCard extends LightningElement {
             return 'NEW';
         }
         
-        // Check for Needs Follow Up: Older than 7 days, not completed/invoiced, without contractor
+        // Check for Needs Follow Up: Older than 7 days, not completed/invoiced
         if (this.workOrder.createdDate) {
             const followUpDate = new Date();
             followUpDate.setDate(followUpDate.getDate() - 7);
             const createdDate = new Date(this.workOrder.createdDate);
             if (createdDate < followUpDate &&
                 this.workOrder.status !== 'Work Complete' &&
-                this.workOrder.status !== 'Invoice Submitted' &&
-                !this.workOrder.contractorName) {
+                this.workOrder.status !== 'Invoice Submitted') {
                 return 'NEEDS FOLLOW UP';
             }
         }

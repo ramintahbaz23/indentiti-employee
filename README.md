@@ -49,7 +49,7 @@ force-app/
 
 4. **workOrderCard** - Individual work order display:
    - Shows work order number, status, title, priority, classification
-   - Displays location, store, dates, amounts, contractor
+   - Displays location, store, dates, amounts
    - Priority color coding and overdue warnings
    - Context-aware action buttons based on status
    - Emits action button clicks
@@ -64,7 +64,7 @@ force-app/
 **WorkOrderDashboardController** provides:
 - `getMetricCounts()` - Returns counts for:
   - Past Due work orders
-  - Need Assignment (New without contractor)
+  - New work orders
   - In Progress work orders
   - Completed This Week
 - `getWorkOrders(filters)` - Returns filtered list of work orders
@@ -83,7 +83,6 @@ force-app/
 - `State__c` (Text 2)
 - `NTE_Amount__c` (Currency)
 - `Scheduled_Date__c` (DateTime)
-- `Contractor_Name__c` (Text 255)
 - `Completed_Date__c` (Date)
 - `Invoice_Amount__c` (Currency)
 - `Due_Date__c` (Date)

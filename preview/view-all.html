@@ -936,22 +936,22 @@
         }
 
         .priority-badge.priority-critical {
-            background: rgba(194, 57, 52, 0.1);
+            background: transparent;
             color: var(--priority-critical);
         }
 
         .priority-badge.priority-high {
-            background: rgba(232, 78, 27, 0.1);
+            background: transparent;
             color: var(--priority-high);
         }
 
         .priority-badge.priority-medium {
-            background: rgba(255, 152, 0, 0.1);
+            background: transparent;
             color: var(--priority-medium);
         }
 
         .priority-badge.priority-low {
-            background: rgba(144, 164, 174, 0.1);
+            background: transparent;
             color: var(--priority-low);
         }
 
@@ -2105,15 +2105,6 @@
                         <option value="AZ">Arizona</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">Contractor</label>
-                    <select class="filter-select" id="filterContractor">
-                        <option value="all">All Contractors</option>
-                        <option value="FireSafe Systems">FireSafe Systems</option>
-                        <option value="CleanPro Services">CleanPro Services</option>
-                        <option value="CoolTech HVAC">CoolTech HVAC</option>
-                    </select>
-                </div>
             </div>
             <div class="active-filters" id="activeFilters">
                 <!-- Active filter tags will be rendered here -->
@@ -2148,7 +2139,11 @@
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th class="sortable" data-sort="created">
-                                Created
+                                Created Date
+                                <span class="sort-icon">⇅</span>
+                            </th>
+                            <th class="sortable" data-sort="endDate">
+                                End Date
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th class="sortable" data-sort="trade">
@@ -2157,10 +2152,6 @@
                             </th>
                             <th class="sortable" data-sort="location">
                                 Store/Location
-                                <span class="sort-icon">⇅</span>
-                            </th>
-                            <th class="sortable" data-sort="contractor">
-                                Contractor
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th class="sortable" data-sort="nte">

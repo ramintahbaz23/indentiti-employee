@@ -8,10 +8,10 @@ const TABLE_COLUMNS = [
     { fieldName: 'status', label: 'Status', sortable: true },
     { fieldName: 'priority', label: 'Priority', sortable: true },
     { fieldName: 'issue', label: 'Issue', sortable: true },
-    { fieldName: 'createdDate', label: 'Created', sortable: true },
+    { fieldName: 'createdDate', label: 'Created Date', sortable: true },
+    { fieldName: 'endDate', label: 'End Date', sortable: true },
     { fieldName: 'trade', label: 'Trade', sortable: true },
     { fieldName: 'location', label: 'Location', sortable: true },
-    { fieldName: 'contractorName', label: 'Contractor', sortable: true },
     { fieldName: 'nteAmount', label: 'NTE', sortable: true }
 ];
 
@@ -39,8 +39,7 @@ export default class ViewAllWorkOrders extends LightningElement {
         priority: 'All Priorities',
         trade: 'All Trades',
         dateRange: 'Last 30 Days',
-        location: 'All Locations',
-        contractor: 'All Contractors'
+        location: 'All Locations'
     };
 
     statusOptions = [{ label: 'All Statuses', value: 'All Statuses' }];

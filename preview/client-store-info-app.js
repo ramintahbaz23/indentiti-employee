@@ -74,7 +74,8 @@ function filterStores() {
                 (store.city && store.city.toLowerCase().includes(query)) ||
                 (store.state && store.state.toLowerCase().includes(query)) ||
                 (store.parentCompany && store.parentCompany.toLowerCase().includes(query)) ||
-                (store.account && store.account.toLowerCase().includes(query))
+                (store.account && store.account.toLowerCase().includes(query)) ||
+                (store.storeStatus && store.storeStatus.toLowerCase().includes(query))
             );
         });
     }
@@ -209,7 +210,7 @@ function renderTable() {
     if (state.filteredStores.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8" class="empty-state">
+                <td colspan="9" class="empty-state">
                     <div class="empty-state-title">No stores found</div>
                     <div class="empty-state-description">Try adjusting your search criteria</div>
                 </td>
@@ -220,7 +221,10 @@ function renderTable() {
     }
 
     const pageStores = getPaginatedStores();
-    tbody.innerHTML = pageStores.map(store => `
+    tbody.innerHTML = pageStores.map(store => {
+        const status = store.storeStatus || 'Open';
+        const statusClass = status === 'Open' ? 'store-status-open' : 'store-status-closed';
+        return `
         <tr class="store-row" data-store-id="${store.id || store.storeNumber}" style="cursor: pointer;">
             <td>${store.accountName || '-'}</td>
             <td>${store.storeNumber || '-'}</td>
@@ -228,10 +232,12 @@ function renderTable() {
             <td>${store.shippingStreet || '-'}</td>
             <td>${store.city || '-'}</td>
             <td>${store.state || '-'}</td>
+            <td><span class="store-status ${statusClass}">${status}</span></td>
             <td>${store.parentCompany || '-'}</td>
             <td>${store.account || '-'}</td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 
     // Add click handlers to store rows
     document.querySelectorAll('.store-row').forEach(row => {

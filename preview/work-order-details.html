@@ -916,37 +916,60 @@
             border-bottom: none;
         }
 
+        /* SLDS-style highlight banner: card look, clear label/value hierarchy */
         .wo-highlight-banner-inner {
             display: flex;
             flex-wrap: wrap;
             align-items: stretch;
             gap: 0;
-            padding: 1rem 1.5rem;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .wo-highlight-banner-fields {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wo-highlight-banner-inner .wo-key-info {
+            padding: 1.25rem 1.5rem 1rem;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .wo-highlight-banner-inner .wo-details-grid {
+            padding: 1rem 1.5rem 1.25rem;
         }
 
         .wo-key-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem 1.5rem;
-            flex: 1;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1.25rem 2rem;
             min-width: 0;
         }
 
         .wo-info-group {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.375rem;
+            min-width: 0;
+        }
+
+        .wo-info-group-issue {
+            grid-column: span 2;
         }
 
         .wo-info-label {
             font-size: 0.6875rem;
             color: #706e6b;
-            font-weight: 600;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
+            letter-spacing: 0.025em;
+            line-height: 1.25;
         }
 
         .wo-info-label svg {
@@ -956,34 +979,34 @@
         }
 
         .wo-info-value {
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             color: #181818;
-            font-weight: 600;
+            font-weight: 400;
             line-height: 1.4;
         }
 
         .wo-info-value-large {
-            font-size: 1.0625rem;
-            font-weight: 700;
+            font-size: 0.9375rem;
+            font-weight: 600;
         }
 
         .wo-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 0.75rem 1.25rem;
-            flex: 1;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem 2rem;
             min-width: 0;
         }
 
         .wo-details-content .wo-details-grid {
-            padding: 0;
+            padding: 1rem 1.5rem 1.25rem;
             margin: 0;
+            border-bottom: none;
         }
 
         .store-detail-item {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.375rem;
             padding: 0;
             background: transparent;
             border-radius: 0;
@@ -998,15 +1021,17 @@
         .store-detail-label {
             font-size: 0.6875rem;
             color: #706e6b;
-            font-weight: 600;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.025em;
+            line-height: 1.25;
         }
 
         .store-detail-value {
             font-size: 0.875rem;
             color: #181818;
-            font-weight: 600;
+            font-weight: 400;
+            line-height: 1.4;
         }
 
         .store-detail-value.empty {
@@ -1016,24 +1041,24 @@
         }
 
         .wo-details-content .weather-time-card {
-            margin-top: 0;
-            margin-left: 1.5rem;
-            padding: 0 1.5rem;
+            margin: 0;
+            padding: 1.25rem 1.5rem;
             border: none;
             border-left: 1px solid #dddbda;
             border-radius: 0;
             background: transparent;
             flex-shrink: 0;
+            min-width: 240px;
         }
 
         .weather-time-card {
             display: flex;
             align-items: center;
             gap: 2rem;
-            padding: 1.75rem 1.25rem;
-            border-radius: 0.25rem;
-            border: 1px solid #dddbda;
-            margin-top: 2rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0;
+            border: none;
+            margin: 0;
         }
 
         .weather-icon {
@@ -1045,21 +1070,18 @@
         .weather-time-info {
             flex: 1;
             min-width: 0;
-        }
-        
-        .weather-time-info:last-child {
             display: flex;
-            align-items: center;
-            gap: 0.75rem;
+            flex-direction: column;
+            gap: 0.375rem;
         }
 
         .weather-time-label {
             font-size: 0.6875rem;
             color: #706e6b;
-            font-weight: 600;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
+            letter-spacing: 0.025em;
+            line-height: 1.25;
         }
 
         .weather-time-value {
@@ -1075,20 +1097,22 @@
         @media (max-width: 768px) {
             .wo-details-content .wo-highlight-banner-inner {
                 flex-direction: column;
-                padding: 1rem;
             }
 
             .wo-details-content .weather-time-card {
-                margin-left: 0;
-                padding: 1rem 0;
+                margin: 0;
+                padding: 1rem 1.5rem;
                 border-left: none;
                 border-top: 1px solid #dddbda;
-                padding-top: 1rem;
             }
 
             .wo-key-info,
             .wo-details-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .wo-info-group-issue {
+                grid-column: span 1;
             }
             
             .wo-details-header {
@@ -1128,10 +1152,10 @@
             display: inline-block;
         }
 
-        .priority-badge.critical { background: #ffebee; color: #c23934; }
-        .priority-badge.high { background: #fff4e5; color: #E84E1B; }
-        .priority-badge.medium { background: #fff4e5; color: #FF9800; }
-        .priority-badge.low { background: #f3f2f2; color: #706e6b; }
+        .priority-badge.critical { background: transparent; color: #c23934; }
+        .priority-badge.high { background: transparent; color: #E84E1B; }
+        .priority-badge.medium { background: transparent; color: #FF9800; }
+        .priority-badge.low { background: transparent; color: #706e6b; }
 
         /* Cards Grid */
         .cards-grid {
@@ -2259,70 +2283,77 @@
                 </div>
                 <div class="wo-details-content">
                     <div class="wo-highlight-banner-inner">
-                    <!-- Key Information Row -->
-                    <div class="wo-key-info">
-                        <div class="wo-info-group">
-                            <div class="wo-info-label">
-                                Status
+                        <div class="wo-highlight-banner-fields">
+                            <div class="wo-key-info">
+                                <div class="wo-info-group">
+                                    <span class="wo-info-label">Status</span>
+                                    <span class="wo-info-value wo-info-value-large" id="statusValueDisplay">-</span>
+                                </div>
+                                <div class="wo-info-group">
+                                    <span class="wo-info-label">Priority</span>
+                                    <span class="wo-info-value wo-info-value-large" id="priorityValueDisplay">-</span>
+                                </div>
+                                <div class="wo-info-group wo-info-group-issue">
+                                    <span class="wo-info-label">Issue</span>
+                                    <span class="wo-info-value wo-info-value-large" id="issueValueDisplay">-</span>
+                                </div>
                             </div>
-                            <div class="wo-info-value wo-info-value-large" id="statusValueDisplay">-</div>
-                        </div>
-                        <div class="wo-info-group">
-                            <div class="wo-info-label">
-                                Priority
-                            </div>
-                            <div class="wo-info-value wo-info-value-large" id="priorityValueDisplay">-</div>
-                        </div>
-                        <div class="wo-info-group" style="grid-column: span 2;">
-                            <div class="wo-info-label">
-                                Issue
-                            </div>
-                            <div class="wo-info-value wo-info-value-large" id="issueValueDisplay">-</div>
-                        </div>
-                    </div>
-
-                    <!-- Details Grid -->
-                    <div class="wo-details-grid">
-                        <div class="store-detail-item">
-                            <span class="store-detail-label">Created On</span>
-                            <span class="store-detail-value" id="createdOn">-</span>
-                        </div>
-                        <div class="store-detail-item">
-                            <span class="store-detail-label">Division</span>
-                            <span class="store-detail-value" id="division">Facility Maintenance</span>
-                        </div>
-                        <div class="store-detail-item">
-                            <span class="store-detail-label">Classification</span>
-                            <span class="store-detail-value" id="classificationValue">General Maintenance</span>
-                        </div>
-                        <div class="store-detail-item">
-                            <span class="store-detail-label">NTE Amount</span>
-                            <span class="store-detail-value" id="nteValue" name="nteAmount">$550.00</span>
-                        </div>
-                        <div class="store-detail-item">
-                            <span class="store-detail-label">Recall</span>
-                            <span class="store-detail-value" id="recall">NO</span>
-                        </div>
-                        <div class="store-detail-item" style="grid-column: 1 / -1; display: none;" id="rejectionReasonGroup">
-                            <span class="store-detail-label">Rejection Reason</span>
-                            <span class="store-detail-value" id="rejectionReason">-</span>
-                        </div>
-                    </div>
-
-                    <!-- Weather & Local Time -->
-                    <div class="weather-time-card">
-                        <div class="weather-time-info">
-                            <div class="weather-time-label">Weather</div>
-                            <div class="weather-time-value" style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="weather-icon" id="weatherIcon">☀️</span>
-                                <span id="storeWeather">Sunny, 72°F</span>
+                            <div class="wo-details-grid">
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Created On</span>
+                                    <span class="store-detail-value" id="createdOn">-</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Original ETA</span>
+                                    <span class="store-detail-value" id="originalEta">-</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Scheduled</span>
+                                    <span class="store-detail-value" id="scheduledDateTime">-</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Division</span>
+                                    <span class="store-detail-value" id="division">Facility Maintenance</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Classification</span>
+                                    <span class="store-detail-value" id="classificationValue">General Maintenance</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">NTE Amount</span>
+                                    <span class="store-detail-value" id="nteValue" name="nteAmount">$550.00</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Quote Date</span>
+                                    <span class="store-detail-value" id="quoteDate">-</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Complete Date</span>
+                                    <span class="store-detail-value" id="completeDate">-</span>
+                                </div>
+                                <div class="store-detail-item">
+                                    <span class="store-detail-label">Recall</span>
+                                    <span class="store-detail-value" id="recall">NO</span>
+                                </div>
+                                <div class="store-detail-item" style="grid-column: 1 / -1; display: none;" id="rejectionReasonGroup">
+                                    <span class="store-detail-label">Rejection Reason</span>
+                                    <span class="store-detail-value" id="rejectionReason">-</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="weather-time-info">
-                            <div class="weather-time-label">Store Local Time</div>
-                            <div class="weather-time-value" id="storeLocalTime">1:33 AM EST</div>
+                        <div class="weather-time-card">
+                            <div class="weather-time-info">
+                                <span class="weather-time-label">Weather</span>
+                                <span class="weather-time-value" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="weather-icon" id="weatherIcon">☀️</span>
+                                    <span id="storeWeather">Sunny, 72°F</span>
+                                </span>
+                            </div>
+                            <div class="weather-time-info">
+                                <span class="weather-time-label">Store Local Time</span>
+                                <span class="weather-time-value" id="storeLocalTime">1:33 AM EST</span>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -2398,6 +2429,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         Invoices
                     </button>
+                    <button class="tab-button" id="tripsTab" data-tab="trips" onclick="window.switchTab('trips'); return false;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        Trips
+                    </button>
                 </div>
 
                 <!-- Messages Tab Content -->
@@ -2470,6 +2505,51 @@
                         </div>
                         <div class="related-list-table" id="invoicesTable">
                             <div class="empty-state">No invoices found.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trips Tab Content -->
+                <div class="tab-content" id="tripsContent">
+                    <div class="related-list-section">
+                        <div class="related-list-header">
+                            <h3 class="related-list-title">Trips</h3>
+                        </div>
+                        <div class="related-list-table" id="tripsTable">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Trip Name</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Destination</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tripsTableBody">
+                                    <tr>
+                                        <td>Site Visit - Store #0407</td>
+                                        <td>02/18/2026</td>
+                                        <td><span class="status-badge-small completed">Completed</span></td>
+                                        <td>Cerritos, CA</td>
+                                        <td>Initial assessment</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Follow-up Inspection</td>
+                                        <td>02/22/2026</td>
+                                        <td><span class="status-badge-small scheduled">Scheduled</span></td>
+                                        <td>Cerritos, CA</td>
+                                        <td>Post-repair verification</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Equipment Delivery</td>
+                                        <td>02/25/2026</td>
+                                        <td><span class="status-badge-small pending">Pending</span></td>
+                                        <td>Winston-Salem, NC</td>
+                                        <td>Materials drop-off</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

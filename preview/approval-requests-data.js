@@ -24,7 +24,7 @@ const approvalRequestsData = [
         grandTotal: 442.80,
         status: 'Approved',
         approvedBy: 'Mark Johnson',
-        comment: 'Approved by manager',
+        comment: 'Approved',
         hasPdf: true
     },
     {

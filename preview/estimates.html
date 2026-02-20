@@ -1192,8 +1192,7 @@
         }
 
         .table-wrapper {
-            overflow-x: auto;
-            overflow-y: visible;
+            overflow: visible;
         }
 
         table {
@@ -1323,7 +1322,7 @@
             border-radius: 0.25rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-width: 220px;
-            z-index: 1000;
+            z-index: 9999;
             margin-top: 0.25rem;
         }
 
@@ -1357,9 +1356,11 @@
         }
         .actions-dropdown-item-icon.icon-approve { color: #04844b; }
         .actions-dropdown-item-icon.icon-reject { color: #c23934; }
+        .actions-dropdown-item-icon.icon-revision { color: #fe9339; }
         .actions-dropdown-item-icon.icon-bill { color: #706e6b; }
         .actions-dropdown-item:hover .actions-dropdown-item-icon.icon-approve { color: #04844b; }
         .actions-dropdown-item:hover .actions-dropdown-item-icon.icon-reject { color: #c23934; }
+        .actions-dropdown-item:hover .actions-dropdown-item-icon.icon-revision { color: #fe9339; }
 
         .actions-dropdown-item:last-child {
             border-bottom: none;
@@ -1841,7 +1842,7 @@
             color: #706e6b;
         }
 
-        /* Rejection Modal */
+        /* Rejection / Revision Modals – hidden by default */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1857,6 +1858,22 @@
         
         .modal-overlay.show {
             display: flex;
+        }
+        
+        /* Force overlay to cover viewport when open (avoids fixed positioning inside transformed parents) */
+        .modal-overlay.modal-overlay-open {
+            display: flex !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 99999 !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         
         .modal-container {
@@ -2220,6 +2237,78 @@
         </main>
     </div>
 
+    <!-- Rejection Reason Modal -->
+    <div class="modal-overlay" id="rejectionModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Reject Estimate</h2>
+                <button class="modal-close" id="closeRejectionModal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">
+                    Please provide a reason for rejecting this estimate. This information will be recorded and may be used for review purposes.
+                </p>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="rejectionReason">
+                        Reason for Rejection
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="rejectionReason" 
+                        class="modal-textarea" 
+                        placeholder="Enter the reason for rejecting this estimate..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" id="cancelRejectionBtn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirmRejectionBtn">Reject Estimate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revision Needed Modal -->
+    <div class="modal-overlay" id="revisionModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Revision Needed</h2>
+                <button class="modal-close" id="closeRevisionModal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">
+                    What is needed from a revision standpoint? This information will be shared with the estimator.
+                </p>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="revisionDetails">
+                        Revision details
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="revisionDetails" 
+                        class="modal-textarea" 
+                        placeholder="Describe what revisions are needed..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" id="cancelRevisionBtn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirmRevisionBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <script src="estimates-data.js"></script>
     <script src="estimates-app.js"></script>
     <script>
@@ -2297,42 +2386,6 @@
             }
         });
     </script>
-    
-    <!-- Rejection Reason Modal -->
-    <div class="modal-overlay" id="rejectionModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Reject Estimate</h2>
-                <button class="modal-close" id="closeRejectionModal" aria-label="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-message">
-                    Please provide a reason for rejecting this estimate. This information will be recorded and may be used for review purposes.
-                </p>
-                <div class="modal-form-group">
-                    <label class="modal-label" for="rejectionReason">
-                        Reason for Rejection
-                        <span class="required">*</span>
-                    </label>
-                    <textarea 
-                        id="rejectionReason" 
-                        class="modal-textarea" 
-                        placeholder="Enter the reason for rejecting this estimate..."
-                        required
-                    ></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="cancelRejectionBtn">Cancel</button>
-                <button class="modal-btn modal-btn-primary" id="confirmRejectionBtn">Reject Estimate</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Bill for Work Incurred Modal -->
     <div class="modal-overlay" id="billForWorkIncurredModal">

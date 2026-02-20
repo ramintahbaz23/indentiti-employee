@@ -21,7 +21,8 @@ const storesData = [
         managerEmail: 'sarah.johnson@warhammer.com',
         mall: 'Silas Creek Crossing Mall',
         projectManager: 'Michael Chen',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Open'
     },
     {
         id: 'store-0407',
@@ -44,7 +45,8 @@ const storesData = [
         managerEmail: 'david.martinez@warhammer.com',
         mall: 'Rancho Vista Shopping Center',
         projectManager: 'Jennifer Lee',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Closed'
     },
     {
         id: 'store-0982',
@@ -67,7 +69,8 @@ const storesData = [
         managerEmail: 'emily.rodriguez@purple.com',
         mall: 'Irvine Spectrum Center',
         projectManager: 'Robert Kim',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Open'
     },
     {
         id: 'store-2105',
@@ -90,7 +93,8 @@ const storesData = [
         managerEmail: 'james.wilson@purple.com',
         mall: 'NW 23rd Shopping District',
         projectManager: 'Lisa Anderson',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Closed'
     },
     {
         id: 'store-0521',
@@ -113,7 +117,8 @@ const storesData = [
         managerEmail: 'patricia.brown@warhammer.com',
         mall: 'Downtown Plaza',
         projectManager: 'Thomas White',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Open'
     },
     {
         id: 'store-1876',
@@ -136,7 +141,8 @@ const storesData = [
         managerEmail: 'christopher.davis@purple.com',
         mall: 'Pike Street Market',
         projectManager: 'Amanda Taylor',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Closed'
     },
     {
         id: 'store-0633',
@@ -159,7 +165,8 @@ const storesData = [
         managerEmail: 'jessica.garcia@warhammer.com',
         mall: 'Westfield Mall',
         projectManager: 'Daniel Moore',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Open'
     },
     {
         id: 'store-2241',
@@ -205,6 +212,7 @@ const storesData = [
         managerEmail: 'kyle.holl@warhammer.com',
         mall: '',
         projectManager: '',
-        deactivationReason: ''
+        deactivationReason: '',
+        storeStatus: 'Open'
     }
 ];

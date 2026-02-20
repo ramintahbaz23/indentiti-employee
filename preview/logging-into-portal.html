@@ -281,6 +281,23 @@ body {
   border: none;
 }
 
+.video-container.video-placeholder {
+  height: auto;
+  min-height: 200px;
+  padding-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f4;
+  border: 1px dashed #ccc;
+}
+
+.video-placeholder-text {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
 /* Step List */
 .step-list {
   list-style: none;
@@ -502,8 +519,8 @@ body {
       <h2 class="section-title">Video Walkthrough</h2>
       <div class="section-content">
         <p>Watch this video for a step-by-step demonstration of logging into the portal:</p>
-        <div class="video-container">
-          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="video-container video-placeholder">
+          <p class="video-placeholder-text">A video will live here.</p>
         </div>
       </div>
     </div>

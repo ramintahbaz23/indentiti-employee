@@ -154,7 +154,7 @@ function hasInvoiceWithStatus(invoices, status) {
 /**
  * Resolve next step CTA based on work order status and related estimates/invoices
  */
-function resolveNextStep({ workOrderStatus, actionNeededReason, estimates, invoices, contractorName, workOrderId }) {
+function resolveNextStep({ workOrderStatus, actionNeededReason, estimates, invoices, workOrderId }) {
     const normalizedStatus = (workOrderStatus || 'new').toLowerCase().trim();
     
     // Define estimates
@@ -170,14 +170,8 @@ function resolveNextStep({ workOrderStatus, actionNeededReason, estimates, invoi
     const sentInvoice = findInvoiceByStatus(invoices, 'sent');
     const paidInvoiceExists = hasInvoiceWithStatus(invoices, 'paid');
     
-    // Check if work order is unassigned (no contractor)
-    const isUnassigned = !contractorName || contractorName.trim() === '' || contractorName === null;
-    
-    // Check if needs dispatch decision (unassigned + status new/action_needed-for-dispatch)
-    const needsDispatchDecision = isUnassigned && (
-        normalizedStatus === 'new' || 
-        (normalizedStatus === 'action_needed' && actionNeededReason === 'for-dispatch')
-    );
+    // Check if needs dispatch decision (status new or action_needed-for-dispatch)
+    const needsDispatchDecision = normalizedStatus === 'new' || (normalizedStatus === 'action_needed' && actionNeededReason === 'for-dispatch');
     
     let primaryCta = null;
     let secondaryActions = [];

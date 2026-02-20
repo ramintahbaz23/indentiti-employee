@@ -103,7 +103,8 @@ function getStatusSLDSClass(status) {
     const statusMap = {
         'Pending': 'slds-badge_lightest',
         'Approved': 'slds-badge_success',
-        'Rejected': 'slds-badge_error'
+        'Rejected': 'slds-badge_error',
+        'Revision Needed': 'slds-badge_warning'
     };
     return statusMap[status] || 'slds-badge_lightest';
 }
@@ -113,6 +114,7 @@ function getStatusColor(status) {
         'Pending': '#706e6b',
         'Approved': '#04844b',
         'Rejected': '#c23934',
+        'Revision Needed': '#fe9339',
         'Draft': '#706e6b'
     };
     return colorMap[status] || '#706e6b';
@@ -333,7 +335,8 @@ function renderTable() {
                 <div class="actions-dropdown-menu" id="estimateActionsDropdown-${est.id}" style="display: none;">
                     <a href="#" onclick="approveEstimate('${est.id}'); return false;" class="actions-dropdown-item"><span class="actions-dropdown-item-icon icon-approve" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Approve</a>
                     <a href="#" class="actions-dropdown-item bill-for-work-incurred-trigger" data-action="bill-for-work-incurred" data-estimate-id="${est.id}"><span class="actions-dropdown-item-icon icon-bill" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg></span>Bill for Work Incurred</a>
-                    <a href="#" onclick="rejectEstimate('${est.id}'); return false;" class="actions-dropdown-item"><span class="actions-dropdown-item-icon icon-reject" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Reject</a>
+                    <button type="button" class="actions-dropdown-item actions-dropdown-item-btn" onclick="event.stopPropagation(); window.rejectEstimate('${est.id}');"><span class="actions-dropdown-item-icon icon-reject" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Reject</button>
+                    <button type="button" class="actions-dropdown-item actions-dropdown-item-btn" onclick="event.stopPropagation(); window.revisionNeededEstimate('${est.id}');"><span class="actions-dropdown-item-icon icon-revision" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>Revision Needed</button>
                     <a href="work-order-details.html?id=${encodeURIComponent(est.workOrderNumber)}" class="actions-dropdown-item"><span class="actions-dropdown-item-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>View</a>
                     <a href="#" onclick="downloadEstimate('${est.id}'); return false;" class="actions-dropdown-item"><span class="actions-dropdown-item-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Download</a>
                 </div>
@@ -572,69 +575,117 @@ function approveEstimate(estimateId) {
     }
 }
 
-// Store current estimate ID being rejected
+// Simple modal created entirely in JS and appended to body (no dependency on HTML)
+function showSimpleModal(opts) {
+    var overlay = document.createElement('div');
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;padding:1.5rem;border-radius:8px;max-width:420px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,0.25);';
+    box.innerHTML = '<h2 style="margin:0 0 0.75rem;font-size:1.25rem;font-weight:600;">' + (opts.title || '') + '</h2>' +
+        (opts.message ? '<p style="margin:0 0 1rem;font-size:0.875rem;color:#555;">' + opts.message + '</p>' : '') +
+        '<textarea class="simple-modal-textarea" style="width:100%;min-height:90px;padding:0.75rem;border:1px solid #ccc;border-radius:4px;font-size:0.875rem;margin-bottom:1rem;box-sizing:border-box;resize:vertical;font-family:inherit;" placeholder="' + (opts.placeholder || '') + '"></textarea>' +
+        '<div style="display:flex;justify-content:flex-end;gap:0.5rem;">' +
+        '<button type="button" class="simple-modal-cancel" style="padding:0.5rem 1rem;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-size:0.875rem;">Cancel</button>' +
+        '<button type="button" class="simple-modal-confirm" style="padding:0.5rem 1rem;border:none;border-radius:4px;background:#003366;color:#fff;cursor:pointer;font-size:0.875rem;">' + (opts.confirmLabel || 'Confirm') + '</button>' +
+        '</div>';
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    function closeModal() {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        document.body.style.overflow = '';
+    }
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeModal();
+    });
+    box.addEventListener('click', function(e) { e.stopPropagation(); });
+    box.querySelector('.simple-modal-cancel').addEventListener('click', closeModal);
+    box.querySelector('.simple-modal-confirm').addEventListener('click', function() {
+        var ta = box.querySelector('.simple-modal-textarea');
+        var val = ta ? ta.value.trim() : '';
+        if (opts.required !== false && !val) {
+            alert(opts.requiredMessage || 'Please enter a value.');
+            if (ta) ta.focus();
+            return;
+        }
+        if (opts.onConfirm) opts.onConfirm(val);
+        closeModal();
+    });
+    box.querySelector('.simple-modal-textarea').focus();
+}
+
 let currentRejectionEstimateId = null;
 
 function rejectEstimate(estimateId) {
     currentRejectionEstimateId = estimateId;
-    const modal = document.getElementById('rejectionModal');
-    const textarea = document.getElementById('rejectionReason');
-    const confirmBtn = document.getElementById('confirmRejectionBtn');
-    if (modal && textarea) {
-        textarea.value = '';
-        modal.classList.add('show');
-        textarea.focus();
-        // Disable confirm button initially
-        if (confirmBtn) {
-            confirmBtn.disabled = true;
+    document.querySelectorAll('.actions-dropdown-menu').forEach(function(menu) {
+        menu.style.display = 'none';
+    });
+    showSimpleModal({
+        title: 'Reject Estimate',
+        message: 'Please provide a reason for rejecting this estimate.',
+        placeholder: 'Enter reason for rejection...',
+        confirmLabel: 'Reject Estimate',
+        required: true,
+        requiredMessage: 'Please provide a reason for rejection.',
+        onConfirm: function(reason) {
+            var est = state.estimates.find(function(e) { return e.id === currentRejectionEstimateId; });
+            if (est) {
+                est.status = 'Rejected';
+                est.rejectedBy = 'Mark Johnson';
+                est.rejectedDate = new Date();
+                est.rejectionReason = reason;
+                est.comment = 'Rejected: ' + reason;
+                filterEstimates();
+            }
+            currentRejectionEstimateId = null;
         }
-    }
+    });
 }
+window.rejectEstimate = rejectEstimate;
 
-function closeRejectionModal() {
-    const modal = document.getElementById('rejectionModal');
-    const textarea = document.getElementById('rejectionReason');
-    const confirmBtn = document.getElementById('confirmRejectionBtn');
-    if (modal) {
-        modal.classList.remove('show');
-    }
-    if (textarea) {
-        textarea.value = '';
-    }
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-    }
-    currentRejectionEstimateId = null;
-}
+function closeRejectionModal() { /* no-op: modal is removed from DOM */ }
+window.closeRejectionModal = closeRejectionModal;
 
-function confirmRejection() {
-    const textarea = document.getElementById('rejectionReason');
-    const reason = textarea ? textarea.value.trim() : '';
-    
-    if (!reason) {
-        alert('Please provide a reason for rejection.');
-        if (textarea) {
-            textarea.focus();
+function confirmRejection() { /* no-op: handled inside showSimpleModal */ }
+window.confirmRejection = confirmRejection;
+
+let currentRevisionEstimateId = null;
+
+function revisionNeededEstimate(estimateId) {
+    currentRevisionEstimateId = estimateId;
+    document.querySelectorAll('.actions-dropdown-menu').forEach(function(menu) {
+        menu.style.display = 'none';
+    });
+    showSimpleModal({
+        title: 'Revision Needed',
+        message: 'Describe what revisions are needed. This will be shared with the estimator.',
+        placeholder: 'Describe what revisions are needed...',
+        confirmLabel: 'Submit',
+        required: true,
+        requiredMessage: 'Please describe what revisions are needed.',
+        onConfirm: function(details) {
+            var est = state.estimates.find(function(e) { return e.id === currentRevisionEstimateId; });
+            if (est) {
+                est.status = 'Revision Needed';
+                est.comment = details;
+                filterEstimates();
+            }
+            currentRevisionEstimateId = null;
         }
-        return;
-    }
-    
-    if (!currentRejectionEstimateId) {
-        return;
-    }
-    
-    const estimate = state.estimates.find(est => est.id === currentRejectionEstimateId);
-    if (estimate) {
-        estimate.status = 'Rejected';
-        estimate.rejectedBy = 'Mark Johnson';
-        estimate.rejectedDate = new Date();
-        estimate.rejectionReason = reason;
-        estimate.comment = `Rejected: ${reason}`;
-        filterEstimates();
-        closeRejectionModal();
-    }
+    });
 }
+window.revisionNeededEstimate = revisionNeededEstimate;
 
+function closeRevisionModal() { /* no-op */ }
+window.closeRevisionModal = closeRevisionModal;
+
+function confirmRevision() { /* no-op */ }
+window.confirmRevision = confirmRevision;
 
 function exportToCsv() {
     const headers = [
@@ -896,8 +947,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Close modal on Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && rejectionModal && rejectionModal.classList.contains('show')) {
+        if (e.key !== 'Escape') return;
+        if (rejectionModal && rejectionModal.classList.contains('show')) {
             closeRejectionModal();
+        } else if (revisionModalEl && revisionModalEl.classList.contains('show')) {
+            closeRevisionModal();
         }
     });
     
@@ -906,8 +960,28 @@ document.addEventListener('DOMContentLoaded', () => {
         rejectionReasonTextarea.addEventListener('input', (e) => {
             confirmRejectionBtn.disabled = !e.target.value.trim();
         });
-        // Initially disable the button
         confirmRejectionBtn.disabled = true;
+    }
+
+    // Revision Needed Modal Event Listeners
+    const revisionModalEl = document.getElementById('revisionModal');
+    const closeRevisionModalBtn = document.getElementById('closeRevisionModal');
+    const cancelRevisionBtn = document.getElementById('cancelRevisionBtn');
+    const confirmRevisionBtn = document.getElementById('confirmRevisionBtn');
+    const revisionDetailsTextarea = document.getElementById('revisionDetails');
+    if (closeRevisionModalBtn) closeRevisionModalBtn.addEventListener('click', closeRevisionModal);
+    if (cancelRevisionBtn) cancelRevisionBtn.addEventListener('click', closeRevisionModal);
+    if (confirmRevisionBtn) confirmRevisionBtn.addEventListener('click', confirmRevision);
+    if (revisionModalEl) {
+        revisionModalEl.addEventListener('click', (e) => {
+            if (e.target === revisionModalEl) closeRevisionModal();
+        });
+    }
+    if (revisionDetailsTextarea && confirmRevisionBtn) {
+        revisionDetailsTextarea.addEventListener('input', (e) => {
+            confirmRevisionBtn.disabled = !e.target.value.trim();
+        });
+        confirmRevisionBtn.disabled = true;
     }
 
     // Desktop dropdown hover for Accounting menu

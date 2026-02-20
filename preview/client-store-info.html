@@ -836,6 +836,18 @@
             font-size: 0.875rem;
         }
 
+        .store-status {
+            display: inline-block;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+        .store-status-open {
+            color: #2e7d32;
+        }
+        .store-status-closed {
+            color: #c62828;
+        }
+
         /* Pagination - inside table container */
         .pagination {
             display: flex;
@@ -1257,6 +1269,10 @@
                                 </th>
                                 <th class="sortable" data-sort="state">
                                     State
+                                    <span class="sort-icon">⇅</span>
+                                </th>
+                                <th class="sortable" data-sort="storeStatus">
+                                    Store Status
                                     <span class="sort-icon">⇅</span>
                                 </th>
                                 <th class="sortable" data-sort="parentCompany">

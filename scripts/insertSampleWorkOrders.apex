@@ -28,7 +28,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Austin',
     State__c = 'TX',
     NTE_Amount__c = 1200.00,
-    Contractor_Name__c = 'CoolTech HVAC',
     Due_Date__c = Date.today().addDays(-2),
     CreatedDate = DateTime.now().addDays(-4)
 ));
@@ -71,7 +70,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Irvine',
     State__c = 'CA',
     NTE_Amount__c = 450.00,
-    Contractor_Name__c = 'CleanPro Services',
     Due_Date__c = Date.today().addDays(2),
     CreatedDate = DateTime.now().addDays(-3)
 ));
@@ -86,7 +84,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Phoenix',
     State__c = 'AZ',
     NTE_Amount__c = 950.00,
-    Contractor_Name__c = 'FireSafe Systems',
     Due_Date__c = Date.today().addDays(1),
     CreatedDate = DateTime.now().addDays(-2)
 ));
@@ -101,7 +98,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Columbus',
     State__c = 'OH',
     NTE_Amount__c = 320.00,
-    Contractor_Name__c = 'FireSafe Systems',
     Scheduled_Date__c = DateTime.now().addDays(5).addHours(9),
     Due_Date__c = Date.today().addDays(5),
     CreatedDate = DateTime.now().addDays(-10)
@@ -117,7 +113,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Austin',
     State__c = 'TX',
     NTE_Amount__c = 650.00,
-    Contractor_Name__c = 'CoolTech HVAC',
     Scheduled_Date__c = DateTime.now().addDays(3).addHours(14),
     Due_Date__c = Date.today().addDays(3),
     CreatedDate = DateTime.now().addDays(-7)
@@ -134,7 +129,6 @@ workOrders.add(new Work_Order__c(
     State__c = 'UT',
     NTE_Amount__c = 420.00,
     Invoice_Amount__c = 420.00,
-    Contractor_Name__c = 'SecureLock Pro',
     Completed_Date__c = Date.today().addDays(-2),
     Due_Date__c = Date.today().addDays(-3),
     CreatedDate = DateTime.now().addDays(-10)
@@ -151,7 +145,6 @@ workOrders.add(new Work_Order__c(
     State__c = 'CO',
     NTE_Amount__c = 380.00,
     Invoice_Amount__c = 375.00,
-    Contractor_Name__c = 'PlumbRight Services',
     Completed_Date__c = Date.today().addDays(-1),
     Due_Date__c = Date.today().addDays(-2),
     CreatedDate = DateTime.now().addDays(-8)
@@ -168,7 +161,6 @@ workOrders.add(new Work_Order__c(
     State__c = 'WA',
     NTE_Amount__c = 1250.00,
     Invoice_Amount__c = 1245.00,
-    Contractor_Name__c = 'Bright Electric Co',
     Completed_Date__c = Date.today(),
     Due_Date__c = Date.today().addDays(-1),
     CreatedDate = DateTime.now().addDays(-5)
@@ -184,7 +176,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Bakersfield',
     State__c = 'CA',
     NTE_Amount__c = 2450.00,
-    Contractor_Name__c = 'Bright Electric Co',
     Due_Date__c = Date.today().addDays(14),
     CreatedDate = DateTime.now().addDays(-5)
 ));
@@ -199,7 +190,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Miami',
     State__c = 'FL',
     NTE_Amount__c = 15000.00,
-    Contractor_Name__c = 'CoolTech HVAC',
     Due_Date__c = Date.today().addDays(30),
     CreatedDate = DateTime.now().addDays(-7)
 ));
@@ -215,7 +205,6 @@ workOrders.add(new Work_Order__c(
     State__c = 'OR',
     NTE_Amount__c = 500.00,
     Invoice_Amount__c = 495.00,
-    Contractor_Name__c = 'MaintainPro Services',
     Completed_Date__c = Date.today().addDays(-3),
     Due_Date__c = Date.today().addDays(-4),
     CreatedDate = DateTime.now().addDays(-12)
@@ -231,7 +220,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Las Vegas',
     State__c = 'NV',
     NTE_Amount__c = 800.00,
-    Contractor_Name__c = 'PlumbRight Services',
     Due_Date__c = Date.today(),
     CreatedDate = DateTime.now().addHours(-2)
 ));
@@ -246,7 +234,6 @@ workOrders.add(new Work_Order__c(
     City__c = 'Atlanta',
     State__c = 'GA',
     NTE_Amount__c = 1100.00,
-    Contractor_Name__c = 'SecureLock Pro',
     Due_Date__c = Date.today().addDays(5),
     CreatedDate = DateTime.now().addDays(-1)
 ));

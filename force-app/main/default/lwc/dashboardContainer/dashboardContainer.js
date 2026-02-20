@@ -24,7 +24,6 @@ export default class DashboardContainer extends LightningElement {
         trade: 'All Trades',
         dateRange: 'Last 30 Days',
         location: 'All Locations',
-        contractor: 'All Contractors',
         quickFilter: ''
     };
 
@@ -60,7 +59,6 @@ export default class DashboardContainer extends LightningElement {
             trade: this.currentFilters.trade,
             dateRange: this.currentFilters.dateRange,
             location: this.currentFilters.location,
-            contractor: this.currentFilters.contractor,
             quickFilter: this.currentFilters.quickFilter
         };
 
@@ -85,7 +83,6 @@ export default class DashboardContainer extends LightningElement {
             trade: 'All Trades',
             dateRange: 'Last 30 Days',
             location: 'All Locations',
-            contractor: 'All Contractors',
             quickFilter: ''
         };
 
@@ -112,7 +109,6 @@ export default class DashboardContainer extends LightningElement {
             trade: event.detail.trade || 'All Trades',
             dateRange: event.detail.dateRange || 'Last 30 Days',
             location: event.detail.location || 'All Locations',
-            contractor: event.detail.contractor || 'All Contractors',
             quickFilter: event.detail.quickFilter || ''
         };
         this.loadWorkOrders();

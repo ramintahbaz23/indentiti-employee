@@ -7,7 +7,6 @@ export default class FilterBar extends LightningElement {
     @api selectedTrade = 'All Trades';
     @api selectedDateRange = 'Last 30 Days';
     @api selectedLocation = 'All Locations';
-    @api selectedContractor = 'All Contractors';
     @api activeQuickFilter = '';
 
     get statusOptions() {
@@ -37,13 +36,6 @@ export default class FilterBar extends LightningElement {
         return [
             { label: 'All Locations', value: 'All Locations' },
             ...(this.filterOptions.states || []).map(state => ({ label: state, value: state }))
-        ];
-    }
-
-    get contractorOptions() {
-        return [
-            { label: 'All Contractors', value: 'All Contractors' },
-            ...(this.filterOptions.contractors || []).map(contractor => ({ label: contractor, value: contractor }))
         ];
     }
 
@@ -82,11 +74,6 @@ export default class FilterBar extends LightningElement {
         this.dispatchFilterChange();
     }
 
-    handleContractorChange(event) {
-        this.selectedContractor = event.target.value;
-        this.dispatchFilterChange();
-    }
-
     handleQuickFilterClick(event) {
         const value = event.currentTarget.dataset.value;
         if (this.activeQuickFilter === value) {
@@ -105,7 +92,6 @@ export default class FilterBar extends LightningElement {
                 trade: this.selectedTrade,
                 dateRange: this.selectedDateRange,
                 location: this.selectedLocation,
-                contractor: this.selectedContractor,
                 quickFilter: this.activeQuickFilter
             }
         }));

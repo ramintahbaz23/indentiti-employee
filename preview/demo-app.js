@@ -81,8 +81,7 @@ function filterWorkOrders() {
         switch (state.activeMetric) {
             case 'needsAttention':
                 filtered = filtered.filter(wo => 
-                    wo.isOverdue || 
-                    (wo.status === 'New' && !wo.contractorName)
+                    wo.isOverdue || wo.status === 'New'
                 );
                 break;
             case 'inProgress':
@@ -127,7 +126,7 @@ function filterWorkOrders() {
                 case 'urgent':
                     filtered = filtered.filter(wo => 
                         wo.isOverdue || 
-                        (wo.status === 'New' && !wo.contractorName) || 
+                        wo.status === 'New' || 
                         wo.status === 'On-site/In Progress'
                     );
                     break;
@@ -147,8 +146,7 @@ function filterWorkOrders() {
                     filtered = filtered.filter(wo => 
                         new Date(wo.createdDate) < followUpDate &&
                         wo.status !== 'Work Complete' &&
-                        wo.status !== 'Invoice Submitted' &&
-                        !wo.contractorName
+                        wo.status !== 'Invoice Submitted'
                     );
                     break;
                 case 'dueThisWeek':
@@ -183,8 +181,7 @@ function filterWorkOrders() {
             // Show all work orders that match any of the 4 metrics
             filtered = filtered.filter(wo => 
                 // Needs Attention
-                wo.isOverdue || 
-                (wo.status === 'New' && !wo.contractorName) ||
+                wo.isOverdue || wo.status === 'New' ||
                 // In Progress
                 wo.status === 'On-site/In Progress' || 
                 wo.status === 'Dispatched' ||
@@ -243,9 +240,9 @@ function filterWorkOrders() {
             return bDaysOverdue - aDaysOverdue;
         }
         
-        // Needs Attention second (New without contractor)
-        const aNeedsAttention = a.status === 'New' && !a.contractorName;
-        const bNeedsAttention = b.status === 'New' && !b.contractorName;
+        // Needs Attention second (New)
+        const aNeedsAttention = a.status === 'New';
+        const bNeedsAttention = b.status === 'New';
         if (aNeedsAttention && !bNeedsAttention) return -1;
         if (!aNeedsAttention && bNeedsAttention) return 1;
         
@@ -315,11 +312,11 @@ function renderWorkOrders() {
                               !state.filters.quickFilter &&
                               !state.activeMetric;
         
-        // Check for Needs Attention: Past Due OR New without contractor — always show ACTION NEEDED (matches red card)
-        if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
+        // Check for Needs Attention: Past Due OR New — always show ACTION NEEDED (matches red card)
+        if (wo.isOverdue || wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-needs-attention">ACTION NEEDED</span>`;
         }
-        // If "New" filter is active OR in default view, show purple NEW for New work orders that have a contractor
+        // If "New" filter is active OR in default view, show purple NEW for New work orders
         else if ((state.activeMetric === 'new' || state.filters.quickFilter === 'new' || isDefaultView) && wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-new-badge">NEW</span>`;
         }
@@ -340,7 +337,7 @@ function renderWorkOrders() {
             badgeHtml = `<span class="status-badge status-${statusClass}">${wo.status}</span>`;
         }
 
-        const isActionNeeded = wo.isOverdue || (wo.status === 'New' && !wo.contractorName);
+        const isActionNeeded = wo.isOverdue || wo.status === 'New';
         return `
             <div class="work-order-card priority-${priorityClass}${isActionNeeded ? ' action-needed' : ''}" data-work-order-id="${wo.id}" data-wo-id="${wo.id}">
                 <div class="work-order-header">
@@ -377,11 +374,6 @@ function renderWorkOrders() {
                         ${wo.completedDate ? `
                             <span class="detail-label">Completed:</span>
                             <span class="detail-value">${formatDate(wo.completedDate)}</span>
-                        ` : ''}
-                        
-                        ${wo.contractorName ? `
-                            <span class="detail-label">Contractor:</span>
-                            <span class="detail-value">${wo.contractorName}</span>
                         ` : ''}
                         
                         ${wo.nteAmount ? `
@@ -488,10 +480,9 @@ function updateWorkOrderCount() {
     const countEl = document.getElementById('workOrderCount');
     
     // Calculate the sum of the four metrics (Needs Attention + In Progress + New + On Hold)
-    // Needs Attention - Past Due OR (New without contractor)
+    // Needs Attention - Past Due OR New
     const needsAttention = state.workOrders.filter(wo => 
-        wo.isOverdue || 
-        (wo.status === 'New' && !wo.contractorName)
+        wo.isOverdue || wo.status === 'New'
     ).length;
     
     // In Progress - On-site/In Progress OR Dispatched
@@ -523,10 +514,9 @@ function updateWorkOrderCount() {
 
 function updateMetrics() {
     // Calculate metrics from all work orders (for initial display)
-    // Needs Attention - Past Due OR (New without contractor)
+    // Needs Attention - Past Due OR New
     const needsAttention = state.workOrders.filter(wo => 
-        wo.isOverdue || 
-        (wo.status === 'New' && !wo.contractorName)
+        wo.isOverdue || wo.status === 'New'
     ).length;
     
     // In Progress - On-site/In Progress OR Dispatched
@@ -569,10 +559,10 @@ function updateMetrics() {
 function updateMetricsFromFiltered() {
     const filtered = state.filteredWorkOrders;
     
-    // Urgent - Past Due OR (New without contractor) OR In Progress
+    // Urgent - Past Due OR New OR In Progress
     const urgent = filtered.filter(wo => 
         wo.isOverdue || 
-        (wo.status === 'New' && !wo.contractorName) || 
+        wo.status === 'New' || 
         wo.status === 'On-site/In Progress'
     ).length;
     
@@ -586,14 +576,13 @@ function updateMetricsFromFiltered() {
     // New - Status is New
     const newCount = filtered.filter(wo => wo.status === 'New').length;
     
-    // Needs Follow Up - Work orders older than 7 days, not completed/invoiced, without contractor
+    // Needs Follow Up - Work orders older than 7 days, not completed/invoiced
     const followUpDate = new Date();
     followUpDate.setDate(followUpDate.getDate() - 7);
     const needsFollowUp = filtered.filter(wo => 
         new Date(wo.createdDate) < followUpDate &&
         wo.status !== 'Work Complete' &&
-        wo.status !== 'Invoice Submitted' &&
-        !wo.contractorName
+        wo.status !== 'Invoice Submitted'
     ).length;
 
     document.getElementById('metricUrgent').textContent = urgent;

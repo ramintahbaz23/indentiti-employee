@@ -5,12 +5,12 @@ public with sharing class WorkOrderDashboardController {
         MetricCounts counts = new MetricCounts();
         
         try {
-            // Urgent - Past Due OR (New without contractor) OR In Progress
+            // Urgent - Past Due OR New OR In Progress
             counts.urgent = [
                 SELECT COUNT() 
                 FROM Work_Order__c 
                 WHERE (Is_Overdue__c = true 
-                OR (Status__c = 'New' AND (Contractor_Name__c = null OR Contractor_Name__c = ''))
+                OR Status__c = 'New'
                 OR Status__c = 'On-site/In Progress')
             ];
             
@@ -30,7 +30,7 @@ public with sharing class WorkOrderDashboardController {
                 WHERE Status__c = 'New'
             ];
             
-            // Needs Follow Up - Work orders older than 7 days, not completed/invoiced, without contractor
+            // Needs Follow Up - Work orders older than 7 days, not completed/invoiced
             Date followUpDate = Date.today().addDays(-7);
             DateTime followUpDateTime = DateTime.newInstance(followUpDate, Time.newInstance(0, 0, 0, 0));
             counts.needsFollowUp = [
@@ -39,7 +39,6 @@ public with sharing class WorkOrderDashboardController {
                 WHERE CreatedDate < :followUpDateTime
                 AND Status__c != 'Work Complete'
                 AND Status__c != 'Invoice Submitted'
-                AND (Contractor_Name__c = null OR Contractor_Name__c = '')
             ];
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching metric counts: ' + e.getMessage());
@@ -54,7 +53,7 @@ public with sharing class WorkOrderDashboardController {
             String whereClause = buildWhereClause(filters);
             String query = 'SELECT Id, Name, Status__c, Priority__c, Trade__c, Issue__c, ' +
                           'Store_Name__c, City__c, State__c, NTE_Amount__c, ' +
-                          'Scheduled_Date__c, Contractor_Name__c, Completed_Date__c, ' +
+                          'Scheduled_Date__c, Completed_Date__c, ' +
                           'Invoice_Amount__c, Due_Date__c, Is_Overdue__c, Days_Overdue__c, ' +
                           'CreatedDate ' +
                           'FROM Work_Order__c ' +
@@ -119,21 +118,6 @@ public with sharing class WorkOrderDashboardController {
                 }
             }
             
-            // Get unique Contractors from existing work orders
-            List<AggregateResult> contractorResults = [
-                SELECT Contractor_Name__c 
-                FROM Work_Order__c 
-                WHERE Contractor_Name__c != null 
-                GROUP BY Contractor_Name__c 
-                ORDER BY Contractor_Name__c
-            ];
-            options.contractors = new List<String>();
-            for (AggregateResult ar : contractorResults) {
-                String contractor = (String)ar.get('Contractor_Name__c');
-                if (contractor != null && contractor != '') {
-                    options.contractors.add(contractor);
-                }
-            }
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching filter options: ' + e.getMessage());
         }
@@ -165,11 +149,6 @@ public with sharing class WorkOrderDashboardController {
                 conditions.add('State__c = \'' + String.escapeSingleQuotes(String.valueOf(filters.get('location'))) + '\'');
             }
             
-            // Contractor filter
-            if (filters.containsKey('contractor') && filters.get('contractor') != null && String.valueOf(filters.get('contractor')) != 'All Contractors') {
-                conditions.add('Contractor_Name__c = \'' + String.escapeSingleQuotes(String.valueOf(filters.get('contractor'))) + '\'');
-            }
-            
             // Date range filter
             if (filters.containsKey('dateRange') && filters.get('dateRange') != null) {
                 String dateRange = String.valueOf(filters.get('dateRange'));
@@ -198,7 +177,7 @@ public with sharing class WorkOrderDashboardController {
             if (filters.containsKey('quickFilter') && filters.get('quickFilter') != null) {
                 String quickFilter = String.valueOf(filters.get('quickFilter'));
                 if (quickFilter == 'Urgent') {
-                    conditions.add('(Is_Overdue__c = true OR (Status__c = \'New\' AND (Contractor_Name__c = null OR Contractor_Name__c = \'\')) OR Status__c = \'On-site/In Progress\')');
+                    conditions.add('(Is_Overdue__c = true OR Status__c = \'New\' OR Status__c = \'On-site/In Progress\')');
                 } else if (quickFilter == 'Pending Approval') {
                     conditions.add('(Status__c = \'Proposal Submitted\' OR Status__c = \'Proposal Pending Approval\' OR Status__c = \'Pending Schedule\')');
                 } else if (quickFilter == 'New') {
@@ -207,7 +186,7 @@ public with sharing class WorkOrderDashboardController {
                     Date followUpDate = Date.today().addDays(-7);
                     DateTime followUpDateTime = DateTime.newInstance(followUpDate, Time.newInstance(0, 0, 0, 0));
                     String dateStr = followUpDateTime.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
-                    conditions.add('CreatedDate < ' + dateStr + ' AND Status__c != \'Work Complete\' AND Status__c != \'Invoice Submitted\' AND (Contractor_Name__c = null OR Contractor_Name__c = \'\')');
+                    conditions.add('CreatedDate < ' + dateStr + ' AND Status__c != \'Work Complete\' AND Status__c != \'Invoice Submitted\'');
                 }
             }
         }
@@ -232,7 +211,6 @@ public with sharing class WorkOrderDashboardController {
         @AuraEnabled public List<String> priorities = new List<String>();
         @AuraEnabled public List<String> trades = new List<String>();
         @AuraEnabled public List<String> states = new List<String>();
-        @AuraEnabled public List<String> contractors = new List<String>();
     }
     
     public class WorkOrderWrapper {
@@ -247,7 +225,6 @@ public with sharing class WorkOrderDashboardController {
         @AuraEnabled public String state;
         @AuraEnabled public Decimal nteAmount;
         @AuraEnabled public DateTime scheduledDate;
-        @AuraEnabled public String contractorName;
         @AuraEnabled public Date completedDate;
         @AuraEnabled public Decimal invoiceAmount;
         @AuraEnabled public Date dueDate;
@@ -267,7 +244,6 @@ public with sharing class WorkOrderDashboardController {
             this.state = wo.State__c;
             this.nteAmount = wo.NTE_Amount__c != null ? wo.NTE_Amount__c : 550.00;
             this.scheduledDate = wo.Scheduled_Date__c;
-            this.contractorName = wo.Contractor_Name__c;
             this.completedDate = wo.Completed_Date__c;
             this.invoiceAmount = wo.Invoice_Amount__c;
             this.dueDate = wo.Due_Date__c;

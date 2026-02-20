@@ -65,19 +65,6 @@
                     </template>
                 </select>
             </div>
-
-            <div class="filter-group">
-                <label class="filter-label" for="contractor-select">Contractor</label>
-                <select 
-                    id="contractor-select"
-                    class="filter-select" 
-                    value={selectedContractor}
-                    onchange={handleContractorChange}>
-                    <template for:each={contractorOptions} for:item="contractor">
-                        <option key={contractor.value} value={contractor.value}>{contractor.label}</option>
-                    </template>
-                </select>
-            </div>
         </div>
 
         <div class="quick-filters-section">

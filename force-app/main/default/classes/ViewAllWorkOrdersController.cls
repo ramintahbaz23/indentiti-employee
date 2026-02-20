@@ -13,7 +13,7 @@ public with sharing class ViewAllWorkOrdersController {
             String countQuery = 'SELECT COUNT() FROM Work_Order__c ' + whereClause;
             Integer totalCount = Database.countQuery(countQuery);
 
-            String dataQuery = 'SELECT Id, Name, Status__c, Priority__c, Trade__c, Issue__c, Store_Name__c, City__c, State__c, NTE_Amount__c, Scheduled_Date__c, Contractor_Name__c, Completed_Date__c, Invoice_Amount__c, Due_Date__c, Is_Overdue__c, Days_Overdue__c, CreatedDate FROM Work_Order__c ' + whereClause + orderClause + ' LIMIT ' + pageSize + ' OFFSET ' + offset;
+            String dataQuery = 'SELECT Id, Name, Status__c, Priority__c, Trade__c, Issue__c, Store_Name__c, City__c, State__c, NTE_Amount__c, Scheduled_Date__c, Completed_Date__c, Invoice_Amount__c, Due_Date__c, Is_Overdue__c, Days_Overdue__c, CreatedDate FROM Work_Order__c ' + whereClause + orderClause + ' LIMIT ' + pageSize + ' OFFSET ' + offset;
 
             List<Work_Order__c> workOrders = Database.query(dataQuery);
             List<WorkOrderRow> rows = new List<WorkOrderRow>();
@@ -51,9 +51,6 @@ public with sharing class ViewAllWorkOrdersController {
             if (filters.containsKey('location') && filters.get('location') != null && String.valueOf(filters.get('location')) != 'All Locations') {
                 conditions.add('State__c = \'' + String.escapeSingleQuotes(String.valueOf(filters.get('location'))) + '\'');
             }
-            if (filters.containsKey('contractor') && filters.get('contractor') != null && String.valueOf(filters.get('contractor')) != 'All Contractors') {
-                conditions.add('Contractor_Name__c = \'' + String.escapeSingleQuotes(String.valueOf(filters.get('contractor'))) + '\'');
-            }
             if (filters.containsKey('dateRange') && filters.get('dateRange') != null) {
                 String dateRange = String.valueOf(filters.get('dateRange'));
                 Date startDate = null;
@@ -71,7 +68,7 @@ public with sharing class ViewAllWorkOrdersController {
 
         if (String.isNotBlank(searchQuery)) {
             String term = '%' + String.escapeSingleQuotes(searchQuery.trim()) + '%';
-            conditions.add('(Name LIKE \'' + term + '\' OR Issue__c LIKE \'' + term + '\' OR Store_Name__c LIKE \'' + term + '\' OR City__c LIKE \'' + term + '\' OR State__c LIKE \'' + term + '\' OR Contractor_Name__c LIKE \'' + term + '\' OR Trade__c LIKE \'' + term + '\')');
+            conditions.add('(Name LIKE \'' + term + '\' OR Issue__c LIKE \'' + term + '\' OR Store_Name__c LIKE \'' + term + '\' OR City__c LIKE \'' + term + '\' OR State__c LIKE \'' + term + '\' OR Trade__c LIKE \'' + term + '\')');
         }
 
         if (conditions.isEmpty()) return '';
@@ -86,9 +83,9 @@ public with sharing class ViewAllWorkOrdersController {
         else if (sortColumn == 'priority') field = 'Priority__c';
         else if (sortColumn == 'issue') field = 'Issue__c';
         else if (sortColumn == 'createdDate') field = 'CreatedDate';
+        else if (sortColumn == 'endDate') field = 'Due_Date__c';
         else if (sortColumn == 'trade') field = 'Trade__c';
         else if (sortColumn == 'storeName') field = 'Store_Name__c';
-        else if (sortColumn == 'contractorName') field = 'Contractor_Name__c';
         else if (sortColumn == 'nteAmount') field = 'NTE_Amount__c';
         return ' ORDER BY ' + field + ' ' + dir + ' ';
     }
@@ -105,9 +102,9 @@ public with sharing class ViewAllWorkOrdersController {
         @AuraEnabled public String priority;
         @AuraEnabled public String issue;
         @AuraEnabled public String createdDate;
+        @AuraEnabled public String endDate;
         @AuraEnabled public String trade;
         @AuraEnabled public String location;
-        @AuraEnabled public String contractorName;
         @AuraEnabled public String nteAmount;
 
         public WorkOrderRow(Work_Order__c wo) {
@@ -117,13 +114,13 @@ public with sharing class ViewAllWorkOrdersController {
             this.priority = wo.Priority__c != null ? wo.Priority__c : '';
             this.issue = wo.Issue__c != null ? wo.Issue__c : '';
             this.createdDate = wo.CreatedDate != null ? wo.CreatedDate.format('MM/dd/yyyy') : '';
+            this.endDate = wo.Due_Date__c != null ? wo.Due_Date__c.format() : '-';
             this.trade = wo.Trade__c != null ? wo.Trade__c : '';
             String loc = '';
             if (wo.City__c != null) loc = wo.City__c;
             if (wo.State__c != null) loc += (loc != '' ? ', ' : '') + wo.State__c;
             if (wo.Store_Name__c != null) loc += (loc != '' ? ' ' : '') + wo.Store_Name__c;
             this.location = loc;
-            this.contractorName = wo.Contractor_Name__c != null ? wo.Contractor_Name__c : '-';
             this.nteAmount = wo.NTE_Amount__c != null ? '$' + String.valueOf(wo.NTE_Amount__c.setScale(2)) : '-';
         }
     }

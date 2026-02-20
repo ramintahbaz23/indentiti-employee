@@ -135,12 +135,8 @@ function renderStoreInfo() {
                 <span class="detail-value ${store.deactivationReason ? '' : 'empty'}">${store.deactivationReason || 'Empty'}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Active</span>
-                <span class="detail-value active-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </span>
+                <span class="detail-label">Store Status</span>
+                <span class="detail-value store-status ${(store.storeStatus || 'Open') === 'Open' ? 'store-status-open' : 'store-status-closed'}">${store.storeStatus || 'Open'}</span>
             </div>
         `;
     }

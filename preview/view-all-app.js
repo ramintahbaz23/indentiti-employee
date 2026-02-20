@@ -13,8 +13,7 @@ let state = {
         priority: 'all',
         trade: 'all',
         dateRange: 'all',
-        location: 'all',
-        contractor: 'all'
+        location: 'all'
     },
     activeFilterTags: [],
     searchQuery: ''
@@ -71,8 +70,7 @@ function filterWorkOrders() {
             wo.issue.toLowerCase().includes(query) ||
             wo.storeName.toLowerCase().includes(query) ||
             wo.city.toLowerCase().includes(query) ||
-            wo.state.toLowerCase().includes(query) ||
-            (wo.contractorName && wo.contractorName.toLowerCase().includes(query))
+            wo.state.toLowerCase().includes(query)
         );
     }
 
@@ -100,11 +98,6 @@ function filterWorkOrders() {
     // Location filter
     if (state.filters.location !== 'all') {
         filtered = filtered.filter(wo => wo.state === state.filters.location);
-    }
-
-    // Contractor filter
-    if (state.filters.contractor !== 'all') {
-        filtered = filtered.filter(wo => wo.contractorName === state.filters.contractor);
     }
 
     // Date range filter
@@ -181,9 +174,9 @@ function filterWorkOrders() {
                     aVal = new Date(a.createdDate);
                     bVal = new Date(b.createdDate);
                     break;
-                case 'contractor':
-                    aVal = a.contractorName || '';
-                    bVal = b.contractorName || '';
+                case 'endDate':
+                    aVal = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+                    bVal = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
                     break;
                 case 'nte':
                     aVal = a.nteAmount || 0;
@@ -231,9 +224,6 @@ function updateActiveFilterTags() {
     }
     if (state.filters.location !== 'all') {
         tags.push({ type: 'location', label: `Location: ${state.filters.location}`, value: state.filters.location });
-    }
-    if (state.filters.contractor !== 'all') {
-        tags.push({ type: 'contractor', label: `Contractor: ${state.filters.contractor}`, value: state.filters.contractor });
     }
     if (state.filters.dateRange !== 'all') {
         const dateLabels = {
@@ -333,8 +323,8 @@ function renderTable() {
         let statusClass = 'new';
         let statusText = wo.status;
         
-        // Check for Needs Attention: Past Due OR (New without contractor)
-        if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
+        // Check for Needs Attention: Past Due OR New
+        if (wo.isOverdue || wo.status === 'New') {
             statusClass = 'needs-attention';
             statusText = 'Action Needed';
         }
@@ -386,9 +376,9 @@ function renderTable() {
                 </td>
                 <td>${wo.issue}</td>
                 <td>${formatDate(wo.createdDate)}</td>
+                <td>${wo.dueDate ? formatDate(wo.dueDate) : '-'}</td>
                 <td>${wo.trade}</td>
                 <td>${storeLocation}</td>
-                <td>${wo.contractorName || '-'}</td>
                 <td>${wo.nteAmount ? formatCurrency(wo.nteAmount) : '-'}</td>
             </tr>
         `;
@@ -432,8 +422,8 @@ function renderWorkOrders() {
         // Show appropriate badge based on work order state - matching metrics
         let badgeHtml;
         
-        // Check for Needs Attention: Past Due OR (New without contractor)
-        if (wo.isOverdue || (wo.status === 'New' && !wo.contractorName)) {
+        // Check for Needs Attention: Past Due OR New
+        if (wo.isOverdue || wo.status === 'New') {
             badgeHtml = `<span class="status-badge status-needs-attention">ACTION NEEDED</span>`;
         }
         // Check for In Progress: On-site/In Progress OR Dispatched
@@ -453,7 +443,7 @@ function renderWorkOrders() {
             badgeHtml = `<span class="status-badge status-${statusClass}">${wo.status}</span>`;
         }
 
-        const isActionNeeded = wo.isOverdue || (wo.status === 'New' && !wo.contractorName);
+        const isActionNeeded = wo.isOverdue || wo.status === 'New';
         return `
             <div class="work-order-card priority-${priorityClass}${isActionNeeded ? ' action-needed' : ''}" data-wo-id="${wo.id}">
                 <div class="work-order-header">
@@ -485,11 +475,6 @@ function renderWorkOrders() {
                         ${wo.dueDate ? `
                             <span class="detail-label">Due Date:</span>
                             <span class="detail-value">${formatDate(wo.dueDate)}</span>
-                        ` : ''}
-                        
-                        ${wo.contractorName ? `
-                            <span class="detail-label">Contractor:</span>
-                            <span class="detail-value">${wo.contractorName}</span>
                         ` : ''}
                         
                         ${wo.nteAmount ? `
@@ -638,11 +623,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filterWorkOrders();
     });
     
-    document.getElementById('filterContractor').addEventListener('change', (e) => {
-        state.filters.contractor = e.target.value;
-        filterWorkOrders();
-    });
-    
     // Search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         state.searchQuery = e.target.value;
@@ -657,8 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
             priority: 'all',
             trade: 'all',
             dateRange: 'all',
-            location: 'all',
-            contractor: 'all'
+            location: 'all'
         };
         state.searchQuery = '';
         
@@ -668,7 +647,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('filterTrade').value = 'all';
         document.getElementById('filterDateRange').value = 'all';
         document.getElementById('filterLocation').value = 'all';
-        document.getElementById('filterContractor').value = 'all';
         document.getElementById('searchInput').value = '';
         
         filterWorkOrders();
@@ -1055,8 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isOverdue: false,
                 daysOverdue: 0,
                 city: '',
-                state: '',
-                contractorName: null
+                state: ''
             };
             
             // Add to the beginning of work orders array (most recent first)
