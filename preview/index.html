@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Order Dashboard - Company View</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/salesforce-lightning-design-system/2.22.2/styles/salesforce-lightning-design-system.min.css">
+    <title>Operational Triage Console - Employee Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/salesforce-lightning-design-system/2.21.3/styles/salesforce-lightning-design-system.min.css" />
     <style>
         :root {
             /* KFM Brand Colors - Primary */
@@ -497,8 +497,105 @@
 
         .main-container {
             max-width: 1600px;
+            width: 100%;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 3rem;
+            box-sizing: border-box;
+        }
+        .main-container > * {
+            max-width: 100%;
+        }
+        /* Page Header - align with view-all.html */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .page-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #181818;
+        }
+        .page-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .breadcrumb {
+            font-size: 0.875rem;
+            color: #706e6b;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+        }
+        .breadcrumb a {
+            color: #003366;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        /* Table container - align with view-all.html */
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .table-container .table-wrapper {
+            overflow-x: auto;
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container thead {
+            background: #fafaf9;
+            border-bottom: 1px solid #dddbda;
+        }
+        .table-container th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            white-space: nowrap;
+        }
+        .table-container tbody tr {
+            border-bottom: 1px solid #f3f2f2;
+            transition: background 0.2s;
+        }
+        .table-container tbody tr:hover {
+            background: #fafaf9;
+        }
+        .table-container td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #181818;
+        }
+        .table-container .section-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #dddbda;
+            background: #fafaf9;
+        }
+        .table-container .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #181818;
+            margin: 0;
+        }
+        .table-container .section-subtitle {
+            font-size: 0.8125rem;
+            color: #706e6b;
+            margin-top: 0.25rem;
         }
 
         @media (max-width: 768px) {
@@ -1021,6 +1118,444 @@
             font-weight: 700;
             color: #181818;
         }
+
+        /* Operational Triage Console - Salesforce-style dashboard */
+        .triage-console { padding: 0; max-width: 100%; }
+        .triage-console .slds-page-header__row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; }
+        .triage-console .slds-page-header__row-actions { margin-left: auto; }
+        .triage-console .slds-page-header__title { font-size: 1.5rem; font-weight: 700; }
+        .triage-console .slds-page-header__meta-text { margin-top: 0.25rem; }
+        .icon-work-order .slds-icon { color: var(--sf-brand); }
+        .icon-warning-circle { background: #ea001e; color: #fff; border-radius: 50%; padding: 0.25rem; display: inline-flex; align-items: center; justify-content: center; }
+        .icon-warning-circle .slds-icon { fill: #fff; }
+
+        .triage-section { }
+        .dashboard-card { border: 1px solid #dddbda; border-radius: 0.25rem; box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1); overflow: hidden; }
+        .dashboard-card .slds-card__header { padding: 1rem 1.25rem; border-bottom: 1px solid #dddbda; background: #fafaf9; }
+        .dashboard-card .slds-card__body_inner { padding: 1rem 1.25rem; }
+        .dashboard-card .slds-card__body_inner.slds-p-horizontal_none { padding-left: 0; padding-right: 0; }
+
+        /* Needs Attention: now in triage slds-card; table uses slds-table (no custom table CSS here) */
+
+        /* My Active Work: slds-table used; only custom = 6px status dots in Media/Quote (no SLDS equivalent) */
+        .active-work-table thead th,
+        .active-work-table tbody td {
+            white-space: nowrap;
+        }
+        .active-work-table .inline-status { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .active-work-table .inline-status-dot {
+            width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+        }
+        .active-work-table .inline-status-dot.green { background: var(--slds-g-color-success-base-50, #2e844a); }
+        .active-work-table .inline-status-dot.amber { background: var(--slds-g-color-warning-base-50, #fe9339); }
+        .active-work-table .inline-status-dot.red { background: var(--slds-g-color-error-base-40, #c23934); }
+        .active-work-row { cursor: pointer; }
+        .wo-link { color: var(--slds-g-color-brand-base-50, #0176d3); text-decoration: none; }
+        .wo-link:hover { text-decoration: underline; }
+        .escalation-icon { color: var(--slds-g-color-warning-base-50, #fe9339); font-size: 1rem; }
+        #activeWorkFiltersToggle[aria-expanded="true"] .slds-button__icon { transform: rotate(180deg); }
+
+        /* Horizontal filter bar - hidden by default, shown when toggle is active */
+        .filter-bar-horizontal {
+            background: #fafaf9;
+            border-bottom: 1px solid #f3f2f2;
+            padding: 1rem 1.5rem;
+        }
+        .filter-bar-horizontal.filter-bar-hidden {
+            display: none;
+        }
+        .filter-bar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 1.25rem 2.5rem; /* vertical gap 1.25rem, horizontal gap 2.5rem between fields */
+        }
+        .filter-bar-row .filter-field {
+            flex: 0 0 auto;
+            min-width: 0;
+        }
+        .filter-bar-row .filter-field .slds-form-element__label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .filter-bar-row .filter-field .slds-select {
+            display: block;
+            min-height: 2rem;
+            width: 160px;
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+            color: #181818;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23706e6b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+        }
+        .filter-bar-row .filter-field .slds-select:focus {
+            outline: none;
+            border-color: #0176d3;
+            box-shadow: 0 0 0 1px #0176d3;
+        }
+        .filter-bar-row .filter-field.filter-quick {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 2rem;
+            margin-left: 1rem;
+            border-left: 1px solid #dddbda;
+        }
+        .filter-bar-row .filter-field.filter-quick .filter-quick-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.5rem;
+        }
+        .filter-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 1.5rem;
+            align-items: center;
+        }
+        .filter-checkboxes .slds-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+            font-size: 0.8125rem;
+            color: #181818;
+        }
+        .filter-checkboxes .slds-checkbox .slds-checkbox_faux {
+            width: 1rem;
+            height: 1rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+        .filter-checkboxes .slds-checkbox input:checked + .slds-checkbox_faux {
+            background: #0176d3;
+            border-color: #0176d3;
+        }
+        .filter-checkboxes .slds-checkbox input:checked + .slds-checkbox_faux::after {
+            content: '';
+            position: absolute;
+            left: 0.25rem;
+            top: 0.1rem;
+            width: 0.35rem;
+            height: 0.6rem;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .filter-checkboxes .slds-checkbox .slds-checkbox_faux { position: relative; }
+        .filter-checkboxes .slds-checkbox input:focus + .slds-checkbox_faux {
+            box-shadow: 0 0 0 1px #0176d3;
+        }
+        .filter-checkboxes .slds-checkbox input { position: absolute; opacity: 0; width: 1rem; height: 1rem; margin: 0; }
+        @media (max-width: 767px) {
+            .filter-bar-row { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .filter-bar-row .filter-field { min-width: 0; }
+            .filter-bar-row .filter-field .slds-select { width: 100%; max-width: 100%; }
+            .filter-bar-row .filter-field.filter-quick { border-left: none; padding-left: 0; margin-left: 0; margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid #dddbda; }
+        }
+        .triage-layout { }
+        .triage-main { min-width: 0; }
+
+        /* Fix 1 — Card: triage zone and active work section */
+        .triage-zone,
+        .active-work-card {
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #dddbda;
+            margin-bottom: 16px;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        /* Fix 2 — Tables: plain CSS */
+        .triage-zone table,
+        .active-work-card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .triage-zone thead th,
+        .active-work-card thead th {
+            background: #f4f6f9;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #3e3e3c;
+            padding: 10px 12px;
+            border-bottom: 1px solid #dddbda;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .triage-zone tbody tr,
+        .active-work-card tbody tr {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .triage-zone tbody tr:hover,
+        .active-work-card tbody tr:hover {
+            background: #f5f9ff;
+        }
+        .triage-zone tbody td,
+        .active-work-card tbody td {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #080707;
+            vertical-align: middle;
+        }
+        .triage-zone .table-wrapper,
+        .active-work-card .table-wrapper {
+            overflow-x: auto;
+        }
+
+        /* Fix 4 — Section headers: Needs Attention & My Active Work */
+        .section-title-card {
+            font-size: 14px;
+            font-weight: 700;
+            color: #080707;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dddbda;
+        }
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-header-row .card-header-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #080707;
+        }
+        .triage-zone table th.text-right { text-align: right; }
+
+        /* Needs Attention table */
+        .triage-table .category-badge.category-priority-p1 {
+            color: #ba0517;
+            font-size: var(--slds-g-font-size-3, 0.8125rem);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .triage-table .category-badge.category-priority-p2 {
+            color: #a86403;
+            font-size: var(--slds-g-font-size-3, 0.8125rem);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .triage-table .category-badge.category-priority-p3 {
+            color: #0176d3;
+            font-size: var(--slds-g-font-size-3, 0.8125rem);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .triage-zone .needs-attention-table.triage-table {
+            min-width: 800px;
+        }
+        .triage-zone .sortable-th {
+            cursor: pointer;
+            user-select: none;
+        }
+        .triage-zone .sortable-th:hover {
+            text-decoration: underline;
+        }
+        .triage-zone .th-expand { width: 1%; padding: 10px 8px; }
+        .triage-zone .td-expand { padding: 10px 8px; vertical-align: middle; }
+        .triage-zone .td-expand { overflow: visible; }
+        .triage-zone .row-dropdown-wrapper { position: relative; display: inline-block; }
+        .triage-zone .row-action-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 2px;
+            min-width: 140px;
+            background: #fff;
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            z-index: 100;
+            padding: 4px 0;
+        }
+        .triage-zone .row-action-dropdown[hidden] { display: none !important; }
+        .triage-zone .row-action-dropdown-item {
+            display: block;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #0176d3;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .triage-zone .row-action-dropdown-item:hover { background: #f5f9ff; }
+
+
+        /* Three summary cards side by side - clean card style (kept for any legacy refs) */
+        .triage-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: stretch; }
+        .triage-summary-col { min-width: 0; display: flex; }
+        .triage-summary-col .table-container.summary-card {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        .triage-summary-col .table-container.summary-card .section-header {
+            flex-shrink: 0;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f3f2f2;
+            background: #ffffff;
+        }
+        .triage-summary-col .table-container.summary-card .section-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #181818;
+            margin: 0;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+        .triage-summary-col .table-container.summary-card .summary-card-body {
+            flex: 1;
+            min-height: 0;
+            padding: 1rem 1.25rem;
+        }
+        .triage-summary-card { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .triage-summary-card .slds-card__body_inner { flex: 1; }
+        @media (max-width: 767px) {
+            .triage-cards-row { grid-template-columns: 1fr; gap: 1rem; }
+            .triage-summary-col .table-container.summary-card { margin-bottom: 0; }
+        }
+
+        /* Counter list (Quote / Media Readiness) - clean card rows */
+        .triage-summary-col .triage-rail-list { list-style: none; padding: 0; margin: 0; }
+        .triage-summary-col .counter-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            margin: 0 -0.75rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            list-style: none;
+        }
+        .triage-summary-col .counter-item:hover { background-color: #fafaf9; }
+        .triage-summary-col .counter-item .counter-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+            min-width: 2rem;
+            text-align: right;
+            color: #181818;
+            flex-shrink: 0;
+        }
+        .triage-summary-col .counter-item .counter-label {
+            font-size: 0.8125rem;
+            color: #3e3e3c;
+            line-height: 1.4;
+        }
+        .triage-summary-col .counter-item-warning {
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f3f2f2;
+        }
+        .triage-summary-col .counter-item-warning .counter-label { color: #c23934; font-weight: 600; }
+        .triage-summary-col .counter-item-warning .counter-value { font-size: 0.875rem; }
+
+        /* Mall Awareness list - clean card rows */
+        .triage-summary-col .mall-list { list-style: none; padding: 0; margin: 0; }
+        .triage-summary-col .mall-list .mall-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 0.75rem;
+            margin: 0 -0.75rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            list-style: none;
+            border-bottom: none;
+        }
+        .triage-summary-col .mall-list .mall-item:not(:last-child) {
+            border-bottom: 1px solid #f3f2f2;
+        }
+        .triage-summary-col .mall-list .mall-item:hover { background-color: #fafaf9; }
+        .triage-summary-col .mall-list .mall-name {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #181818;
+            flex: 1;
+            min-width: 0;
+        }
+        .triage-summary-col .mall-list .slds-badge { flex-shrink: 0; font-size: 0.75rem; }
+
+        /* Needs Attention table: action dropdown (match estimates table) */
+        .needs-attention-table td.slds-cell-action { overflow: visible; position: relative; }
+        .actions-dropdown-container { position: relative; display: inline-block; overflow: visible; }
+        .actions-dropdown-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #706e6b;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        .actions-dropdown-btn:hover { background: #f3f2f2; color: #181818; }
+        .actions-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 9999;
+            margin-top: 0.25rem;
+        }
+        .actions-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #181818;
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #f3f2f2;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .actions-dropdown-item:last-child { border-bottom: none; }
+        .actions-dropdown-item:hover { background: #f3f2f2; color: var(--sf-brand); }
+        .actions-dropdown-item-icon {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #706e6b;
+        }
+        .actions-dropdown-item-icon svg { width: 100%; height: 100%; }
 
         /* Page Search Bar */
         .page-search-bar {
@@ -2084,6 +2619,7 @@
     </style>
 </head>
 <body>
+    <div class="slds-scope">
     <div class="toast" id="toast"></div>
     
     <!-- Top Navigation Bar -->
@@ -2137,7 +2673,7 @@
                     <div class="user-avatar">MT</div>
                     <div class="user-details">
                         <div class="user-name">Mark Johnson</div>
-                        <div class="user-role">Purple Corporate Manager</div>
+                        <div class="user-role">Title</div>
                     </div>
                 </div>
                 
@@ -2159,123 +2695,142 @@
     <!-- Main Content -->
     <div class="main-wrapper">
         <main class="main-container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Welcome, Mark</h1>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <button class="btn-secondary" id="exportBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Export
-                </button>
-                <button class="btn-primary" id="newWorkOrderBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New Work Order
-                </button>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="page-search-bar">
-            <div class="page-search-wrapper">
-                <svg class="page-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                <input type="text" class="page-search-input" placeholder="Search work orders..." id="pageSearchInput">
-            </div>
-        </div>
-
-        <!-- Metrics Grid -->
-        <div class="metrics-grid">
-            <div class="metric-card critical" data-metric="needsAttention" style="--accent-color: var(--priority-critical)">
-                <div class="metric-label">Action Needed</div>
-                <div class="metric-value" id="metricNeedsAttention">0</div>
-                <div class="metric-sublabel">Your action is needed</div>
+            <!-- Breadcrumb - align with view-all.html -->
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> > Operational Triage Console
             </div>
 
-            <div class="metric-card info" data-metric="inProgress" style="--accent-color: var(--sf-info)">
-                <div class="metric-label">In Progress</div>
-                <div class="metric-value" id="metricInProgress">0</div>
-                <div class="metric-sublabel">We're working on it</div>
-            </div>
-
-            <div class="metric-card purple" data-metric="new" style="--accent-color: #9065b0">
-                <div class="metric-label">New</div>
-                <div class="metric-value" id="metricNew">0</div>
-                <div class="metric-sublabel">Just created</div>
-            </div>
-
-            <div class="metric-card warning" data-metric="onHold" style="--accent-color: var(--priority-high)">
-                <div class="metric-label">Awaiting Approval</div>
-                <div class="metric-value" id="metricOnHold">0</div>
-                <div class="metric-sublabel">Waiting on approval</div>
-            </div>
-
-            <div class="metric-card success" data-metric="pendingEstimates" style="--accent-color: var(--sf-info)">
-                <div class="metric-label">Awaiting Estimate</div>
-                <div class="metric-value" id="metricPendingEstimates">0</div>
-                <div class="metric-sublabel">Estimate needed</div>
-            </div>
-        </div>
-
-        <!-- Work Orders Section -->
-        <div class="work-orders-section">
-            <div class="section-header">
-                <div class="section-title-group">
-                    <h2 class="section-title">
-                        Active Work Orders 
-                        <span class="section-count" id="workOrderCount">(0)</span>
-                    </h2>
-                    <button class="filter-btn" id="filterBtn" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                        Filter
+            <!-- Page Header - align with view-all.html -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">Operational Triage Console</h1>
+                </div>
+                <div class="page-actions">
+                    <button type="button" class="slds-button slds-button_brand" id="newWorkOrderBtn">
+                        <svg class="slds-button__icon slds-button__icon_left" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        New Work Order
                     </button>
-                    <!-- Filter Dropdown -->
-                    <div class="filter-dropdown" id="filterDropdown">
-                        <div class="filter-dropdown-content">
-                            <div class="filter-group">
-                                <label class="filter-label">Status</label>
-                                <div class="filter-buttons" id="status-buttons">
-                                    <button class="filter-button active" data-value="all">All Statuses</button>
+                </div>
+            </div>
+
+            <!-- Triage Zone: Needs Attention table -->
+            <div class="triage-zone">
+                <div class="card-body">
+                    <h2 class="section-title-card">Needs Attention (<span id="needsAttentionCount">0</span>)</h2>
+                    <div class="table-wrapper">
+                        <table class="needs-attention-table triage-table" role="grid">
+                            <colgroup>
+                                <col style="width: 12%;">
+                                <col style="width: 11%;">
+                                <col style="width: 18%;">
+                                <col style="width: 10%;">
+                                <col style="width: 26%;">
+                                <col style="width: 9%;">
+                                <col style="width: 4%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col" id="needsAttentionCategoryHeader" class="sortable-th" role="button" tabindex="0" aria-sort="none" title="Sort by category">Category</th>
+                                    <th scope="col">Work Order #</th>
+                                    <th scope="col">Client / Account</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Reason</th>
+                                    <th scope="col">Age / SLA</th>
+                                    <th style="width: 40px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="needsAttentionBody">                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Active Work - full width below triage zone -->
+            <div class="triage-layout">
+                <div class="triage-main">
+                    <div class="active-work-card">
+                        <div class="section-title-card card-header-row">
+                            <div class="card-header-left">
+                                <h2 class="card-header-title">My Active Work</h2>
+                                <button type="button" class="btn-filters" id="activeWorkFiltersToggle" aria-expanded="false" aria-controls="activeWorkFilterBar" aria-label="Show filters">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    <span class="filters-toggle-label">Filters</span>
+                                </button>
+                            </div>
+                            <a href="view-all.html" class="link-view-all">View all</a>
+                        </div>
+                        <div class="filter-bar-horizontal filter-bar-hidden" id="activeWorkFilterBar" role="region" aria-label="Filter work orders">
+                            <div class="filter-bar-row">
+                                <div class="filter-field">
+                                    <label class="slds-form-element__label" for="filterStatus">Status</label>
+                                    <select id="filterStatus" class="slds-select" aria-label="Filter by status">
+                                        <option value="">All Statuses</option>
+                                        <option value="Open">Open</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="On Hold">On Hold</option>
+                                    </select>
+                                </div>
+                                <div class="filter-field">
+                                    <label class="slds-form-element__label" for="filterPriority">Priority</label>
+                                    <select id="filterPriority" class="slds-select" aria-label="Filter by priority">
+                                        <option value="">All Priorities</option>
+                                        <option value="Critical">Critical</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="filter-field">
+                                    <label class="slds-form-element__label" for="filterMall">Mall</label>
+                                    <select id="filterMall" class="slds-select" aria-label="Filter by mall">
+                                        <option value="">All Malls</option>
+                                        <option value="Westfield Mall">Westfield Mall</option>
+                                        <option value="Galleria">Galleria</option>
+                                        <option value="Plaza Center">Plaza Center</option>
+                                    </select>
+                                </div>
+                                <div class="filter-field filter-quick">
+                                    <span class="filter-quick-label">Quick filters</span>
+                                    <div class="filter-checkboxes">
+                                        <label class="slds-checkbox">
+                                            <input type="checkbox" id="filterMediaMissing" name="mediaMissing" aria-label="Media missing" />
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label">Media Missing</span>
+                                        </label>
+                                        <label class="slds-checkbox">
+                                            <input type="checkbox" id="filterQuoteNeedsAction" name="quoteNeedsAction" aria-label="Quote needs action" />
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label">Quote Needs Action</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="filter-group">
-                                <label class="filter-label">Priority</label>
-                                <div class="filter-buttons" id="priority-buttons">
-                                    <button class="filter-button active" data-value="all">All Priorities</button>
-                                    <button class="filter-button" data-value="Critical">Critical</button>
-                                    <button class="filter-button" data-value="High">High</button>
-                                    <button class="filter-button" data-value="Medium">NPW1</button>
-                                    <button class="filter-button" data-value="Low">Low</button>
-                                </div>
-                            </div>
-
-                            <div class="filter-group">
-                                <label class="filter-label">Trade</label>
-                                <div class="filter-buttons" id="trade-buttons">
-                                    <button class="filter-button active" data-value="all">All Trades</button>
-                                </div>
-                            </div>
-
-                            <div class="filter-group">
-                                <label class="filter-label">Date Range</label>
-                                <div class="filter-buttons" id="date-range-buttons">
-                                    <button class="filter-button" data-value="all">All Time</button>
-                                    <button class="filter-button" data-value="today">Today</button>
-                                    <button class="filter-button" data-value="7days">Last 7 Days</button>
-                                    <button class="filter-button active" data-value="30days">Last 30 Days</button>
-                                    <button class="filter-button" data-value="thisWeek">This Week</button>
-                                    <button class="filter-button" data-value="thisMonth">This Month</button>
-                                </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-wrapper">
+                                <table class="active-work-table" role="grid">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Work Order #</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Priority</th>
+                                            <th scope="col">Mall</th>
+                                            <th scope="col">Media</th>
+                                            <th scope="col">Quote Status</th>
+                                            <th scope="col">Escalation</th>
+                                            <th scope="col">SLA Age</th>
+                                            <th scope="col">Last Updated</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activeWorkBody"></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a href="#" class="view-all-link" id="viewAllLink">View All →</a>
             </div>
-
-            <div class="work-orders-grid" id="workOrdersGrid">
-                <!-- Work orders will be rendered here by JavaScript -->
-            </div>
-        </div>
         </main>
     </div>
 
@@ -2412,16 +2967,14 @@
                 </div>
             </form>
             <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="cancelWorkOrder">Cancel</button>
-                <button type="button" class="btn-secondary" id="saveAndNewWorkOrder">Save & New</button>
-                <button type="submit" class="btn-primary" id="saveWorkOrder">Save</button>
+                <button type="button" class="slds-button slds-button_neutral" id="cancelWorkOrder">Cancel</button>
+                <button type="button" class="slds-button slds-button_neutral" id="saveAndNewWorkOrder">Save & New</button>
+                <button type="submit" class="slds-button slds-button_brand" id="saveWorkOrder">Save</button>
             </div>
         </div>
     </div>
 
-    <script src="demo-data.js"></script>
-    <script src="estimates-data.js"></script>
-    <script src="store-time-weather.js"></script>
-    <script src="demo-app.js"></script>
+    <script src="triage-console.js"></script>
+</div>
 </body>
 </html>

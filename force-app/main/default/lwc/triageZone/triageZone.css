@@ -1,0 +1,4 @@
+/* Triage zone: slds-card with single custom rule for visual hierarchy */
+.triage-zone {
+    border-top: 3px solid #ba0517;
+}

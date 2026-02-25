@@ -1,0 +1,57 @@
+<template>
+    <div class="readiness-bar slds-has-divider_bottom-space" role="region" aria-label="Readiness status">
+        <div class="readiness-bar__inner slds-grid slds-gutters_medium slds-nowrap">
+            <div class="slds-col">
+                <button
+                type="button"
+                class="readiness-signal slds-button slds-button_neutral"
+                data-category="quote"
+                aria-pressed={isQuoteSelected}
+                onclick={handleQuoteClick}>
+                <span class="readiness-signal__dot readiness-signal__dot_quote" data-status={quoteStatus}></span>
+                <span class="readiness-signal__label">Quotes</span>
+                <span class="readiness-signal__summary">{quoteSummary}</span>
+                <div class="readiness-signal__chips">
+                    <template for:each={quoteChips} for:item="chip">
+                        <span key={chip.key} class="slds-badge readiness-chip readiness-chip_quote">{chip.label}</span>
+                    </template>
+                </div>
+            </button>
+            </div>
+            <div class="slds-col">
+                <button
+                type="button"
+                class="readiness-signal slds-button slds-button_neutral"
+                data-category="media"
+                aria-pressed={isMediaSelected}
+                onclick={handleMediaClick}>
+                <span class="readiness-signal__dot readiness-signal__dot_media" data-status={mediaStatus}></span>
+                <span class="readiness-signal__label">Media</span>
+                <span class="readiness-signal__summary">{mediaSummary}</span>
+                <div class="readiness-signal__chips">
+                    <template for:each={mediaChips} for:item="chip">
+                        <span key={chip.key} class="slds-badge readiness-chip readiness-chip_media">{chip.label}</span>
+                    </template>
+                </div>
+            </button>
+            </div>
+            <div class="slds-col">
+                <button
+                type="button"
+                class="readiness-signal slds-button slds-button_neutral"
+                data-category="mall"
+                aria-pressed={isMallSelected}
+                onclick={handleMallClick}>
+                <span class="readiness-signal__dot readiness-signal__dot_mall" data-status={mallStatus}></span>
+                <span class="readiness-signal__label">Malls</span>
+                <span class="readiness-signal__summary">{mallSummary}</span>
+                <div class="readiness-signal__chips">
+                    <template for:each={mallChips} for:item="chip">
+                        <span key={chip.key} class="slds-badge readiness-chip readiness-chip_mall">{chip.label}</span>
+                    </template>
+                </div>
+            </button>
+            </div>
+        </div>
+    </div>
+</template>

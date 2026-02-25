@@ -1,0 +1,70 @@
+.employee-home-dashboard {
+    padding: 0 var(--slds-spacing-small, 0.75rem);
+}
+
+.employee-home-dashboard .slds-page-header__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--slds-spacing-small, 0.75rem);
+}
+
+.employee-home-dashboard .slds-page-header__row-actions {
+    margin-left: auto;
+}
+
+.section-needs-attention,
+.section-active-work {
+    width: 100%;
+}
+
+/* Readiness Filters: 3 compact panels in a row on desktop, stacked on small screens */
+.readiness-filters-strip {
+    width: 100%;
+}
+
+.readiness-panels-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--slds-spacing-small, 0.75rem);
+}
+
+@media (min-width: 768px) {
+    .readiness-panels-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.readiness-panel {
+    min-width: 0;
+}
+
+/* Compact card body inside readiness strip */
+.readiness-filters-strip lightning-card .slds-card__body_inner {
+    padding: var(--slds-spacing-x-small, 0.5rem);
+}
+
+.readiness-filters-strip lightning-card {
+    margin-bottom: 0;
+}
+
+/* Active Filters bar: chips with remove (x) */
+.active-filters-bar .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding-right: 0;
+}
+
+.active-filters-bar .chip-remove {
+    --slds-c-button-neutral-color-border: transparent;
+}
+
+@media (max-width: 767px) {
+    .employee-home-dashboard {
+        padding: 0 var(--slds-spacing-x-small, 0.5rem);
+    }
+    .employee-home-dashboard .slds-page-header__row-actions lightning-button {
+        width: 100%;
+    }
+}

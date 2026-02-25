@@ -1,0 +1,115 @@
+<template>
+    <lightning-card title="My Active Work" icon-name="standard:work_order">
+        <div class="slds-card__body_inner">
+            <!-- Filters -->
+            <div class="filter-bar slds-m-bottom_medium">
+                <div class="slds-grid slds-wrap slds-gutters_small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6">
+                        <lightning-combobox
+                            name="status"
+                            label="Status"
+                            value={selectedStatus}
+                            options={statusOptionsWithAll}
+                            onchange={handleStatusChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6">
+                        <lightning-combobox
+                            name="priority"
+                            label="Priority"
+                            value={selectedPriority}
+                            options={priorityOptionsWithAll}
+                            onchange={handlePriorityChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6">
+                        <lightning-combobox
+                            name="mall"
+                            label="Mall"
+                            value={selectedMall}
+                            options={mallOptionsWithAll}
+                            onchange={handleMallChange}>
+                        </lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-6 slds-m-top_small slds-medium-m-top_none">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Quick filters</label>
+                            <div class="slds-form-element__control slds-m-top_xx-small">
+                                <lightning-input type="checkbox" label="Media Missing" checked={mediaMissingChecked} onchange={handleMediaMissingChange} data-filter="mediaMissing"></lightning-input>
+                                <lightning-input type="checkbox" label="Quote Needs Action" checked={quoteNeedsActionChecked} onchange={handleQuoteNeedsActionChange} data-filter="quoteNeedsAction"></lightning-input>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">Media Missing: required photos or documents not yet uploaded. Quote Needs Action: quote not sent or needs your review.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_medium">
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </div>
+            </template>
+            <template if:false={isLoading}>
+                <template if:true={hasRows}>
+                    <div class="table-wrapper slds-scrollable_x">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Work Order #</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Status</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Priority</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Mall</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Media</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Quote Status</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Escalation</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">SLA Age</th>
+                                    <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={rowsWithFormatted} for:item="row">
+                                    <tr key={row.id} class="slds-hint-parent row-clickable" data-id={row.id} onclick={handleRowClick}>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Work Order #">
+                                            <a href="javascript:void(0);" class="slds-text-link" data-id={row.id} onclick={handleWoLinkClick}>{row.workOrderNumber}</a>
+                                        </td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Status">
+                                            <span class={row.statusBadgeClass}>{row.status}</span>
+                                        </td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Priority">{row.priority}</td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Mall">{row.mall}</td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Media">
+                                            <span class="inline-status">
+                                                <span class="inline-status__dot inline-status__dot_media" data-status={row.mediaStatusKey}></span>
+                                                <span>{row.mediaStatusLabel}</span>
+                                            </span>
+                                        </td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Quote Status">
+                                            <span class="inline-status">
+                                                <span class="inline-status__dot inline-status__dot_quote" data-status={row.quoteStatusKey}></span>
+                                                <span class={row.quoteBadgeClass}>{row.quoteStatus}</span>
+                                            </span>
+                                        </td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Escalation">
+                                            <template if:true={row.hasEscalation}>
+                                                <lightning-icon icon-name="utility:warning" size="x-small" alternative-text="Escalation"></lightning-icon>
+                                            </template>
+                                            <template if:false={row.hasEscalation}>—</template>
+                                        </td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="SLA Age">{row.slaAgeDays}d</td>
+                                        <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Last Updated">{row.lastUpdatedFormatted}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template if:false={hasRows}>
+                    <div class="slds-p-around_large slds-text-align_center slds-text-color_weak">
+                        <p class="slds-text-heading_small slds-m-bottom_x-small">No work orders match these filters. Clear filters.</p>
+                        <p class="slds-text-body_small">Use the filter bar above to change criteria.</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

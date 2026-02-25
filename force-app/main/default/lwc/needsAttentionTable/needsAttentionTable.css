@@ -1,0 +1,38 @@
+.needs-attention-table-wrapper {
+    /* scoped wrapper */
+}
+
+/* 3px left priority strip on tr (no SLDS equivalent) */
+.needs-attention-table .needs-attention-row.category-priority-p1 {
+    border-left: 3px solid var(--slds-g-color-error-base-40, #c23934);
+}
+.needs-attention-table .needs-attention-row.category-priority-p2 {
+    border-left: 3px solid var(--slds-g-color-warning-base-50, #fe9339);
+}
+.needs-attention-table .needs-attention-row.category-priority-p3 {
+    border-left: 3px solid var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+/* Priority colors on category text only (no background), one line */
+.needs-attention-table .category-badge.category-priority-p1 {
+    color: var(--slds-g-color-error-base-40, #c23934);
+    font-size: var(--slds-g-font-size-3, 0.8125rem);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.needs-attention-table .category-badge.category-priority-p2 {
+    color: var(--slds-g-color-warning-base-50, #fe9339);
+    font-size: var(--slds-g-font-size-3, 0.8125rem);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.needs-attention-table .category-badge.category-priority-p3 {
+    color: var(--slds-g-color-brand-base-50, #0176d3);
+    font-size: var(--slds-g-font-size-3, 0.8125rem);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.empty-state {
+    color: var(--slds-g-color-neutral-base-50, #3e3e3c);
+}

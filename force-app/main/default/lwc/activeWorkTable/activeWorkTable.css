@@ -1,0 +1,63 @@
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.inline-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.inline-status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.inline-status__dot_media[data-status="missing"] {
+    background: var(--slds-g-color-error-base-40, #c23934);
+}
+.inline-status__dot_media[data-status="complete"] {
+    background: var(--slds-g-color-success-base-50, #2e844a);
+}
+
+.inline-status__dot_quote[data-status="draft"],
+.inline-status__dot_quote[data-status="neutral"] {
+    background: var(--slds-g-color-neutral-base-50, #706e6b);
+}
+.inline-status__dot_quote[data-status="pending"] {
+    background: var(--slds-g-color-warning-base-50, #fe9339);
+}
+.inline-status__dot_quote[data-status="ok"] {
+    background: var(--slds-g-color-success-base-50, #2e844a);
+}
+.inline-status__dot_quote[data-status="conflict"] {
+    background: var(--slds-g-color-error-base-40, #c23934);
+}
+
+.row-clickable {
+    cursor: pointer;
+}
+
+.row-clickable:hover {
+    background-color: var(--slds-color-background-row-hover, #f3f2f2);
+}
+
+/* Ensure tap targets >= 44px for row actions */
+.table-wrapper .slds-button {
+    min-height: 2.75rem;
+}
+
+/* On small screens, hide less critical columns to avoid horizontal scroll */
+@media (max-width: 480px) {
+    .table-wrapper th:nth-child(5),
+    .table-wrapper td:nth-child(5),
+    .table-wrapper th:nth-child(7),
+    .table-wrapper td:nth-child(7),
+    .table-wrapper th:nth-child(9),
+    .table-wrapper td:nth-child(9) {
+        display: none;
+    }
+}

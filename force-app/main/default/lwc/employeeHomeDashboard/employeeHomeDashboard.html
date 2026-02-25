@@ -1,0 +1,60 @@
+<template>
+    <div class="employee-home-dashboard">
+        <div class="slds-page-header slds-m-bottom_medium">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__row-title">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle">Operational Triage Console</h1>
+                    <p class="slds-page-header__meta-text slds-text-body_small slds-text-color_weak">Find and act on work orders that need your attention.</p>
+                </div>
+                <div class="slds-page-header__row-actions">
+                    <lightning-button label="New Work Order" variant="neutral" icon-name="utility:add" onclick={handleNewWorkOrder}></lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_x-large">
+                <lightning-spinner alternative-text="Loading triage data" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:true={hasError}>
+            <div class="slds-box slds-m-around_medium slds-theme_error">
+                <p class="slds-text-body_regular slds-m-bottom_small">{errorMessage}</p>
+                <p class="slds-text-body_small slds-m-bottom_small">Try again, or refresh the page. If the problem continues, contact your administrator.</p>
+                <lightning-button label="Try again" variant="brand" onclick={handleRetry} class="slds-m-top_x-small"></lightning-button>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:false={hasError}>
+                <!-- 1) Triage Zone: readiness bar + needs attention table (dark) -->
+                <div class="section-triage slds-m-bottom_medium">
+                    <c-triage-zone
+                        items={needsAttentionItems}
+                        quote-readiness={quoteReadiness}
+                        media-readiness={mediaReadiness}
+                        mall-summary={mallSummary}
+                        mall-awareness={mallAwareness}
+                        onviewworkorder={handleViewWorkOrder}>
+                    </c-triage-zone>
+                </div>
+
+                <!-- 2) My Active Work - full width, light background -->
+                <div class="section-active-work">
+                    <c-active-work-table
+                        rows={filteredActiveWorkRows}
+                        status-options={statusOptions}
+                        priority-options={priorityOptions}
+                        mall-options={mallOptions}
+                        filters={filters}
+                        is-loading={isLoading}
+                        has-active-filters={hasActiveFilters}
+                        onfilterchange={handleFilterChange}
+                        onrowclick={handleViewWorkOrder}>
+                    </c-active-work-table>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

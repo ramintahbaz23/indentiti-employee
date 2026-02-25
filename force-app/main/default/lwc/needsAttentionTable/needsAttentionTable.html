@@ -1,0 +1,58 @@
+<template>
+    <div class="needs-attention-table-wrapper">
+        <template if:true={hasItems}>
+            <div class="slds-scrollable_x">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped needs-attention-table">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Category</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Work Order #</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Client / Account</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Status</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Reason</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Age / SLA</th>
+                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={itemsWithMeta} for:item="row">
+                            <tr key={row.id} class={row.rowClass}>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Category">
+                                    <span class={row.categoryBadgeClass}>{row.categoryShortLabel}</span>
+                                </td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Work Order #">{row.workOrderNumber}</td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Client / Account">{row.account}</td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Status">
+                                    <span class="slds-badge slds-badge_lightest">{row.status}</span>
+                                </td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Reason">{row.reason}</td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Age / SLA">
+                                    <template if:true={row.slaAtRisk}>
+                                        <span class="slds-badge slds-badge_error">{row.ageDays}d</span>
+                                    </template>
+                                    <template if:false={row.slaAtRisk}>
+                                        <span>{row.ageDays}d</span>
+                                    </template>
+                                </td>
+                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Action">
+                                    <lightning-button
+                                        label={row.actionLabel}
+                                        variant="neutral"
+                                        data-id={row.workOrderId}
+                                        onclick={handleAction}>
+                                    </lightning-button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+        <template if:false={hasItems}>
+            <div class="slds-p-around_medium slds-text-align_center empty-state">
+                <p class="slds-text-body_regular slds-m-bottom_x-small">No items need attention.</p>
+                <p class="slds-text-body_small">Use the readiness bar above to filter, or view My Active Work below.</p>
+            </div>
+        </template>
+    </div>
+</template>

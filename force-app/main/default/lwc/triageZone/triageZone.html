@@ -1,0 +1,19 @@
+<template>
+    <div class="triage-zone slds-card slds-m-bottom_medium">
+        <c-readiness-status-bar
+            quote-readiness={quoteReadiness}
+            media-readiness={mediaReadiness}
+            mall-awareness={mallAwarenessForBar}
+            selected-category={triageFilterCategory}
+            ontriagefilterchange={handleTriageFilterChange}>
+        </c-readiness-status-bar>
+        <div class="slds-card__body slds-card__body_inner">
+            <h2 class="slds-text-heading_small slds-m-bottom_small">Needs Attention</h2>
+            <c-needs-attention-table
+                items={filteredAttentionItems}
+                first-item-id={firstItemId}
+                onviewworkorder={handleViewWorkOrder}>
+            </c-needs-attention-table>
+        </div>
+    </div>
+</template>

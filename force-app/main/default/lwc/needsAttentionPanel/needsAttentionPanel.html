@@ -1,0 +1,63 @@
+<template>
+    <lightning-card title="Needs Attention" icon-name="utility:warning">
+        <div slot="actions" if:true={hasPrimaryAction}>
+            <lightning-button label="Open highest priority" variant="brand" onclick={handleOpenFirst} class="slds-m-left_x-small"></lightning-button>
+        </div>
+        <div class="slds-card__body_inner">
+            <template if:true={hasItems}>
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-table_striped needs-attention-table">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">Category</th>
+                                <th class="slds-text-title_caps" scope="col">Work Order #</th>
+                                <th class="slds-text-title_caps" scope="col">Client / Account</th>
+                                <th class="slds-text-title_caps" scope="col">Status</th>
+                                <th class="slds-text-title_caps" scope="col">Reason</th>
+                                <th class="slds-text-title_caps" scope="col">Age / SLA</th>
+                                <th class="slds-text-title_caps" scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={itemsWithBadgeClass} for:item="row">
+                                <tr key={row.id} class="slds-hint-parent">
+                                    <td data-label="Category">
+                                        <span class={row.badgeClass}>{row.categoryShortLabel}</span>
+                                    </td>
+                                    <td data-label="Work Order #">{row.workOrderNumber}</td>
+                                    <td data-label="Client / Account">{row.account}</td>
+                                    <td data-label="Status">
+                                        <span class="slds-badge slds-badge_lightest">{row.status}</span>
+                                    </td>
+                                    <td data-label="Reason">{row.reason}</td>
+                                    <td data-label="Age / SLA">
+                                        <template if:true={row.slaAtRisk}>
+                                            <span class="slds-badge slds-badge_error">{row.ageDays}d</span>
+                                        </template>
+                                        <template if:false={row.slaAtRisk}>
+                                            <span>{row.ageDays}d</span>
+                                        </template>
+                                    </td>
+                                    <td data-label="Action">
+                                        <lightning-button
+                                            label="View"
+                                            variant="neutral"
+                                            data-id={row.workOrderId}
+                                            onclick={handleView}>
+                                        </lightning-button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template if:false={hasItems}>
+                <div class="slds-p-around_medium slds-text-align_center slds-text-color_weak">
+                    <p class="slds-text-body_regular slds-m-bottom_x-small">No items need attention.</p>
+                    <p class="slds-text-body_small">View My Active Work below to see all work orders.</p>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
