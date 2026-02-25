@@ -1,0 +1,27 @@
+<template>
+    <lightning-card title="Activity Log">
+        <div slot="actions">
+            <lightning-button-group>
+                <lightning-button label="All" onclick={showAll}></lightning-button>
+                <lightning-button label="Internal" onclick={showInternal}></lightning-button>
+                <lightning-button label="Client" onclick={showClient}></lightning-button>
+                <lightning-button label="System" onclick={showSystem}></lightning-button>
+            </lightning-button-group>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <template for:each={filteredEntries} for:item="entry">
+                <div key={entry.id} class="activity-entry">
+                    <div class="activity-avatar">{entry.initials}</div>
+                    <div class="activity-content">
+                        <div class="activity-header">
+                            <span class="activity-name">{entry.name}</span>
+                            <span class="activity-type-badge">{entry.type}</span>
+                            <span class="activity-time">{entry.time}</span>
+                        </div>
+                        <div class="activity-message">{entry.message}</div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

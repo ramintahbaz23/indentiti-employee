@@ -1059,72 +1059,42 @@
 </head>
 <body>
     <!-- Top Navigation Bar -->
+    <!-- Top nav -->
     <header class="top-nav">
         <div class="top-nav-container">
-            <!-- Left Section: Logo + Navigation -->
             <div class="top-nav-left">
                 <nav class="top-nav-menu" id="topNavMenu">
-                    <a href="index.html" class="nav-item">
-                        <span class="nav-item-text">Home</span>
-                    </a>
-                    <a href="view-all.html" class="nav-item">
-                        <span class="nav-item-text">Work Orders</span>
-                    </a>
+                    <a href="index.html" class="nav-item"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item"><span class="nav-item-text">Work Requests</span></a>
                     <div class="nav-item-dropdown">
-                        <a href="#" class="nav-item">
-                            <span class="nav-item-text">Accounting</span>
-                        </a>
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
                         <div class="nav-dropdown-menu">
-                            <a href="invoices.html" class="nav-dropdown-item">
-                                <span>Invoices</span>
-                            </a>
-                            <a href="estimates.html" class="nav-dropdown-item">
-                                <span>Estimates</span>
-                            </a>
+                            <a href="invoices.html" class="nav-dropdown-item"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
                         </div>
                     </div>
-                    <a href="approval-requests.html" class="nav-item">
-                        <span class="nav-item-text">Approval Requests</span>
-                    </a>
-                    <a href="client-store-info.html" class="nav-item active">
-                        <span class="nav-item-text">My Store List</span>
-                    </a>
-                    <a href="training-faqs.html" class="nav-item">
-                        <span class="nav-item-text">Training and FAQs</span>
-                    </a>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
                 </nav>
             </div>
-            
-            <!-- Right Section: User Info -->
             <div class="top-nav-right">
-                <!-- User Info -->
                 <div class="top-nav-user">
-                    <div class="notification-bell" id="notificationBell">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notification-badge has-count" id="notificationBadge">3</span>
                     </div>
                     <div class="user-avatar">MT</div>
                     <div class="user-details">
                         <div class="user-name">Mark Johnson</div>
-                        <div class="user-role">Purple Corporate Manager</div>
+                        <div class="user-role">Title</div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
@@ -1133,7 +1103,7 @@
         <main class="main-container">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="index.html">Home</a> > My Store List
+                <a href="index.html">Dashboard</a> > My Store List
             </div>
 
             <!-- Page Header -->

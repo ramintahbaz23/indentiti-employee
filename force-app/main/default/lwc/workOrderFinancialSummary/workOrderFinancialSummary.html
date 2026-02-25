@@ -1,0 +1,33 @@
+<template>
+    <lightning-card title="Financial Summary">
+        <div class="slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">NTE Amount</span><br/>{financial.nteAmount}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Quote Amount</span><br/>{financial.quoteAmount}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Quote Status</span><br/>
+                    <span class={financial.quoteStatusClass}>{financial.quoteStatus}</span>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Quote Date</span><br/>{financial.quoteDate}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Invoice Total</span><br/>{financial.invoiceTotal}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Balance Due</span><br/>{financial.balanceDue}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">Payment Status</span><br/>{financial.paymentStatus}
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_small">
+                    <span class="slds-text-title_caps slds-text-color_weak">PO Number</span><br/>{financial.poNumber}
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

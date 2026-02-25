@@ -569,14 +569,30 @@
                 padding-right: 1.5rem;
             }
 
-            .page-actions {
-                padding-right: 1.5rem;
-            }
 
             .search-filters-bar {
-                padding-right: 1.5rem;
+                padding: 1rem;
                 flex-wrap: wrap;
-                gap: 0.75rem;
+                gap: 1rem;
+            }
+
+            .search-bar-narrow {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .search-actions {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .inline-filter-status {
+                width: 100%;
+            }
+
+            .inline-filter-multiselect {
+                height: 64px;
+                min-height: 64px;
             }
 
             .search-actions {
@@ -604,13 +620,14 @@
             }
         }
 
-        /* Breadcrumb */
+        /* Breadcrumb - align left with metrics grid and page content */
         .breadcrumb {
             font-size: 0.875rem;
             color: #706e6b;
             margin-bottom: 1rem;
-            padding-left: 3rem;
+            margin-left: 0;
             padding-top: 1rem;
+            padding-left: 0;
         }
 
         .breadcrumb a {
@@ -628,7 +645,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-left: 3rem;
         }
 
         .page-title-section {
@@ -653,7 +669,7 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
-            padding-right: 3rem;
+            margin-left: auto;
         }
 
         .btn-icon {
@@ -692,14 +708,17 @@
             background: var(--sf-brand-dark);
         }
 
-        /* Search and Filters Bar - full width to align with metrics grid */
+        /* Search and Filters Bar - clean single row, aligned */
         .search-filters-bar {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.25rem 1.5rem;
+            align-items: flex-end;
             margin-bottom: 1.5rem;
-            padding-left: 0;
-            padding-right: 0;
+            padding: 1rem 1.25rem;
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
         }
 
         .search-bar {
@@ -708,10 +727,89 @@
             position: relative;
         }
 
+        .search-bar-narrow {
+            flex: 0 0 auto;
+            width: 300px;
+            min-width: 240px;
+        }
+
+        .search-bar-narrow input {
+            height: 36px;
+        }
+
+        .inline-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .inline-filter-group:not(.inline-filter-status) {
+            width: 200px;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
+
+        .inline-filter-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .inline-filter-input {
+            padding: 0.5rem 0.625rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            background: #ffffff;
+            height: 36px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .inline-filter-input:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .inline-filter-status {
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        .inline-filter-multiselect {
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            background: #ffffff;
+            height: 52px;
+            min-height: 52px;
+            font-family: inherit;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .inline-filter-multiselect:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .inline-filter-multiselect option {
+            padding: 0.2rem 0;
+        }
+
         .search-actions {
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            margin-left: auto;
+            flex-shrink: 0;
         }
 
         .btn-filter {
@@ -1264,6 +1362,42 @@
             font-size: 0.625rem;
         }
 
+        .th-status-dropdown {
+            white-space: nowrap;
+        }
+
+        .cell-status-dropdown {
+            vertical-align: middle;
+        }
+
+        .invoice-status-yesno {
+            padding: 0.375rem 1.75rem 0.375rem 0.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23706e6b' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 0.5rem center;
+            background-size: 12px;
+            appearance: none;
+            cursor: pointer;
+            min-width: 5rem;
+            font-family: inherit;
+        }
+
+        .invoice-status-yesno:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .cell-comment {
+            min-width: 220px;
+            max-width: 320px;
+            width: 280px;
+            word-wrap: break-word;
+            font-size: 0.8125rem;
+            color: #181818;
+        }
+
         tbody tr {
             border-bottom: 1px solid #f3f2f2;
             transition: background 0.2s;
@@ -1342,7 +1476,7 @@
             border-radius: 0.25rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-width: 150px;
-            z-index: 1000;
+            z-index: 10000;
             margin-top: 0.25rem;
         }
 
@@ -2003,73 +2137,42 @@
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
+    <!-- Top nav -->
     <header class="top-nav">
         <div class="top-nav-container">
-            <!-- Left Section: Logo + Navigation -->
             <div class="top-nav-left">
                 <nav class="top-nav-menu" id="topNavMenu">
-                    <a href="index.html" class="nav-item">
-                        <span class="nav-item-text">Home</span>
-                    </a>
-                    <a href="view-all.html" class="nav-item">
-                        <span class="nav-item-text">Work Orders</span>
-                    </a>
+                    <a href="index.html" class="nav-item"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item"><span class="nav-item-text">Work Requests</span></a>
                     <div class="nav-item-dropdown">
-                        <a href="#" class="nav-item">
-                            <span class="nav-item-text">Accounting</span>
-                        </a>
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
                         <div class="nav-dropdown-menu">
-                            <a href="invoices.html" class="nav-dropdown-item active">
-                                <span>Invoices</span>
-                            </a>
-                            <a href="estimates.html" class="nav-dropdown-item">
-                                <span>Estimates</span>
-                            </a>
+                            <a href="invoices.html" class="nav-dropdown-item active"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
                         </div>
                     </div>
-                    <a href="approval-requests.html" class="nav-item">
-                        <span class="nav-item-text">Approval Requests</span>
-                    </a>
-                    <a href="client-store-info.html" class="nav-item">
-                        <span class="nav-item-text">My Store List</span>
-                    </a>
-                    <a href="training-faqs.html" class="nav-item">
-                        <span class="nav-item-text">Training and FAQs</span>
-                    </a>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
                 </nav>
             </div>
-            
-            <!-- Right Section: User Info -->
             <div class="top-nav-right">
-                <!-- User Info -->
                 <div class="top-nav-user">
-                    <div class="notification-bell" id="notificationBell">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notification-badge has-count" id="notificationBadge">3</span>
                     </div>
                     <div class="user-avatar">MT</div>
                     <div class="user-details">
                         <div class="user-name">Mark Johnson</div>
-                        <div class="user-role">Purple Corporate Manager</div>
+                        <div class="user-role">Title</div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
@@ -2078,7 +2181,7 @@
         <main class="main-container">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="index.html">Home</a> > Client Invoices
+            <a href="index.html">Dashboard</a> > Client Invoices
         </div>
 
         <!-- Page Header -->
@@ -2087,7 +2190,9 @@
                 <h1 class="page-title">Client Invoices</h1>
                 <span class="page-count" id="totalCount">0 invoices</span>
             </div>
-            <div class="page-actions"></div>
+            <div class="page-actions">
+                <button type="button" class="btn-primary" id="addRequestBtn">Add Request</button>
+            </div>
         </div>
 
         <!-- Summary Cards (metrics row) -->
@@ -2108,23 +2213,35 @@
 
         <!-- Search and Filters Bar -->
         <div class="search-filters-bar">
-            <div class="search-bar">
+            <div class="search-bar search-bar-narrow">
                 <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input type="text" id="searchInput" placeholder="Search invoices...">
             </div>
+            <div class="inline-filter-group inline-filter-status">
+                <label class="inline-filter-label" for="filterStatus">Status</label>
+                <select multiple class="inline-filter-multiselect" id="filterStatus" title="Select one or more statuses">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
+                </select>
+            </div>
+            <div class="inline-filter-group">
+                <label class="inline-filter-label" for="filterCreated">Created</label>
+                <input type="date" class="inline-filter-input" id="filterCreated" title="Created date">
+            </div>
+            <div class="inline-filter-group">
+                <label class="inline-filter-label" for="filterPaidDate">Paid Date</label>
+                <input type="date" class="inline-filter-input" id="filterPaidDate" title="Paid date">
+            </div>
             <div class="search-actions">
-                <button class="btn-filter" id="filterToggleBtn" title="Filters">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                    </svg>
-                    <span>Filters</span>
-                    <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
-                </button>
+                <button type="button" class="btn-filter" id="pdfBtn" title="PDF">PDF</button>
                 <button class="btn-filter" id="csvAllBtn">CSV (ALL)</button>
             </div>
         </div>
 
-        <!-- Filters Section -->
+        <!-- Filters Section (additional filters) -->
         <div class="filters-section" id="filtersSection">
             <div class="filters-header">
                 <div class="filters-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -2134,27 +2251,8 @@
             </div>
             <div class="filters-row">
                 <div class="filter-group">
-                    <label class="filter-label">Created</label>
-                    <input type="date" class="filter-input" id="filterCreated">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Paid Date</label>
-                    <input type="date" class="filter-input" id="filterPaidDate">
-                </div>
-                <div class="filter-group">
                     <label class="filter-label">Corporate</label>
                     <input type="text" class="filter-input" id="filterCorporate" placeholder="Enter corporate name">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Status Name</label>
-                    <select class="filter-select" id="filterStatus">
-                        <option value="all">All Statuses</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Unpaid">Unpaid</option>
-                    </select>
                 </div>
             </div>
             <div class="active-filters" id="activeFilters">
@@ -2219,8 +2317,9 @@
                                 Paid Date
                                 <span class="sort-icon">⇅</span>
                             </th>
+                            <th class="th-status-dropdown">Status</th>
                             <th class="sortable" data-sort="status">
-                                Status
+                                Approval Status
                                 <span class="sort-icon">⇅</span>
                             </th>
                             <th>Comment</th>
@@ -2327,41 +2426,6 @@
             });
     </script>
     
-    <!-- Rejection Reason Modal -->
-    <div class="modal-overlay" id="rejectionModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Reject Invoice</h2>
-                <button class="modal-close" id="closeRejectionModal" aria-label="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-message">
-                    Please provide a reason for rejecting this invoice. This information will be recorded and may be used for review purposes.
-                </p>
-                <div class="modal-form-group">
-                    <label class="modal-label" for="rejectionReason">
-                        Reason for Rejection
-                        <span class="required">*</span>
-                    </label>
-                    <textarea 
-                        id="rejectionReason" 
-                        class="modal-textarea" 
-                        placeholder="Enter the reason for rejecting this invoice..."
-                        required
-                    ></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" id="cancelRejectionBtn">Cancel</button>
-                <button class="modal-btn modal-btn-primary" id="confirmRejectionBtn">Reject Invoice</button>
-            </div>
-        </div>
-    </div>
     <script src="store-time-weather.js"></script>
 </body>
 </html>

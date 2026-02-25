@@ -16,7 +16,9 @@ let state = {
         location: 'all'
     },
     activeFilterTags: [],
-    searchQuery: ''
+    searchQuery: '',
+    quickFilter: 'all',
+    quickFilterCounts: { all: 0, 'action-needed': 0, 'in-progress': 0, 'awaiting-approval': 0, completed: 0 }
 };
 
 // Utility Functions
@@ -38,6 +40,7 @@ function getStatusClass(status) {
         'On-site/In Progress': 'in-progress',
         'Dispatched': 'dispatched',
         'Work Complete': 'completed',
+        'Awaiting Estimate': 'awaiting-estimate',
         'Proposal Submitted': 'pending-approval',
         'Proposal Pending Approval': 'pending-approval',
         'Pending Schedule': 'pending-approval'
@@ -56,6 +59,33 @@ function formatPriorityDisplay(priority) {
     if (!priority) return '';
     // Display "Medium" as "NPW1"
     return priority === 'Medium' ? 'NPW1' : priority;
+}
+
+function getQuickStatus(wo) {
+    if (wo.isOverdue || wo.status === 'New') return 'action-needed';
+    if (wo.status === 'On-site/In Progress' || wo.status === 'Dispatched') return 'in-progress';
+    if (wo.status === 'Proposal Submitted' || wo.status === 'Proposal Pending Approval' || wo.status === 'Pending Schedule' || wo.status === 'Awaiting Parts') return 'awaiting-approval';
+    if (wo.status === 'Completed' || wo.status === 'Work Complete') return 'completed';
+    return null;
+}
+
+function getStatusBadgeHtml(statusText) {
+    if (statusText === 'Action Needed') {
+        return '<span class="slds-badge slds-theme_error">Action Needed</span>';
+    }
+    if (statusText === 'In Progress') {
+        return '<span class="slds-badge slds-theme_info">In Progress</span>';
+    }
+    if (statusText === 'Completed' || statusText === 'Work Complete') {
+        return '<span class="slds-badge slds-theme_success">Completed</span>';
+    }
+    if (statusText === 'Awaiting Approval') {
+        return '<span class="slds-badge" style="color:#a86403;">Awaiting Approval</span>';
+    }
+    if (statusText === 'Awaiting Estimate') {
+        return '<span class="slds-badge" style="color:#5c4a00;">Awaiting Estimate</span>';
+    }
+    return `<span class="slds-badge">${statusText}</span>`;
 }
 
 // Filter Functions
@@ -129,6 +159,18 @@ function filterWorkOrders() {
         }
     }
 
+    // Quick filter counts (from current filtered set) then apply quick filter
+    state.quickFilterCounts = {
+        all: filtered.length,
+        'action-needed': filtered.filter(wo => getQuickStatus(wo) === 'action-needed').length,
+        'in-progress': filtered.filter(wo => getQuickStatus(wo) === 'in-progress').length,
+        'awaiting-approval': filtered.filter(wo => getQuickStatus(wo) === 'awaiting-approval').length,
+        completed: filtered.filter(wo => getQuickStatus(wo) === 'completed').length
+    };
+    if (state.quickFilter !== 'all') {
+        filtered = filtered.filter(wo => getQuickStatus(wo) === state.quickFilter);
+    }
+
     // Sort - First prioritize by days overdue (3 days first, then 1 day), then apply user sort
     filtered.sort((a, b) => {
         // First, prioritize overdue work orders by days overdue (descending: 3 days before 1 day)
@@ -199,6 +241,22 @@ function filterWorkOrders() {
     state.currentPage = 1;
     updateActiveFilterTags();
     renderCurrentView();
+    updateQuickFilterTabs();
+}
+
+function updateQuickFilterTabs() {
+    const container = document.getElementById('quickFilterTabs');
+    if (!container) return;
+    const tabs = container.querySelectorAll('.quick-filter-tab');
+    const counts = state.quickFilterCounts || {};
+    tabs.forEach(btn => {
+        const key = btn.getAttribute('data-quick-filter');
+        const countSpan = btn.querySelector('.quick-filter-count');
+        if (countSpan) countSpan.textContent = counts[key] != null ? counts[key] : 0;
+        const isActive = state.quickFilter === key;
+        btn.style.color = isActive ? '#0176d3' : '#706e6b';
+        btn.style.borderBottom = isActive ? '2px solid #0176d3' : '2px solid transparent';
+    });
 }
 
 function renderCurrentView() {
@@ -267,26 +325,34 @@ function updateFilterBadge() {
     }
 }
 
+function renderPillHtml(label, filterType) {
+    const typeAttr = filterType ? ` data-filter-type="${filterType}"` : '';
+    return `<span class="slds-pill"${typeAttr}>
+        <span class="slds-pill__label">${label}</span>
+        <button type="button" class="slds-button slds-button_icon slds-pill__remove" title="Remove"${typeAttr}>
+            <svg class="slds-button__icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 52 52"><path d="M31 25.4l13-13.1c.6-.6.6-1.5 0-2.1l-2-2.1c-.5-.5-1.5-.5-2.1 0L27 21.2 14 8.1c-.5-.5-1.5-.5-2.1 0l-2 2.1c-.5.6-.5 1.5 0 2.1l13 13.1-13 13.1c-.5.6-.5 1.5 0 2.1l2 2.1c.6.6 1.5.6 2.1 0l13-13.1 13 13.1c.6.6 1.5.6 2.1 0l2-2.1c.6-.6.6-1.5 0-2.1L31 25.4z"/></svg>
+            <span class="slds-assistive-text">Remove</span>
+        </button>
+    </span>`;
+}
+
 function renderActiveFilters() {
     const container = document.getElementById('activeFilters');
-    
+    if (!container) return;
+
     if (state.activeFilterTags.length === 0) {
-        container.innerHTML = '';
+        container.innerHTML = '<span class="active-filters-empty">No filters applied</span><div class="slds-pill_container">' + renderPillHtml('Status: Action Needed', '') + '</div>';
         updateFilterBadge();
         return;
     }
     
-    container.innerHTML = state.activeFilterTags.map(tag => `
-        <div class="filter-tag">
-            <span>${tag.label}</span>
-            <span class="filter-tag-remove" data-filter-type="${tag.type}">×</span>
-        </div>
-    `).join('');
+    const pillsHtml = state.activeFilterTags.map(tag => renderPillHtml(tag.label, tag.type)).join('');
+    container.innerHTML = '<div class="slds-pill_container">' + pillsHtml + '</div>';
     
-    // Attach remove listeners
-    container.querySelectorAll('.filter-tag-remove').forEach(btn => {
+    container.querySelectorAll('.slds-pill__remove').forEach(btn => {
         btn.addEventListener('click', () => {
             const filterType = btn.dataset.filterType;
+            if (!filterType) return;
             state.filters[filterType] = 'all';
             const filterElement = document.getElementById(`filter${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`);
             if (filterElement) filterElement.value = 'all';
@@ -360,14 +426,12 @@ function renderTable() {
                 <td>
                     ${wo.isOverdue && wo.daysOverdue ? `
                         <div class="status-with-tooltip">
-                            <span class="status-text status-${statusClass}">${statusText}</span>
+                            ${getStatusBadgeHtml(statusText)}
                             <div class="hover-tooltip">
                                 ${wo.daysOverdue} ${wo.daysOverdue === 1 ? 'day' : 'days'} overdue
                             </div>
                         </div>
-                    ` : `
-                        <span class="status-text status-${statusClass}">${statusText}</span>
-                    `}
+                    ` : getStatusBadgeHtml(statusText)}
                 </td>
                 <td>
                     <span class="priority-badge priority-${getPriorityClass(wo.priority)}">
@@ -629,6 +693,14 @@ document.addEventListener('DOMContentLoaded', () => {
         filterWorkOrders();
     });
     
+    // Quick filter tabs
+    document.querySelectorAll('.quick-filter-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            state.quickFilter = btn.getAttribute('data-quick-filter');
+            filterWorkOrders();
+        });
+    });
+
     // Clear all filters
     document.getElementById('clearAll').addEventListener('click', (e) => {
         e.preventDefault();
@@ -640,6 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
             location: 'all'
         };
         state.searchQuery = '';
+        state.quickFilter = 'all';
         
         document.getElementById('filterStatus').value = 'all';
         const filterPriorityEl = document.getElementById('filterPriority');
@@ -705,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tableContainer').style.display = 'block';
     document.getElementById('workOrdersGrid').style.display = 'none';
     filterWorkOrders();
+    updateQuickFilterTabs();
     renderSidebarNavigation();
 });
 

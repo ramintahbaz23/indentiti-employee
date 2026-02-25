@@ -1,0 +1,13 @@
+.operational-triage-console {
+    padding: 0;
+}
+
+.category-amber { color: #a86403; font-weight: 600; }
+.category-blue { color: #0176d3; font-weight: 600; }
+.kpi-red { color: #ba0517; }
+.kpi-amber { color: #a86403; }
+.sla-red { color: #ba0517; font-weight: 600; }
+.sla-amber { color: #a86403; font-weight: 600; }
+.sla-neutral { color: #706e6b; }
+.media-bad { color: #ba0517; font-weight: 600; }
+.media-ok { color: #2e844a; font-weight: 600; }

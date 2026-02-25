@@ -1163,6 +1163,21 @@
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
+            align-items: stretch;
+        }
+        .cards-grid > * {
+            min-height: 0;
+        }
+        /* Equal-height cards only inside the three-column grid (Store, Client, Financial) */
+        .cards-grid > div[style*="grid-template-columns: 1fr 1fr 1fr"] > div {
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
+        }
+        .cards-grid > .card {
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
         }
 
         @media (max-width: 1200px) {
@@ -2152,83 +2167,53 @@
     </style>
 </head>
 <body>
+    <!-- Top nav -->
     <header class="top-nav">
         <div class="top-nav-container">
-            <!-- Left Section: Logo + Navigation -->
             <div class="top-nav-left">
                 <nav class="top-nav-menu" id="topNavMenu">
-                    <a href="index.html" class="nav-item">
-                        <span class="nav-item-text">Home</span>
-                    </a>
-                    <a href="view-all.html" class="nav-item active">
-                        <span class="nav-item-text">Work Orders</span>
-                    </a>
+                    <a href="index.html" class="nav-item"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item active"><span class="nav-item-text">Work Requests</span></a>
                     <div class="nav-item-dropdown">
-                        <a href="#" class="nav-item">
-                            <span class="nav-item-text">Accounting</span>
-                        </a>
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
                         <div class="nav-dropdown-menu">
-                            <a href="invoices.html" class="nav-dropdown-item">
-                                <span>Invoices</span>
-                            </a>
-                            <a href="estimates.html" class="nav-dropdown-item">
-                                <span>Estimates</span>
-                            </a>
+                            <a href="invoices.html" class="nav-dropdown-item"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
                         </div>
                     </div>
-                    <a href="approval-requests.html" class="nav-item">
-                        <span class="nav-item-text">Approval Requests</span>
-                    </a>
-                    <a href="client-store-info.html" class="nav-item">
-                        <span class="nav-item-text">My Store List</span>
-                    </a>
-                    <a href="training-faqs.html" class="nav-item">
-                        <span class="nav-item-text">Training and FAQs</span>
-                    </a>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
                 </nav>
             </div>
-            
-            <!-- Right Section: User Info -->
             <div class="top-nav-right">
-                <!-- User Info -->
                 <div class="top-nav-user">
-                    <div class="notification-bell" id="notificationBell">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notification-badge has-count" id="notificationBadge">3</span>
                     </div>
                     <div class="user-avatar">MT</div>
                     <div class="user-details">
                         <div class="user-name">Mark Johnson</div>
-                        <div class="user-role">Purple Corporate Manager</div>
+                        <div class="user-role">Title</div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
     <!-- Main Content -->
     <div class="main-wrapper">
-        <main class="main-container">
+        <main class="main-container wo-detail-page" data-status="action-needed">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
                 <a href="index.html">Dashboard</a>
                 <span class="breadcrumb-separator">></span>
-                <a href="view-all.html">Work Orders</a>
+                <a href="view-all.html">Work Requests</a>
                 <span class="breadcrumb-separator">></span>
                 <span id="workOrderId">Work Order Details</span>
             </div>
@@ -2243,34 +2228,18 @@
                     <div class="page-subtitle" id="pageSubtitle">Loading work order information...</div>
                 </div>
                 <div class="page-header-right">
-                    <div class="cta-buttons-group">
-                        <button type="button" class="btn-secondary" id="printViewBtn" title="Print view">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path></svg>
-                            Print View
-                        </button>
-                        <button class="btn-success" id="dispatchBtn" style="display: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                            Dispatch
-                        </button>
-                        <button class="btn-danger" id="declineBtn" style="display: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            Decline
-                        </button>
-                        <button class="btn-primary" id="primaryCtaBtn" style="display: none;">
-                            <span id="primaryCtaLabel">Action</span>
-                        </button>
-                        <div class="more-actions-dropdown" id="moreActionsDropdown">
-                            <button class="btn-secondary btn-more" id="moreActionsBtn" title="More actions" aria-haspopup="true" aria-expanded="false">
-                                <svg class="slds-icon slds-icon_x-small" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            <div class="dropdown-menu" id="moreActionsMenu" style="display: none;">
-                                <div class="dropdown-menu-content" id="moreActionsContent"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="cta-buttons-group header-actions"></div>
                 </div>
+            </div>
+
+            <!-- Account-level alert banner -->
+            <div id="accountAlertBanner" style="background: #fff1ee; border: 1px solid #fdb9ad; border-left: 4px solid #ba0517; border-radius: 4px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 12px;">
+                <span style="color: #ba0517; font-size: 16px; font-weight: 700; flex-shrink: 0;">⚠</span>
+                <div>
+                    <div style="font-size: 13px; font-weight: 700; color: #ba0517; margin-bottom: 2px;">Mall Alert — Silas Creek Crossing</div>
+                    <div style="font-size: 12px; color: #3e3e3c;">Compliance requirements must be acknowledged before dispatch. Certificate of Insurance on file expires Mar 1, 2026.</div>
+                </div>
+                <button type="button" id="accountAlertDismiss" aria-label="Dismiss" style="margin-left: auto; background: none; border: none; color: #706e6b; font-size: 16px; cursor: pointer; flex-shrink: 0;">×</button>
             </div>
 
             <!-- Work Order Details Section -->
@@ -2360,35 +2329,6 @@
 
             <!-- Cards Grid -->
             <div class="cards-grid">
-                <!-- Store Details Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Store Details</h2>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <div class="form-value" id="storeName">-</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Mall</label>
-                            <div class="form-value" id="storeMall">-</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone</label>
-                            <div class="form-value" id="storePhone">-</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <div class="form-value" id="storeEmail">-</div>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Address</label>
-                            <div class="form-value" id="storeAddress">-</div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Work Order Summary Card -->
                 <div class="card">
                     <div class="card-header">
@@ -2401,7 +2341,180 @@
                         </div>
                         <div class="form-group full-width">
                             <label>Description</label>
-                            <textarea id="description" rows="6" readonly>Manager reports needing several ceiling tiles cut and replaced in back of store. The tiles have water damage from a previous leak and need to be removed and replaced with new tiles. Please coordinate with store manager for access to the back storage area.</textarea>
+                            <textarea id="description" rows="6" readonly style="min-height: 120px;">Manager reports needing several ceiling tiles cut and replaced in back of store. The tiles have water damage from a previous leak and need to be removed and replaced with new tiles. Please coordinate with store manager for access to the back storage area.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div style="background: #ffffff; border: 1px solid #dddbda; border-radius: 4px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); height: 100%; min-height: 0; box-sizing: border-box;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #dddbda;">
+                        <div style="font-size: 14px; font-weight: 700; color: #080707;">Activity Log</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" style="font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; border: 1px solid #dddbda; background: #f4f6f9; color: #3e3e3c; cursor: pointer;">All</button>
+                            <button type="button" style="font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; border: 1px solid #0176d3; background: #e8f4fd; color: #0176d3; cursor: pointer;">Internal</button>
+                            <button type="button" style="font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; border: 1px solid #dddbda; background: #f4f6f9; color: #3e3e3c; cursor: pointer;">Client</button>
+                            <button type="button" style="font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; border: 1px solid #dddbda; background: #f4f6f9; color: #3e3e3c; cursor: pointer;">System</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0;">
+
+                        <!-- Entry 1 -->
+                        <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f6f9;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #1b4f8a; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">SJ</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #080707;">Sarah Johnson</span>
+                                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; background: #e8f4fd; color: #0176d3; text-transform: uppercase;">Internal</span>
+                                    <span style="font-size: 11px; color: #706e6b; margin-left: auto;">4 days ago</span>
+                                </div>
+                                <div style="font-size: 12px; color: #3e3e3c;">Contacted store manager to confirm access to back storage area. Awaiting confirmation.</div>
+                            </div>
+                        </div>
+
+                        <!-- Entry 2 -->
+                        <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f6f9;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #2e844a; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">CL</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #080707;">Client Portal</span>
+                                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; background: #effaf3; color: #2e844a; text-transform: uppercase;">Client</span>
+                                    <span style="font-size: 11px; color: #706e6b; margin-left: auto;">3 days ago</span>
+                                </div>
+                                <div style="font-size: 12px; color: #3e3e3c;">Store manager confirmed access. Work can proceed on scheduled date.</div>
+                            </div>
+                        </div>
+
+                        <!-- Entry 3 -->
+                        <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f4f6f9;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #706e6b; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">SY</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #080707;">System</span>
+                                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; background: #f4f6f9; color: #706e6b; text-transform: uppercase;">System</span>
+                                    <span style="font-size: 11px; color: #706e6b; margin-left: auto;">2 days ago</span>
+                                </div>
+                                <div style="font-size: 12px; color: #3e3e3c;">Status updated to Action Needed. Quote approved, pending dispatch.</div>
+                            </div>
+                        </div>
+
+                        <!-- Entry 4 -->
+                        <div style="display: flex; gap: 12px; padding: 12px 0;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #1b4f8a; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">MJ</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #080707;">Mark Johnson</span>
+                                    <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; background: #e8f4fd; color: #0176d3; text-transform: uppercase;">Internal</span>
+                                    <span style="font-size: 11px; color: #706e6b; margin-left: auto;">1 day ago</span>
+                                </div>
+                                <div style="font-size: 12px; color: #3e3e3c;">Reviewed quote. Ready to dispatch pending mall compliance sign-off.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Store Details + Client Details + Financial Summary (three column) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; align-items: stretch; grid-column: 1 / -1;">
+                    <!-- Store Details Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Store Details</h2>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <div class="form-value" id="storeName">-</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Mall</label>
+                                <div class="form-value" id="storeMall">-</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <div class="form-value" id="storePhone">-</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <div class="form-value" id="storeEmail">-</div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Address</label>
+                                <div class="form-value" id="storeAddress">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Details Card -->
+                    <div style="background: #ffffff; border: 1px solid #dddbda; border-radius: 4px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.06);">
+                        <div style="font-size: 14px; font-weight: 700; color: #080707; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #dddbda;">Client Details</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Client Name</div>
+                                <div style="font-size: 13px; color: #080707;">Warhammer Inc.</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Contact Name</div>
+                                <div style="font-size: 13px; color: #080707;">Sarah Johnson</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Phone</div>
+                                <div style="font-size: 13px; color: #080707;">+1 743-643-4182</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Email</div>
+                                <div style="font-size: 13px; color: #0176d3;">client@warhammer.com</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Account Type</div>
+                                <div style="font-size: 13px; color: #080707;">Retail Chain</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Portal Access</div>
+                                <div style="font-size: 13px; color: #2e844a; font-weight: 600;">Active</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Summary -->
+                    <div style="background: #ffffff; border: 1px solid #dddbda; border-radius: 4px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); height: 100%; min-height: 0; box-sizing: border-box;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #dddbda;">
+                            <div style="font-size: 14px; font-weight: 700; color: #080707;">Financial Summary</div>
+                            <span style="font-size: 11px; color: #706e6b;">CPQ Display Only — Read Only</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">NTE Amount</div>
+                                <div style="font-size: 20px; font-weight: 700; color: #080707;">$550.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Quote Amount</div>
+                                <div style="font-size: 20px; font-weight: 700; color: #080707;">$520.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Quote Status</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #a86403;">Awaiting Approval</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Quote Date</div>
+                                <div style="font-size: 13px; color: #080707;">02/23/2026</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Invoice Total</div>
+                                <div style="font-size: 20px; font-weight: 700; color: #080707;">$0.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Balance Due</div>
+                                <div style="font-size: 20px; font-weight: 700; color: #ba0517;">$520.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">Payment Status</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #ba0517;">Unpaid</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 4px;">PO Number</div>
+                                <div style="font-size: 13px; color: #080707;">PO-2026-0042</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2439,26 +2552,65 @@
                 <div class="tab-content active" id="messagesContent">
                     <div class="messages-content">
                         <div class="chatter-feed">
-                            <div class="chatter-composer">
-                                <textarea id="chatterPostInput" class="chatter-composer-textarea" placeholder="Share an update..." rows="3"></textarea>
-                                <div class="chatter-composer-actions">
-                                    <div class="chatter-composer-left">
-                                        <button class="chatter-action-btn" type="button" title="Attach file">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="17 8 12 3 7 8"></polyline>
-                                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                                            </svg>
-                                            <span>Attach</span>
-                                        </button>
-                                        <input type="file" id="chatterFileInput" style="display: none;" multiple>
+                            <div style="padding: 8px 16px; background: #f4f6f9; border-bottom: 1px solid #dddbda; font-size: 12px; color: #706e6b;">
+                                For operational notes and client communication history, use the Activity Log above. Messages here sync to the client portal via MuleSoft.
+                            </div>
+                            <div style="background: #ffffff; border: 1px solid #dddbda; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 0; margin-bottom: 16px; border: 1px solid #dddbda; border-radius: 4px; overflow: hidden; width: fit-content;">
+                                    <button type="button" id="mode-internal" onclick="setMode('internal')" style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: #0176d3; color: #ffffff; border: none; cursor: pointer;">
+                                        Internal Note
+                                    </button>
+                                    <button type="button" id="mode-client" onclick="setMode('client')" style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: #ffffff; color: #3e3e3c; border: none; border-left: 1px solid #dddbda; cursor: pointer;">
+                                        Client Message
+                                    </button>
+                                </div>
+                                <div id="fields-internal">
+                                    <textarea style="width: 100%; border: 1px solid #dddbda; border-radius: 4px; padding: 10px; font-size: 13px; color: #080707; min-height: 80px; resize: vertical; font-family: inherit; margin-bottom: 10px;" placeholder="Add an internal note..."></textarea>
+                                    <div style="display: flex; justify-content: flex-end;">
+                                        <button type="button" style="background: #0176d3; color: #ffffff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;">Post Note</button>
                                     </div>
-                                    <div class="chatter-composer-right">
-                                        <button class="btn-secondary" type="button" id="chatterCancelBtn" style="display: none;">Cancel</button>
-                                        <button class="btn-primary" type="button" id="chatterPostBtn">Post</button>
+                                </div>
+                                <div id="fields-client" style="display: none;">
+                                    <div style="margin-bottom: 12px;">
+                                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 6px;">Recipients</div>
+                                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                            <span style="background: #e8f4fd; border: 1px solid #0176d3; color: #0176d3; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                                Sarah Johnson — Store Manager
+                                                <span style="cursor: pointer;">×</span>
+                                            </span>
+                                            <button type="button" style="background: #f4f6f9; border: 1px dashed #dddbda; color: #706e6b; border-radius: 20px; padding: 3px 10px; font-size: 12px; cursor: pointer;">+ Add Recipient</button>
+                                        </div>
+                                    </div>
+                                    <div style="margin-bottom: 12px;">
+                                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #706e6b; margin-bottom: 6px;">Template</div>
+                                        <select style="width: 100%; border: 1px solid #dddbda; border-radius: 4px; padding: 8px 10px; font-size: 13px; color: #080707; background: #ffffff;">
+                                            <option>Standard Client Update</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 12px;">
+                                        <textarea style="width: 100%; border: 1px solid #dddbda; border-radius: 4px; padding: 10px; font-size: 13px; color: #080707; min-height: 80px; resize: vertical; font-family: inherit;" placeholder="Write a client-facing message..."></textarea>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 12px; background: #fff1ee; border: 1px solid #fdb9ad; border-radius: 4px;">
+                                        <input type="checkbox" id="action-required" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ba0517;">
+                                        <label for="action-required" style="font-size: 13px; font-weight: 600; color: #ba0517; cursor: pointer;">Mark as Action Required</label>
+                                        <span style="font-size: 11px; color: #706e6b;">Client will be notified this requires a response</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="font-size: 11px; color: #706e6b;">Sends via MuleSoft → FEXA</span>
+                                        <button type="button" style="background: #0176d3; color: #ffffff; border: none; border-radius: 4px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Send to Client →</button>
                                     </div>
                                 </div>
                             </div>
+                            <script>
+                            function setMode(mode) {
+                                document.getElementById('fields-internal').style.display = mode === 'internal' ? 'block' : 'none';
+                                document.getElementById('fields-client').style.display = mode === 'client' ? 'block' : 'none';
+                                document.getElementById('mode-internal').style.background = mode === 'internal' ? '#0176d3' : '#ffffff';
+                                document.getElementById('mode-internal').style.color = mode === 'internal' ? '#ffffff' : '#3e3e3c';
+                                document.getElementById('mode-client').style.background = mode === 'client' ? '#0176d3' : '#ffffff';
+                                document.getElementById('mode-client').style.color = mode === 'client' ? '#ffffff' : '#3e3e3c';
+                            }
+                            </script>
                             <div class="chatter-feed-list" id="commentsList">
                                 <div class="empty-state">No posts yet. Share an update!</div>
                             </div>
@@ -2487,6 +2639,9 @@
 
                 <!-- Estimates Tab Content -->
                 <div class="tab-content" id="estimatesContent">
+                    <div style="padding: 20px; color: #706e6b; font-size: 13px; text-align: center;">
+                        CPQ financial data is now available in the Financial Summary section above. This tab is retained for detailed line item access only.
+                    </div>
                     <div class="related-list-section">
                         <div class="related-list-header">
                             <h3 class="related-list-title">Estimates</h3>
@@ -2561,6 +2716,70 @@
     <script src="estimates-data.js"></script>
     <script src="store-time-weather.js"></script>
     <script src="work-order-details-app.js"></script>
+    <script>
+        (function() {
+            var key = 'workOrderDetailsAccountAlertDismissed';
+            var banner = document.getElementById('accountAlertBanner');
+            var btn = document.getElementById('accountAlertDismiss');
+            if (sessionStorage.getItem(key)) { if (banner) banner.style.display = 'none'; return; }
+            if (btn && banner) btn.addEventListener('click', function() { sessionStorage.setItem(key, '1'); banner.style.display = 'none'; });
+        })();
+    </script>
+    <script>
+        (function() {
+            var page = document.querySelector('.wo-detail-page');
+            if (!page) return;
+            var status = page.dataset.status || 'action-needed';
+            var buttonConfigs = {
+                'action-needed': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' },
+                    { label: '+ Create Child Work Order', style: 'outline' },
+                    { label: 'Dispatch', style: 'primary' },
+                    { label: '\u2715 Decline', style: 'danger' }
+                ],
+                'awaiting-approval': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' },
+                    { label: '+ Create Child Work Order', style: 'outline' },
+                    { label: 'Approve', style: 'primary' },
+                    { label: '\u2715 Reject', style: 'danger' }
+                ],
+                'awaiting-estimate': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' },
+                    { label: '+ Create Child Work Order', style: 'outline' },
+                    { label: 'Create Estimate', style: 'primary' }
+                ],
+                'in-progress': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' },
+                    { label: '+ Create Child Work Order', style: 'outline' },
+                    { label: 'Escalate', style: 'danger' }
+                ],
+                'on-hold': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' },
+                    { label: '+ Create Child Work Order', style: 'outline' },
+                    { label: 'Resume', style: 'primary' },
+                    { label: '\u2715 Decline', style: 'danger' }
+                ],
+                'completed': [
+                    { label: 'Print View', style: 'secondary', icon: '\uD83D\uDDA8' }
+                ]
+            };
+            var styles = {
+                primary: 'background:#2e844a;color:#fff;border:none;',
+                danger: 'background:#ba0517;color:#fff;border:none;',
+                secondary: 'background:#fff;color:#3e3e3c;border:1px solid #dddbda;',
+                outline: 'background:#fff;color:#0176d3;border:1px solid #0176d3;'
+            };
+            var buttons = buttonConfigs[status] || buttonConfigs['action-needed'];
+            var container = document.querySelector('.header-actions');
+            if (container) {
+                container.innerHTML = buttons.map(function(btn) {
+                    var style = styles[btn.style] || styles.secondary;
+                    var text = (btn.icon || '') + btn.label;
+                    return '<button type="button" style="' + style + ' border-radius:4px; padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">' + text + '</button>';
+                }).join('');
+            }
+        })();
+    </script>
 </body>
 </html>
 

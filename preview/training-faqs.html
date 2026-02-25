@@ -101,8 +101,22 @@ body {
   border-bottom-color: var(--sf-brand);
 }
 
+.nav-item-text { white-space: nowrap; }
+
 .nav-item-dropdown {
   position: relative;
+}
+
+.nav-item-dropdown .nav-item-text::after {
+  content: '';
+  display: inline-block;
+  margin-left: 0.5rem;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  vertical-align: middle;
 }
 
 .nav-dropdown-menu {
@@ -197,6 +211,84 @@ body {
   font-size: 0.6875rem;
   color: #706e6b;
   white-space: nowrap;
+}
+
+.notification-bell {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.notification-bell:hover { background: #f3f2f2; }
+
+.notification-bell svg { width: 18px; height: 18px; color: #706e6b; }
+
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ea001e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.notification-badge.has-count {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ea001e;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 2px;
+  right: 2px;
+  border: 2px solid #fff;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #3e3e3c;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+}
+
+.mobile-menu-toggle:hover { background: #f3f2f2; }
+
+.mobile-menu-toggle svg { width: 24px; height: 24px; }
+
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+}
+
+.mobile-nav-overlay.show { display: block; }
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle { display: flex; }
 }
 
 /* Main Content */
@@ -957,53 +1049,44 @@ body {
 </head>
 <body>
 
-<!-- Top Navigation -->
-<header class="top-nav">
-  <div class="top-nav-container">
-    <div class="top-nav-left">
-      <nav class="top-nav-menu">
-        <a href="index.html" class="nav-item">
-          <span>Home</span>
-        </a>
-        <a href="view-all.html" class="nav-item">
-          <span>Work Orders</span>
-        </a>
-        <div class="nav-item-dropdown">
-          <a href="#" class="nav-item">
-            <span>Accounting</span>
-          </a>
-          <div class="nav-dropdown-menu">
-            <a href="invoices.html" class="nav-dropdown-item">
-              <span>Invoices</span>
-            </a>
-            <a href="estimates.html" class="nav-dropdown-item">
-              <span>Estimates</span>
-            </a>
-          </div>
+    <!-- Top nav -->
+    <header class="top-nav">
+        <div class="top-nav-container">
+            <div class="top-nav-left">
+                <nav class="top-nav-menu" id="topNavMenu">
+                    <a href="index.html" class="nav-item"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item"><span class="nav-item-text">Work Requests</span></a>
+                    <div class="nav-item-dropdown">
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="invoices.html" class="nav-dropdown-item"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
+                        </div>
+                    </div>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
+                </nav>
+            </div>
+            <div class="top-nav-right">
+                <div class="top-nav-user">
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span class="notification-badge has-count" id="notificationBadge">3</span>
+                    </div>
+                    <div class="user-avatar">MT</div>
+                    <div class="user-details">
+                        <div class="user-name">Mark Johnson</div>
+                        <div class="user-role">Title</div>
+                    </div>
+                </div>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
         </div>
-        <a href="approval-requests.html" class="nav-item">
-          <span>Approval Requests</span>
-        </a>
-        <a href="client-store-info.html" class="nav-item">
-          <span>My Store List</span>
-        </a>
-        <a href="training-faqs.html" class="nav-item active">
-          <span>Training and FAQs</span>
-        </a>
-      </nav>
-    </div>
-    
-    <div class="top-nav-right">
-      <div class="top-nav-user">
-        <div class="user-avatar">MT</div>
-        <div class="user-details">
-          <div class="user-name">Mark Johnson</div>
-          <div class="user-role">Purple Corporate Manager</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    </header>
 
 <!-- Main Content -->
 <div class="main-wrapper">

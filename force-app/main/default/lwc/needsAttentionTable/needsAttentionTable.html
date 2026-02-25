@@ -1,58 +1,63 @@
 <template>
-    <div class="needs-attention-table-wrapper">
-        <template if:true={hasItems}>
+    <lightning-card title={cardTitle} icon-name="standard:feedback">
+        <div class="slds-card__body_inner">
             <div class="slds-scrollable_x">
-                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped needs-attention-table">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered needs-attention-table">
                     <thead>
                         <tr class="slds-line-height_reset">
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Category</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Work Order #</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Client / Account</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Status</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Reason</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Age / SLA</th>
-                            <th class="slds-text-title_caps slds-cell-buffer_left slds-cell-buffer_right" scope="col">Action</th>
+                            <th class="slds-text-title_caps" scope="col">Category</th>
+                            <th class="slds-text-title_caps" scope="col">Work Order #</th>
+                            <th class="slds-text-title_caps" scope="col">Client / Account</th>
+                            <th class="slds-text-title_caps" scope="col">Status</th>
+                            <th class="slds-text-title_caps" scope="col">Reason</th>
+                            <th class="slds-text-title_caps" scope="col">Age / SLA</th>
+                            <th class="slds-text-title_caps slds-cell-shrink" scope="col" aria-label="Expand"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <template for:each={itemsWithMeta} for:item="row">
-                            <tr key={row.id} class={row.rowClass}>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Category">
-                                    <span class={row.categoryBadgeClass}>{row.categoryShortLabel}</span>
+                        <template for:each={itemsWithState} for:item="row">
+                            <tr key={row.id} class="slds-hint-parent">
+                                <td data-label="Category">
+                                    <span class={row.categoryClass}>{row.category}</span>
                                 </td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Work Order #">{row.workOrderNumber}</td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Client / Account">{row.account}</td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Status">
+                                <td data-label="Work Order #">{row.workOrder}</td>
+                                <td data-label="Client / Account">{row.client}</td>
+                                <td data-label="Status">
                                     <span class="slds-badge slds-badge_lightest">{row.status}</span>
                                 </td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Reason">{row.reason}</td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Age / SLA">
-                                    <template if:true={row.slaAtRisk}>
-                                        <span class="slds-badge slds-badge_error">{row.ageDays}d</span>
-                                    </template>
-                                    <template if:false={row.slaAtRisk}>
-                                        <span>{row.ageDays}d</span>
-                                    </template>
+                                <td data-label="Reason">{row.reason}</td>
+                                <td data-label="Age / SLA">{row.slaAge}</td>
+                                <td class="slds-cell-shrink" data-label="">
+                                    <button type="button"
+                                        class="slds-button slds-button_icon slds-button_icon-container"
+                                        data-id={row.id}
+                                        onclick={handleRowToggle}
+                                        aria-expanded={row.isExpanded}
+                                        title="Expand row">
+                                        <lightning-icon
+                                            icon-name={row.isExpandedIcon}
+                                            alternative-text="Expand"
+                                            size="x-small">
+                                        </lightning-icon>
+                                    </button>
                                 </td>
-                                <td class="slds-cell-buffer_left slds-cell-buffer_right" data-label="Action">
-                                    <lightning-button
-                                        label={row.actionLabel}
-                                        variant="neutral"
-                                        data-id={row.workOrderId}
-                                        onclick={handleAction}>
-                                    </lightning-button>
+                            </tr>
+                            <tr key={row.drawerKey} class="needs-attention-drawer-row" if:true={row.isExpanded}>
+                                <td colspan="7" class="needs-attention-drawer-cell">
+                                    <div class="slds-p-around_small">
+                                        <lightning-button
+                                            label={row.action}
+                                            variant="brand"
+                                            data-id={row.id}
+                                            onclick={handleAction}>
+                                        </lightning-button>
+                                    </div>
                                 </td>
                             </tr>
                         </template>
                     </tbody>
                 </table>
             </div>
-        </template>
-        <template if:false={hasItems}>
-            <div class="slds-p-around_medium slds-text-align_center empty-state">
-                <p class="slds-text-body_regular slds-m-bottom_x-small">No items need attention.</p>
-                <p class="slds-text-body_small">Use the readiness bar above to filter, or view My Active Work below.</p>
-            </div>
-        </template>
-    </div>
+        </div>
+    </lightning-card>
 </template>

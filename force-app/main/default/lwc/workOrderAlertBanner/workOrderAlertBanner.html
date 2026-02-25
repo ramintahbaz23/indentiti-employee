@@ -1,0 +1,12 @@
+<template>
+    <template if:true={isVisible}>
+        <div class="alert-banner">
+            <span class="slds-icon_container alert-icon">&#9888;</span>
+            <div class="alert-content">
+                <div class="alert-title">Mall Alert — Silas Creek Crossing</div>
+                <div class="alert-message">Compliance requirements must be acknowledged before dispatch. Certificate of Insurance on file expires Mar 1, 2026.</div>
+            </div>
+            <button type="button" onclick={handleDismiss} class="slds-button slds-button_icon" aria-label="Dismiss">×</button>
+        </div>
+    </template>
+</template>

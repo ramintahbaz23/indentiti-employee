@@ -7,8 +7,9 @@ let state = {
     sortDirection: 'asc',
     filters: {
         created: '',
-        expirationDate: '',
-        status: 'all'
+        paidDate: '',
+        corporate: '',
+        status: []
     },
     searchQuery: '',
     pageSize: 25,
@@ -171,19 +172,26 @@ function filterEstimates() {
         });
     }
 
-    // Expiration date filter
-    if (state.filters.expirationDate) {
-        const filterDate = new Date(state.filters.expirationDate);
+    // Paid date filter (for estimates, use expirationDate if no paidDate)
+    if (state.filters.paidDate) {
+        const filterDate = new Date(state.filters.paidDate);
         filtered = filtered.filter(est => {
-            if (!est.expirationDate) return false;
-            const estDate = new Date(est.expirationDate);
+            const dateVal = est.paidDate || est.expirationDate;
+            if (!dateVal) return false;
+            const estDate = new Date(dateVal);
             return estDate.toDateString() === filterDate.toDateString();
         });
     }
 
-    // Status filter
-    if (state.filters.status !== 'all') {
-        filtered = filtered.filter(est => est.status === state.filters.status);
+    // Corporate filter
+    if (state.filters.corporate) {
+        const q = state.filters.corporate.toLowerCase();
+        filtered = filtered.filter(est => (est.corporate && est.corporate.toLowerCase().includes(q)) || (est.brand && est.brand.toLowerCase().includes(q)));
+    }
+
+    // Status filter (multi-select)
+    if (state.filters.status && state.filters.status.length) {
+        filtered = filtered.filter(est => state.filters.status.includes(est.status));
     }
 
     // Sort
@@ -256,11 +264,14 @@ function updateActiveFilterTags() {
     if (state.filters.created) {
         tags.push({ type: 'created', label: `Created: ${state.filters.created}`, value: state.filters.created });
     }
-    if (state.filters.expirationDate) {
-        tags.push({ type: 'expirationDate', label: `Expiration: ${state.filters.expirationDate}`, value: state.filters.expirationDate });
+    if (state.filters.paidDate) {
+        tags.push({ type: 'paidDate', label: `Paid Date: ${state.filters.paidDate}`, value: state.filters.paidDate });
     }
-    if (state.filters.status !== 'all') {
-        tags.push({ type: 'status', label: `Status: ${state.filters.status}`, value: state.filters.status });
+    if (state.filters.corporate) {
+        tags.push({ type: 'corporate', label: `Corporate: ${state.filters.corporate}`, value: state.filters.corporate });
+    }
+    if (state.filters.status && state.filters.status.length) {
+        tags.push({ type: 'status', label: `Status: ${state.filters.status.join(', ')}`, value: state.filters.status });
     }
     
     state.activeFilterTags = tags;
@@ -732,25 +743,6 @@ function exportToCsv() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Filter toggle button
-    const filterToggleBtn = document.getElementById('filterToggleBtn');
-    const filtersSection = document.getElementById('filtersSection');
-    
-    if (filterToggleBtn && filtersSection) {
-        filterToggleBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            filtersSection.classList.toggle('expanded');
-            const isExpanded = filtersSection.classList.contains('expanded');
-            filterToggleBtn.setAttribute('aria-expanded', isExpanded);
-            // Add/remove expanded class to button for border styling
-            if (isExpanded) {
-                filterToggleBtn.classList.add('expanded');
-            } else {
-                filterToggleBtn.classList.remove('expanded');
-            }
-        });
-    }
-    
     // Initialize state
     if (typeof estimatesData !== 'undefined' && estimatesData && Array.isArray(estimatesData)) {
         state.estimates = estimatesData;
@@ -781,10 +773,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    const filterExpiration = document.getElementById('filterExpiration');
-    if (filterExpiration) {
-        filterExpiration.addEventListener('change', (e) => {
-            state.filters.expirationDate = e.target.value;
+    const filterPaidDate = document.getElementById('filterPaidDate');
+    if (filterPaidDate) {
+        filterPaidDate.addEventListener('change', (e) => {
+            state.filters.paidDate = e.target.value;
             state.currentPage = 1;
             filterEstimates();
         });
@@ -792,52 +784,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const filterStatus = document.getElementById('filterStatus');
     if (filterStatus) {
-        filterStatus.addEventListener('change', (e) => {
-            state.filters.status = e.target.value;
+        filterStatus.addEventListener('change', () => {
+            state.filters.status = Array.from(filterStatus.selectedOptions).map(opt => opt.value);
             state.currentPage = 1;
             filterEstimates();
-            updateCardActiveStates();
         });
     }
     
-    // Metric card click handlers for filtering
-    const cardPending = document.getElementById('cardPending');
-    const cardApproved = document.getElementById('cardApproved');
-    const cardRejected = document.getElementById('cardRejected');
-    const cardAll = document.getElementById('cardAll');
-    
-    function handleCardClick(status) {
-        // Toggle: if clicking the same status, clear filter (set to 'all')
-        if (state.filters.status === status) {
-            state.filters.status = 'all';
-        } else {
-            state.filters.status = status;
-        }
-        
-        // Update status dropdown to match
-        if (filterStatus) {
-            filterStatus.value = state.filters.status;
-        }
-        
-        state.currentPage = 1;
-        filterEstimates();
-        updateCardActiveStates();
-    }
-    
-    if (cardPending) {
-        cardPending.addEventListener('click', () => handleCardClick('Pending'));
-    }
-    
-    if (cardApproved) {
-        cardApproved.addEventListener('click', () => handleCardClick('Approved'));
-    }
-    
-    if (cardRejected) {
-        cardRejected.addEventListener('click', () => handleCardClick('Rejected'));
-    }
-    
-    if (cardAll) {
-        cardAll.addEventListener('click', () => handleCardClick('all'));
+    const filterCorporate = document.getElementById('filterCorporate');
+    if (filterCorporate) {
+        filterCorporate.addEventListener('input', () => {
+            state.filters.corporate = filterCorporate.value.trim();
+            state.currentPage = 1;
+            filterEstimates();
+        });
     }
     
     // Clear all filters
@@ -847,17 +807,28 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             state.filters = {
                 created: '',
-                expirationDate: '',
-                status: 'all'
+                paidDate: '',
+                corporate: '',
+                status: []
             };
             state.searchQuery = '';
             if (searchInput) searchInput.value = '';
             if (filterCreated) filterCreated.value = '';
-            if (filterExpiration) filterExpiration.value = '';
-            if (filterStatus) filterStatus.value = 'all';
+            if (filterPaidDate) filterPaidDate.value = '';
+            if (filterCorporate) filterCorporate.value = '';
+            if (filterStatus) {
+                Array.from(filterStatus.options).forEach(opt => { opt.selected = false; });
+            }
             state.currentPage = 1;
             filterEstimates();
-            updateCardActiveStates();
+        });
+    }
+    
+    // PDF button
+    const pdfBtn = document.getElementById('pdfBtn');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+            alert('PDF export would run here.');
         });
     }
     

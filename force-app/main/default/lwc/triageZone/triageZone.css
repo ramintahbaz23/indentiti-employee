@@ -1,4 +1,39 @@
-/* Triage zone: slds-card with single custom rule for visual hierarchy */
+/* Card: red top border for needs-attention hierarchy */
 .triage-zone {
     border-top: 3px solid #ba0517;
+}
+
+/* Category label colors - P1: Emergency Tickets, Mall Alert / Compliance */
+.triage-table .category-p1 {
+    color: #ba0517;
+    font-weight: 600;
+}
+
+/* P2: Escalations, Unread Client Note, Quote Status Conflict, Media Not Consolidated */
+.triage-table .category-p2 {
+    color: #a86403;
+    font-weight: 600;
+}
+
+/* P3: Missing Required Media, Quotes Pending Send */
+.triage-table .category-p3 {
+    color: #0176d3;
+    font-weight: 600;
+}
+
+.triage-table .category-default {
+    color: #3e3e3c;
+    font-weight: 600;
+}
+
+/* Expandable drawer row */
+.triage-drawer-row .triage-drawer-cell {
+    background-color: #f3f2f2;
+    border-bottom: 1px solid #dddbda;
+    vertical-align: top;
+}
+
+.triage-drawer {
+    display: flex;
+    align-items: center;
 }

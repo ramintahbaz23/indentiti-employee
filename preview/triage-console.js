@@ -279,8 +279,126 @@
             }
         });
 
+        // New Work Order modal
         var newWoBtn = document.getElementById('newWorkOrderBtn');
-        if (newWoBtn) newWoBtn.addEventListener('click', function () { showToast('New Work Order – coming soon', 'info'); });
+        var newWorkOrderModal = document.getElementById('newWorkOrderModal');
+        var modalOverlay = document.getElementById('modalOverlay');
+        var modalClose = document.getElementById('modalClose');
+        var cancelWorkOrderBtn = document.getElementById('cancelWorkOrder');
+        var saveAndNewBtn = document.getElementById('saveAndNewWorkOrder');
+        var newWorkOrderForm = document.getElementById('newWorkOrderForm');
+
+        function openNewWorkOrderModal() {
+            if (newWorkOrderModal) {
+                newWorkOrderModal.style.display = 'flex';
+                newWorkOrderModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                document.addEventListener('keydown', handleModalEscape);
+            }
+        }
+        function closeNewWorkOrderModal() {
+            if (newWorkOrderModal) {
+                newWorkOrderModal.style.display = 'none';
+                newWorkOrderModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                document.removeEventListener('keydown', handleModalEscape);
+            }
+        }
+        function handleModalEscape(e) {
+            if (e.key === 'Escape' && newWorkOrderModal && newWorkOrderModal.style.display === 'flex') {
+                closeNewWorkOrderModal();
+            }
+        }
+        if (newWoBtn) newWoBtn.addEventListener('click', openNewWorkOrderModal);
+        if (modalOverlay) modalOverlay.addEventListener('click', closeNewWorkOrderModal);
+        if (modalClose) modalClose.addEventListener('click', closeNewWorkOrderModal);
+        if (cancelWorkOrderBtn) cancelWorkOrderBtn.addEventListener('click', closeNewWorkOrderModal);
+
+        var vendorTypesOptions = ['Installer', 'Electrician', 'Painter', 'Roofing', 'Manufacturer'];
+        var vendorTypesAvailable = document.getElementById('vendorTypesAvailable');
+        var vendorTypesChosen = document.getElementById('vendorTypesChosen');
+        var vendorTypesValue = document.getElementById('vendorTypesValue');
+        var vendorTypesAddBtn = document.getElementById('vendorTypesAdd');
+        var vendorTypesRemoveBtn = document.getElementById('vendorTypesRemove');
+
+        function updateVendorTypesHidden() {
+            if (!vendorTypesValue) return;
+            var chosen = vendorTypesChosen ? [].slice.call(vendorTypesChosen.querySelectorAll('li')).map(function (li) { return li.getAttribute('data-value') || li.textContent; }) : [];
+            vendorTypesValue.value = chosen.length ? chosen.join(',') : '';
+        }
+        function initVendorTypesDualList() {
+            if (!vendorTypesAvailable || !vendorTypesChosen) return;
+            vendorTypesAvailable.innerHTML = '';
+            vendorTypesChosen.innerHTML = '';
+            vendorTypesOptions.forEach(function (v) {
+                var li = document.createElement('li');
+                li.setAttribute('data-value', v);
+                li.textContent = v;
+                li.tabIndex = 0;
+                li.addEventListener('click', function () {
+                    vendorTypesAvailable.querySelectorAll('li').forEach(function (el) { el.classList.remove('selected'); });
+                    vendorTypesChosen.querySelectorAll('li').forEach(function (el) { el.classList.remove('selected'); });
+                    this.classList.add('selected');
+                });
+                vendorTypesAvailable.appendChild(li);
+            });
+            updateVendorTypesHidden();
+        }
+        if (vendorTypesAddBtn && vendorTypesAvailable && vendorTypesChosen) {
+            vendorTypesAddBtn.addEventListener('click', function () {
+                var sel = vendorTypesAvailable.querySelector('li.selected');
+                if (!sel) return;
+                sel.classList.remove('selected');
+                vendorTypesAvailable.removeChild(sel);
+                vendorTypesChosen.appendChild(sel);
+                updateVendorTypesHidden();
+            });
+        }
+        if (vendorTypesRemoveBtn && vendorTypesAvailable && vendorTypesChosen) {
+            vendorTypesRemoveBtn.addEventListener('click', function () {
+                var sel = vendorTypesChosen.querySelector('li.selected');
+                if (!sel) return;
+                sel.classList.remove('selected');
+                vendorTypesChosen.removeChild(sel);
+                vendorTypesAvailable.appendChild(sel);
+                updateVendorTypesHidden();
+            });
+        }
+        initVendorTypesDualList();
+
+        if (newWorkOrderForm) {
+            newWorkOrderForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                updateVendorTypesHidden();
+                if (!vendorTypesValue || !vendorTypesValue.value.trim()) {
+                    showToast('Please select at least one Vendor Type', 'warning');
+                    return;
+                }
+                if (this.checkValidity()) {
+                    showToast('Work order saved successfully', 'success');
+                    closeNewWorkOrderModal();
+                } else this.reportValidity();
+            });
+        }
+        if (saveAndNewBtn) {
+            saveAndNewBtn.addEventListener('click', function () {
+                var form = document.getElementById('newWorkOrderForm');
+                updateVendorTypesHidden();
+                if (!vendorTypesValue || !vendorTypesValue.value.trim()) {
+                    showToast('Please select at least one Vendor Type', 'warning');
+                    return;
+                }
+                if (form && form.checkValidity()) {
+                    showToast('Work order saved. Creating new…', 'success');
+                    closeNewWorkOrderModal();
+                    setTimeout(function () {
+                        if (form) form.reset();
+                        initVendorTypesDualList();
+                        openNewWorkOrderModal();
+                    }, 400);
+                } else if (form) form.reportValidity();
+            });
+        }
 
         var filtersToggle = document.getElementById('activeWorkFiltersToggle');
         var filterBar = document.getElementById('activeWorkFilterBar');

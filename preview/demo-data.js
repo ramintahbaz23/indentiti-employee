@@ -220,6 +220,7 @@ const invoicesData = [
         checkAch: 'ACH-4567',
         paidDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
         status: 'Paid',
+        statusYesNo: 'Yes',
         comment: 'ACH payment processed',
         hasPdf: true
     }

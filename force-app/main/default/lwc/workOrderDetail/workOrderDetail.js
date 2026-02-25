@@ -1,68 +1,44 @@
-import { LightningElement, api, track } from 'lwc';
-import getWorkOrder from '@salesforce/apex/WorkOrderDetailController.getWorkOrder';
-import getEstimates from '@salesforce/apex/WorkOrderDetailController.getEstimates';
-import getInvoices from '@salesforce/apex/WorkOrderDetailController.getInvoices';
+import { LightningElement, track } from 'lwc';
 
 export default class WorkOrderDetail extends LightningElement {
-    _recordId;
-    @api get recordId() { return this._recordId; }
-    set recordId(val) {
-        this._recordId = val;
-        if (val) this.load();
-    }
-    @track detail = null;
-    @track estimates = [];
-    @track invoices = [];
-    @track isLoading = true;
-    @track error;
+    @track workOrder = {
+        id: 'WO-00000001',
+        title: 'Work Order WO-00000001',
+        subtitle: 'Heating System Repair',
+        status: 'action-needed',
+        statusLabel: 'Open',
+        priority: 'NPW1',
+        issue: 'Heating System Repair',
+        createdOn: '02/23/2026 12:08 PM',
+        originalEta: '03/04/2026 12:08 PM',
+        scheduled: '02/28/2026 12:08 PM',
+        division: 'Facility Maintenance',
+        classification: 'General Maintenance',
+        nteAmount: '$550.00',
+        quoteDate: '-',
+        completeDate: '-',
+        recall: 'NO',
+        weather: 'Sunny, 45°F',
+        storeLocalTime: '12:08 PM EST',
+        requestedBy: 'Mark Johnson',
+        description: 'Manager reports needing several ceiling tiles cut and replaced in back of store.'
+    };
 
-    get hasRecordId() {
-        return this._recordId && this._recordId.length > 0;
-    }
+    @track showAlert = true;
 
-    get workOrderTitle() {
-        return this.detail ? `Work Order: ${this.detail.workOrderNumber}` : 'Work Order Detail';
-    }
-
-    get formattedNteAmount() {
-        if (!this.detail || this.detail.nteAmount == null) return '–';
-        return '$' + Number(this.detail.nteAmount).toFixed(2);
-    }
-
-    get hasEstimates() {
-        return this.estimates && this.estimates.length > 0;
-    }
-
-    get hasInvoices() {
-        return this.invoices && this.invoices.length > 0;
-    }
-
-    get estimatesCount() {
-        return this.estimates ? this.estimates.length : 0;
-    }
-
-    get invoicesCount() {
-        return this.invoices ? this.invoices.length : 0;
+    get headerButtons() {
+        const configs = {
+            'action-needed': ['Print View', 'Create Child Work Order', 'Dispatch', 'Decline'],
+            'awaiting-approval': ['Print View', 'Create Child Work Order', 'Approve', 'Reject'],
+            'awaiting-estimate': ['Print View', 'Create Child Work Order', 'Create Estimate'],
+            'in-progress': ['Print View', 'Create Child Work Order', 'Escalate'],
+            'on-hold': ['Print View', 'Create Child Work Order', 'Resume', 'Decline'],
+            'completed': ['Print View']
+        };
+        return configs[this.workOrder.status] || configs['action-needed'];
     }
 
-    load() {
-        if (!this._recordId) return;
-        this.isLoading = true;
-        Promise.all([
-            getWorkOrder({ recordId: this._recordId }),
-            getEstimates({ workOrderId: this._recordId }),
-            getInvoices({ workOrderId: this._recordId })
-        ])
-            .then(([wo, est, inv]) => {
-                this.detail = wo;
-                this.estimates = est || [];
-                this.invoices = inv || [];
-                this.isLoading = false;
-            })
-            .catch(err => {
-                this.error = err.body?.message || err.message;
-                this.detail = null;
-                this.isLoading = false;
-            });
+    handleDismissAlert() {
+        this.showAlert = false;
     }
 }

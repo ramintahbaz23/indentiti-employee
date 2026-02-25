@@ -1,0 +1,25 @@
+.comm-container {
+    padding: 0.5rem 0;
+}
+
+.recipient-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.action-required-row {
+    margin-bottom: 0.5rem;
+}
+
+.category-amber { color: #a86403; font-weight: 600; }
+.category-blue { color: #0176d3; font-weight: 600; }
+.kpi-red { color: #ba0517; }
+.kpi-amber { color: #a86403; }
+.sla-red { color: #ba0517; font-weight: 600; }
+.sla-amber { color: #a86403; font-weight: 600; }
+.sla-neutral { color: #706e6b; }
+.media-bad { color: #ba0517; font-weight: 600; }
+.media-ok { color: #2e844a; font-weight: 600; }

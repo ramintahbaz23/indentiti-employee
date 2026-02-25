@@ -1,0 +1,157 @@
+<template>
+    <lightning-card>
+        <div class="slds-card__header slds-grid">
+            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h2 class="slds-text-heading_medium">Work Order Number</h2>
+                    <p class="slds-text-body_small slds-text-color_weak">Create or edit work order details</p>
+                </div>
+            </div>
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <span class="slds-text-body_small slds-text-color_weak slds-m-right_small">OWNER</span>
+                <span class="slds-text-body_regular slds-font-weight_bold">Purple Corporate Manager</span>
+                <lightning-button-icon icon-name="utility:close" variant="bare" onclick={handleClose} class="slds-m-left_small"></lightning-button-icon>
+            </div>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label">
+                    <abbr class="slds-required" title="required">*</abbr>
+                    Account
+                </label>
+                <div class="slds-form-element__control">
+                    <lightning-combobox
+                        name="account"
+                        placeholder="Search accounts..."
+                        options={accountOptions}
+                        value={formData.account}
+                        onchange={handleAccountChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <template if:true={showAccountConfirm}>
+                <div class="account-confirm slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:check" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <span>Account selected — Work Order will be linked to
+                        <strong>{formData.accountName}</strong>
+                        · {accountMeta.activeQuotes} active quotes
+                        · {accountMeta.vendorsOnFile} vendor on file
+                    </span>
+                </div>
+            </template>
+
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label">
+                    <abbr class="slds-required" title="required">*</abbr>
+                    Vendor Type
+                </label>
+                <div class="vendor-types slds-grid slds-wrap slds-gutters_x-small">
+                    <template for:each={vendorTypes} for:item="vendor">
+                        <div key={vendor.value} class="slds-col slds-size_1-of-3 slds-m-bottom_x-small">
+                            <lightning-input
+                                type="checkbox"
+                                label={vendor.label}
+                                value={vendor.value}
+                                data-vendor-value={vendor.value}
+                                onchange={handleVendorChange}>
+                            </lightning-input>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        label="Original NTE"
+                        name="nte"
+                        value={formData.nte}
+                        step="0.01"
+                        required
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Priority"
+                        name="priority"
+                        value={formData.priority}
+                        options={priorityOptions}
+                        required
+                        onchange={handleInputChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Trade"
+                        name="trade"
+                        value={formData.trade}
+                        options={tradeOptions}
+                        required
+                        onchange={handleTradeChange}>
+                    </lightning-combobox>
+                    <a class="slds-text-body_small slds-m-top_x-small dependency-link" onclick={handleTradeDependency} role="button" tabindex="0">What issue types are available for this trade?</a>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Issue Type"
+                        name="issueType"
+                        value={formData.issueType}
+                        options={issueTypeOptions}
+                        onchange={handleInputChange}>
+                    </lightning-combobox>
+                    <a class="slds-text-body_small slds-m-top_x-small dependency-link" onclick={handleIssueDependency} role="button" tabindex="0">What trades handle this issue type?</a>
+                </div>
+            </div>
+
+            <div class="slds-form-element slds-m-bottom_medium">
+                <lightning-combobox
+                    label="Is this a recall?"
+                    name="recall"
+                    value={formData.recall}
+                    options={recallOptions}
+                    onchange={handleInputChange}>
+                </lightning-combobox>
+            </div>
+
+            <div class="slds-section slds-m-bottom_medium">
+                <h3 class="slds-section__title slds-text-heading_small slds-m-bottom_small">Description</h3>
+                <lightning-textarea
+                    label="Description"
+                    name="description"
+                    value={formData.description}
+                    required
+                    onchange={handleInputChange}>
+                </lightning-textarea>
+            </div>
+
+            <div class="slds-section slds-m-bottom_medium">
+                <h3 class="slds-section__title slds-text-heading_small slds-m-bottom_small">Attachments</h3>
+                <lightning-file-upload
+                    label=""
+                    name="attachments"
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}
+                    multiple>
+                </lightning-file-upload>
+            </div>
+
+        </div>
+
+        <div slot="footer" class="slds-grid slds-grid_align-end slds-gutters_x-small">
+            <lightning-button label="Cancel" onclick={handleClose}></lightning-button>
+            <lightning-button label="Save & New" onclick={handleSaveAndNew}></lightning-button>
+            <lightning-button label="Save & Create Estimate" variant="neutral" onclick={handleSaveAndCreateEstimate}></lightning-button>
+            <lightning-button label="Save" variant="brand" onclick={handleSave}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

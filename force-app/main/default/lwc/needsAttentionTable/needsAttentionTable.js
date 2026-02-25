@@ -1,86 +1,51 @@
-import { LightningElement, api } from 'lwc';
-
-const CATEGORY_SHORT_LABEL = {
-    emergency: 'Emergency',
-    escalation: 'Escalation',
-    unreadClientNote: 'Unread Client Note',
-    slaBreach: 'SLA',
-    mediaMissing: 'Media',
-    mediaNotConsolidated: 'Media Not Consolidated',
-    quotePending: 'Quote',
-    quoteConflict: 'Quote',
-    mallAlert: 'Mall',
-};
-
-/** P2 = amber: escalation, quoteConflict, mediaNotConsolidated, unreadClientNote */
-function getPriorityTier(row) {
-    const isP1 =
-        row.category === 'emergency' ||
-        row.category === 'mallAlert' ||
-        (row.slaAtRisk && (row.ageDays === 0 || row.ageDays === '0'));
-    if (isP1) return 'p1';
-    const isP2 =
-        row.category === 'escalation' ||
-        row.category === 'quoteConflict' ||
-        row.category === 'mediaNotConsolidated' ||
-        row.category === 'unreadClientNote';
-    if (isP2) return 'p2';
-    return 'p3';
-}
-
-/** Contextual action label per category */
-function getActionLabel(row) {
-    switch (row.category) {
-        case 'emergency':
-            return 'Open WO';
-        case 'escalation':
-            return 'Respond';
-        case 'unreadClientNote':
-            return 'Read & Respond →';
-        case 'mediaMissing':
-            return 'Upload Media';
-        case 'mediaNotConsolidated':
-            return 'Consolidate →';
-        case 'quotePending':
-            return 'Send Quote';
-        case 'mallAlert':
-            return 'Acknowledge →';
-        case 'quoteConflict':
-            return 'Resolve';
-        default:
-            return 'Open WO';
-    }
-}
+import { LightningElement, track } from 'lwc';
 
 export default class NeedsAttentionTable extends LightningElement {
-    @api items = [];
+    @track items = [
+        { id: '1', category: 'Emergency Tickets', workOrder: 'WO-00000001', client: 'Acme Corp', status: 'Open', reason: 'Safety issue', slaAge: '0d', action: 'Open WO', priority: 'p1' },
+        { id: '2', category: 'Escalations', workOrder: 'WO-00000002', client: 'Retail Co', status: 'In Progress', reason: 'Client escalation', slaAge: '2d', action: 'Respond', priority: 'p2' },
+        { id: '3', category: 'Unread Client Note', workOrder: 'WO-00000007', client: 'Metro Signs', status: 'In Progress', reason: 'Client note via portal, unread', slaAge: '1d', action: 'Read & Respond', priority: 'p2' },
+        { id: '4', category: 'Missing Required Media', workOrder: 'WO-00000003', client: 'Mall Tenant A', status: 'Scheduled', reason: 'Pre-work photos missing', slaAge: '5d', action: 'Upload Media', priority: 'p3' },
+        { id: '5', category: 'Media Not Consolidated', workOrder: 'WO-00000007', client: 'Child WO Parent', status: 'Scheduled', reason: 'Child photos not rolled up', slaAge: '2d', action: 'Consolidate', priority: 'p2' },
+        { id: '6', category: 'Quotes Pending Send', workOrder: 'WO-00000004', client: 'Store B', status: 'Pending', reason: 'Quote approved, not sent', slaAge: '1d', action: 'Send Quote', priority: 'p3' },
+        { id: '7', category: 'Mall Alert / Compliance', workOrder: 'WO-00000006', client: 'Mall West', status: 'Open', reason: 'Compliance requirements not acknowledged', slaAge: '0d', action: 'Acknowledge', priority: 'p1' },
+        { id: '8', category: 'Quote Status Conflict', workOrder: 'WO-00000005', client: 'Chain X', status: 'On Hold', reason: 'Status mismatch', slaAge: '3d', action: 'Resolve', priority: 'p2' }
+    ];
 
-    get hasItems() {
-        return this.items && this.items.length > 0;
+    @track expandedRow = null;
+
+    get itemCount() {
+        return this.items.length;
     }
 
-    get itemsWithMeta() {
-        if (!this.items) return [];
-        return this.items.map((row) => {
-            const tier = getPriorityTier(row);
-            return {
-                ...row,
-                rowClass: `slds-hint-parent needs-attention-row category-priority-${tier}`,
-                categoryBadgeClass: `slds-text-body_regular category-badge category-priority-${tier}`,
-                categoryShortLabel: CATEGORY_SHORT_LABEL[row.category] || row.categoryLabel,
-                actionLabel: getActionLabel(row),
-            };
-        });
+    get cardTitle() {
+        return `Needs Attention (${this.itemCount})`;
+    }
+
+    handleRowToggle(event) {
+        const rowId = event.currentTarget.dataset.id;
+        this.expandedRow = this.expandedRow === rowId ? null : rowId;
+    }
+
+    get itemsWithState() {
+        const expandedId = this.expandedRow;
+        return this.items.map(item => ({
+            ...item,
+            isExpanded: expandedId === item.id,
+            categoryClass: this.getCategoryClass(item.priority),
+            drawerKey: item.id + '-drawer',
+            isExpandedIcon: expandedId === item.id ? 'utility:chevrondown' : 'utility:chevronright'
+        }));
     }
 
     handleAction(event) {
-        const workOrderId = event.currentTarget?.dataset?.id || event.target?.dataset?.id;
-        this.dispatchEvent(
-            new CustomEvent('viewworkorder', {
-                detail: { workOrderId, id: workOrderId },
-                bubbles: true,
-                composed: true,
-            })
-        );
+        const id = event.currentTarget.dataset.id;
+        this.dispatchEvent(new CustomEvent('viewworkorder', { detail: { id }, bubbles: true, composed: true }));
+    }
+
+    getCategoryClass(priority) {
+        if (priority === 'p1') return 'slds-text-color_error';
+        if (priority === 'p2') return 'category-amber';
+        return 'category-blue';
     }
 }

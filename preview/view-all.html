@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Work Orders - List View</title>
+    <title>All Work Requests - List View</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/salesforce-lightning-design-system/2.22.2/styles/salesforce-lightning-design-system.min.css">
     <style>
         :root {
@@ -536,6 +536,11 @@
                 flex-wrap: wrap;
                 gap: 0.75rem;
             }
+
+            .search-bar-narrow {
+                width: 100%;
+                max-width: 100%;
+            }
             
             .filters-section {
                 padding-left: 1.5rem;
@@ -630,10 +635,10 @@
         /* Search and Filters Bar - align with table (use main-container padding only) */
         .search-filters-bar {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 1.25rem 1.5rem;
+            align-items: flex-end;
             margin-bottom: 1.5rem;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
         }
 
         .search-bar {
@@ -642,10 +647,64 @@
             position: relative;
         }
 
+        .search-bar-narrow {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-bar-narrow input {
+            height: 36px;
+        }
+
+        .inline-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .inline-filter-group.inline-filter-status {
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        .inline-filter-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .inline-filter-multiselect {
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            background: #ffffff;
+            height: 52px;
+            min-height: 52px;
+            font-family: inherit;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .inline-filter-multiselect:focus {
+            outline: none;
+            border-color: var(--sf-brand);
+            box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
+        }
+
+        .inline-filter-multiselect option {
+            padding: 0.2rem 0;
+        }
+
         .search-actions {
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            margin-left: auto;
             flex-shrink: 0;
         }
 
@@ -817,12 +876,35 @@
             box-shadow: 0 0 3px rgba(0, 51, 102, 0.3);
         }
 
+        .filter-multiselect {
+            min-height: 52px;
+            height: auto;
+            padding: 0.4rem 0.75rem;
+            appearance: auto;
+            background-image: none;
+        }
+
+        .filter-multiselect option {
+            padding: 0.2rem 0;
+        }
+
         .active-filters {
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
             flex-wrap: wrap;
-            padding-top: 1rem;
-            border-top: 1px solid #f3f2f2;
+            min-height: 28px;
+            padding: 4px 0;
+            align-items: center;
+            font-size: 12px;
+            color: #706e6b;
+        }
+
+        .active-filters-empty {
+            color: #706e6b;
+        }
+
+        .active-filters:has(.slds-pill) .active-filters-empty {
+            display: none;
         }
 
         .filter-tag {
@@ -890,6 +972,11 @@
             background: #ecebea;
         }
 
+        th[data-sort="trade"] {
+            color: #080707;
+            font-weight: 800;
+        }
+
         .sort-icon {
             display: inline-block;
             margin-left: 0.25rem;
@@ -929,30 +1016,33 @@
             display: inline-block;
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.025em;
         }
 
         .priority-badge.priority-critical {
             background: transparent;
-            color: var(--priority-critical);
+            color: #ba0517;
         }
 
         .priority-badge.priority-high {
             background: transparent;
-            color: var(--priority-high);
+            color: #ba0517;
         }
 
         .priority-badge.priority-medium {
             background: transparent;
-            color: var(--priority-medium);
+            color: #a86403;
         }
 
         .priority-badge.priority-low {
             background: transparent;
-            color: var(--priority-low);
+            color: #706e6b;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
         }
 
         .wo-number {
@@ -969,25 +1059,32 @@
             font-weight: 500;
         }
 
+        .status-text.status-needs-attention {
+            color: #ba0517;
+            font-weight: 600;
+        }
+        .status-text.status-in-progress {
+            color: #0176d3;
+            font-weight: 600;
+        }
+        .status-text.status-on-hold {
+            color: #a86403;
+            font-weight: 600;
+        }
+        .status-text.status-awaiting-estimate {
+            color: #5c4a00;
+            font-weight: 600;
+        }
+        .status-text.status-completed {
+            color: #2e844a;
+            font-weight: 600;
+        }
+
         .status-new { color: #003366; }
         .status-assigned { color: #fe9339; }
         .status-scheduled { color: #003366; }
-        .status-in-progress { color: #003366; }
         .status-dispatched { color: #fe9339; }
-        .status-completed { color: #2e844a; }
         .status-proposal-pending { color: #fe9339; }
-        .status-text.status-needs-attention { 
-            color: #c23934; 
-            background: transparent;
-        }
-        .status-text.status-in-progress { 
-            color: #003366; 
-            background: transparent;
-        }
-        .status-text.status-on-hold { 
-            color: #fe9339; 
-            background: transparent;
-        }
         .status-needs-follow-up { color: #9065b0; }
 
         .priority-status-combined {
@@ -1927,73 +2024,42 @@
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
+    <!-- Top nav -->
     <header class="top-nav">
         <div class="top-nav-container">
-            <!-- Left Section: Logo + Navigation -->
             <div class="top-nav-left">
                 <nav class="top-nav-menu" id="topNavMenu">
-                    <a href="index.html" class="nav-item">
-                        <span class="nav-item-text">Home</span>
-                    </a>
-                    <a href="view-all.html" class="nav-item active">
-                        <span class="nav-item-text">Work Orders</span>
-                    </a>
+                    <a href="index.html" class="nav-item"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item active"><span class="nav-item-text">Work Requests</span></a>
                     <div class="nav-item-dropdown">
-                        <a href="#" class="nav-item">
-                            <span class="nav-item-text">Accounting</span>
-                        </a>
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
                         <div class="nav-dropdown-menu">
-                            <a href="invoices.html" class="nav-dropdown-item">
-                                <span>Invoices</span>
-                            </a>
-                            <a href="estimates.html" class="nav-dropdown-item">
-                                <span>Estimates</span>
-                            </a>
+                            <a href="invoices.html" class="nav-dropdown-item"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
                         </div>
                     </div>
-                    <a href="approval-requests.html" class="nav-item">
-                        <span class="nav-item-text">Approval Requests</span>
-                    </a>
-                    <a href="client-store-info.html" class="nav-item">
-                        <span class="nav-item-text">My Store List</span>
-                    </a>
-                    <a href="training-faqs.html" class="nav-item">
-                        <span class="nav-item-text">Training and FAQs</span>
-                    </a>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
                 </nav>
             </div>
-            
-            <!-- Right Section: User Info -->
             <div class="top-nav-right">
-                <!-- User Info -->
                 <div class="top-nav-user">
-                    <div class="notification-bell" id="notificationBell">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notification-badge has-count" id="notificationBadge">3</span>
                     </div>
                     <div class="user-avatar">MT</div>
                     <div class="user-details">
                         <div class="user-name">Mark Johnson</div>
-                        <div class="user-role">Purple Corporate Manager</div>
+                        <div class="user-role">Title</div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
@@ -2002,13 +2068,13 @@
         <main class="main-container">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="index.html">Home</a> > All Work Orders
+            <a href="index.html">Dashboard</a> > All Work Requests
         </div>
 
         <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
-                <h1 class="page-title">All Work Orders</h1>
+                <h1 class="page-title">All Work Requests</h1>
             </div>
             <div class="page-actions">
                 <button class="btn-secondary" id="exportBtn">
@@ -2017,14 +2083,23 @@
                 </button>
                 <button class="btn-primary" id="newWorkOrderBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New Work Order
+                    New Work Request
                 </button>
             </div>
         </div>
 
+        <!-- Quick filter tabs -->
+        <div class="quick-filter-tabs" id="quickFilterTabs" style="display: flex; gap: 0; border-bottom: 1px solid #dddbda; margin-bottom: 16px;">
+            <button type="button" class="quick-filter-tab active" data-quick-filter="all" style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: #0176d3; border: none; border-bottom: 2px solid #0176d3; background: none; cursor: pointer;">All (<span class="quick-filter-count">0</span>)</button>
+            <button type="button" class="quick-filter-tab" data-quick-filter="action-needed" style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: #706e6b; border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer;">Action Needed (<span class="quick-filter-count">0</span>)</button>
+            <button type="button" class="quick-filter-tab" data-quick-filter="in-progress" style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: #706e6b; border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer;">In Progress (<span class="quick-filter-count">0</span>)</button>
+            <button type="button" class="quick-filter-tab" data-quick-filter="awaiting-approval" style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: #706e6b; border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer;">Awaiting Approval (<span class="quick-filter-count">0</span>)</button>
+            <button type="button" class="quick-filter-tab" data-quick-filter="completed" style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: #706e6b; border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer;">Completed (<span class="quick-filter-count">0</span>)</button>
+        </div>
+
         <!-- Search and Filters Bar -->
         <div class="search-filters-bar">
-            <div class="search-bar">
+            <div class="search-bar search-bar-narrow">
                 <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
                 <input type="text" id="searchInput" placeholder="Search...">
             </div>
@@ -2059,6 +2134,16 @@
                         <option value="Proposal Submitted">Proposal Submitted</option>
                         <option value="Work Complete">Work Complete</option>
                         <option value="Invoice Submitted">Invoice Submitted</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select multiple class="filter-select filter-multiselect" id="filterStatusInline" title="Select one or more statuses">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -2105,9 +2190,6 @@
                         <option value="AZ">Arizona</option>
                     </select>
                 </div>
-            </div>
-            <div class="active-filters" id="activeFilters">
-                <!-- Active filter tags will be rendered here -->
             </div>
         </div>
 
@@ -2268,7 +2350,7 @@
                 <div class="modal-header-right">
                     <div class="header-field">
                         <label>Owner</label>
-                        <div class="header-value">Purple Corporate Manager</div>
+                        <div class="header-value">Mark Johnson</div>
                     </div>
                     <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
                 </div>
@@ -2287,6 +2369,29 @@
                                     </svg>
                                 </span>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; font-weight: 700; color: #080707; display: block; margin-bottom: 6px;">
+                            Vendor Type <span style="color: #ba0517;">*</span>
+                        </label>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3e3e3c; cursor: pointer;">
+                                <input type="checkbox" name="vendorType" value="Installer" style="accent-color: #0176d3;"> Installer
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3e3e3c; cursor: pointer;">
+                                <input type="checkbox" name="vendorType" value="Electrician" style="accent-color: #0176d3;"> Electrician
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3e3e3c; cursor: pointer;">
+                                <input type="checkbox" name="vendorType" value="Painter" style="accent-color: #0176d3;"> Painter
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3e3e3c; cursor: pointer;">
+                                <input type="checkbox" name="vendorType" value="Roofing" style="accent-color: #0176d3;"> Roofing
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3e3e3c; cursor: pointer;">
+                                <input type="checkbox" name="vendorType" value="Manufacturer" style="accent-color: #0176d3;"> Manufacturer
+                            </label>
                         </div>
                     </div>
                     

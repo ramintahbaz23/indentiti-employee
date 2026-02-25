@@ -147,6 +147,75 @@ function getApproverRole(approvedBy) {
     return approvedBy || 'Approved';
 }
 
+// Extra columns (Priority, Trade, Store/Location, Assigned To, SLA Age) per work order
+function getExtraColumnsHtml(workOrderNumber) {
+    const data = {
+        'WO-00149331': {
+            priority: '<span style="color:#ba0517;font-weight:700;font-size:11px;">CRITICAL</span>',
+            trade: 'Plumbing',
+            storeLocation: 'Cerritos, CA Warhammer',
+            assignedTo: 'Mark Johnson',
+            slaAge: '<span style="color:#ba0517;font-weight:600;">0d</span>'
+        },
+        'WO-00150125': {
+            priority: '<span style="color:#a86403;font-weight:700;font-size:11px;">NPW1</span>',
+            trade: 'Janitorial',
+            storeLocation: 'Irvine, CA Purple Store',
+            assignedTo: 'Sarah Johnson',
+            slaAge: '<span style="color:#a86403;font-weight:600;">2d</span>'
+        },
+        'WO-00150298': {
+            priority: '<span style="color:#a86403;font-weight:700;font-size:11px;">NPW1</span>',
+            trade: 'Electrical',
+            storeLocation: 'Portland, OR Purple Store',
+            assignedTo: 'Mark Johnson',
+            slaAge: '<span style="color:#706e6b;font-weight:600;">5d</span>'
+        },
+        'WO-00149887': {
+            priority: '<span style="color:#a86403;font-weight:700;font-size:11px;">NPW1</span>',
+            trade: 'Lighting',
+            storeLocation: 'Bakersfield, CA Purple Store',
+            assignedTo: 'Sarah Johnson',
+            slaAge: '<span style="color:#a86403;font-weight:600;">1d</span>'
+        },
+        'WO-00150438': {
+            priority: '<span style="color:#a86403;font-weight:700;font-size:11px;">NPW1</span>',
+            trade: 'Fire Services',
+            storeLocation: 'Miami, FL Purple Store',
+            assignedTo: 'Mark Johnson',
+            slaAge: '<span style="color:#706e6b;font-weight:600;">3d</span>'
+        }
+    };
+    const row = data[workOrderNumber] || {
+        priority: '<span class="empty-cell">—</span>',
+        trade: '<span class="empty-cell">—</span>',
+        storeLocation: '<span class="empty-cell">—</span>',
+        assignedTo: '<span class="empty-cell">—</span>',
+        slaAge: '<span class="empty-cell">—</span>'
+    };
+    return `<td>${row.priority}</td><td>${row.trade}</td><td>${row.storeLocation}</td><td>${row.assignedTo}</td><td>${row.slaAge}</td>`;
+}
+
+function getStatusPillHtml(est) {
+    if (est.status === 'Pending') {
+        return '<span class="slds-badge">Pending</span>';
+    }
+    if (est.status === 'Approved' && est.approvedBy) {
+        const role = getApproverRole(est.approvedBy);
+        if (role === 'Manager Approved') {
+            return '<span class="slds-badge slds-theme_success">Manager Approved</span>';
+        }
+        return '<span class="slds-badge slds-theme_success">Client Approved</span>';
+    }
+    if (est.status === 'Approved') {
+        return '<span class="slds-badge slds-theme_success">Manager Approved</span>';
+    }
+    if (est.status === 'Rejected') {
+        return '<span class="slds-badge slds-theme_error">Rejected</span>';
+    }
+    return '<span class="slds-badge">' + (est.status || 'Pending') + '</span>';
+}
+
 // Filter Functions
 function filterEstimates() {
     let filtered = [...state.estimates];
@@ -313,15 +382,8 @@ function renderTable() {
     tbody.innerHTML = state.displayedEstimates.map(est => {
         const isSelected = state.selectedEstimates.has(est.id);
         
-        // Status display - plain text with color, show approver if approved
-        const statusColor = getStatusColor(est.status);
-        let statusText = est.status;
-        if (est.status === 'Approved' && est.approvedBy) {
-            // Map approver name to role
-            const approverRole = getApproverRole(est.approvedBy);
-            statusText = `${est.status} (${approverRole})`;
-        }
-        const statusDisplay = `<span style="color: ${statusColor}; font-weight: 500;">${statusText}</span>`;
+        // Status display - pill-style indicator
+        const statusDisplay = getStatusPillHtml(est);
         
         // Actions dropdown
         const actionsDropdown = `
@@ -348,13 +410,10 @@ function renderTable() {
                 </td>
                 <td><a href="work-order-details.html?id=${encodeURIComponent(est.workOrderNumber)}" class="work-order-number">${est.workOrderNumber}</a></td>
                 <td>${formatDateTime(est.created)}</td>
-                <td>${est.estimationDate ? formatDate(est.estimationDate) : (est.expirationDate ? formatDate(est.expirationDate) : '<span class="empty-cell">Empty</span>')}</td>
-                <td>${est.brand || '<span class="empty-cell">Empty</span>'}</td>
+                ${getExtraColumnsHtml(est.workOrderNumber)}
                 <td class="amount">${formatCurrency(est.total)}</td>
-                <td class="amount">${formatCurrency(est.taxAmount)}</td>
                 <td class="amount">${formatCurrency(est.grandTotal)}</td>
                 <td>${statusDisplay}</td>
-                <td>${est.comment || '<span class="empty-cell">Empty</span>'}</td>
                 <td>${actionsDropdown}</td>
             </tr>
         `;
@@ -371,14 +430,10 @@ function updateColumnVisibility() {
     const columnMap = {
         'colWorkOrder': 1,
         'colCreated': 2,
-        'colEstimation': 3,
-        'colBrand': 4,
-        'colTotal': 5,
-        'colTaxAmount': 6,
-        'colGrandTotal': 7,
-        'colStatus': 8,
-        'colComment': 9,
-        'colActions': 10
+        'colTotal': 9,
+        'colGrandTotal': 10,
+        'colStatus': 11,
+        'colActions': 12
     };
     
     const table = document.querySelector('table');
@@ -448,8 +503,13 @@ function updateSortIcons() {
     });
 }
 
+function toggleSelectAll(masterCheckbox) {
+    const rowCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+    rowCheckboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+}
+
 function updateSelectAllCheckbox() {
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectAllCheckbox = document.getElementById('select-all');
     if (!selectAllCheckbox) return;
     
     const allCheckboxes = document.querySelectorAll('.estimate-checkbox');
@@ -491,6 +551,7 @@ function updateSummary() {
     if (approvedEl) approvedEl.textContent = approved.toString();
     if (rejectedEl) rejectedEl.textContent = rejected.toString();
     if (countEl) countEl.textContent = totalCount.toString();
+    updateTicketSubtabs();
 }
 
 function updateCardActiveStates() {
@@ -505,6 +566,22 @@ function updateCardActiveStates() {
     if (activeCard) {
         activeCard.classList.add('active');
     }
+}
+
+function updateTicketSubtabs() {
+    const pending = state.estimates.filter(est => est.status === 'Pending').length;
+    const approved = state.estimates.filter(est => est.status === 'Approved').length;
+    const rejected = state.estimates.filter(est => est.status === 'Rejected').length;
+    const totalCount = state.estimates.length;
+    const counts = { all: totalCount, Pending: pending, Approved: approved, Rejected: rejected };
+    document.querySelectorAll('.ticket-subtab').forEach(btn => {
+        const tab = btn.getAttribute('data-ticket-tab');
+        const countSpan = btn.querySelector('.ticket-subtab-count');
+        if (countSpan) countSpan.textContent = (counts[tab] != null ? counts[tab] : 0).toString();
+        const isActive = state.filters.status === tab;
+        btn.style.color = isActive ? '#0176d3' : '#706e6b';
+        btn.style.borderBottom = isActive ? '2px solid #0176d3' : '2px solid transparent';
+    });
 }
 
 function getTotalPages() {
@@ -795,6 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentPage = 1;
             filterEstimates();
             updateCardActiveStates();
+            updateTicketSubtabs();
         });
     }
     
@@ -838,6 +916,19 @@ document.addEventListener('DOMContentLoaded', () => {
         cardAll.addEventListener('click', () => handleCardClick('all'));
     }
     
+    // Ticket subtabs: filter by status and sync with dropdown/cards
+    document.querySelectorAll('.ticket-subtab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const status = btn.getAttribute('data-ticket-tab');
+            state.filters.status = status;
+            if (filterStatus) filterStatus.value = status;
+            state.currentPage = 1;
+            filterEstimates();
+            updateCardActiveStates();
+            updateTicketSubtabs();
+        });
+    });
+    
     // Clear all filters
     const clearAll = document.getElementById('clearAll');
     if (clearAll) {
@@ -856,23 +947,14 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentPage = 1;
             filterEstimates();
             updateCardActiveStates();
+            updateTicketSubtabs();
         });
     }
     
-    // Select All checkbox
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    // Select All checkbox (toggleSelectAll is called via onclick; sync state and indeterminate on change)
+    const selectAllCheckbox = document.getElementById('select-all');
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', (e) => {
-            const checkboxes = document.querySelectorAll('.estimate-checkbox');
-            checkboxes.forEach(cb => {
-                cb.checked = e.target.checked;
-                const estId = cb.dataset.estimateId;
-                if (e.target.checked) {
-                    state.selectedEstimates.add(estId);
-                } else {
-                    state.selectedEstimates.delete(estId);
-                }
-            });
+        selectAllCheckbox.addEventListener('change', () => {
             updateSelectAllCheckbox();
         });
     }
@@ -1053,6 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSummary();
     updateSortIcons();
     updateCardActiveStates();
+    updateTicketSubtabs();
     updateFilterBadge();
     updateCsvButtonLabel();
 });

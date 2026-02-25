@@ -1,0 +1,64 @@
+<template>
+    <div class="comm-container">
+        <lightning-button-group class="slds-m-bottom_small">
+            <lightning-button
+                label="Internal Note"
+                variant={internalVariant}
+                onclick={setInternal}>
+            </lightning-button>
+            <lightning-button
+                label="Client Message"
+                variant={clientVariant}
+                onclick={setClient}>
+            </lightning-button>
+        </lightning-button-group>
+
+        <template if:true={isInternal}>
+            <lightning-textarea
+                label="Internal Note"
+                placeholder="Add an internal note...">
+            </lightning-textarea>
+            <lightning-button
+                label="Post Note"
+                variant="brand"
+                class="slds-m-top_small">
+            </lightning-button>
+        </template>
+
+        <template if:false={isInternal}>
+            <div class="slds-m-bottom_small">
+                <label class="slds-form-element__label">Recipients</label>
+                <div class="recipient-pills">
+                    <span class="slds-pill">
+                        <span class="slds-pill__label">Sarah Johnson — Store Manager</span>
+                        <button type="button" class="slds-button slds-button_icon slds-pill__remove" aria-label="Remove">×</button>
+                    </span>
+                    <button type="button" class="slds-button slds-button_neutral slds-m-left_x-small">+ Add Recipient</button>
+                </div>
+            </div>
+            <lightning-select
+                label="Template"
+                value={selectedTemplate}
+                options={templateOptions}>
+            </lightning-select>
+            <lightning-textarea
+                label="Message"
+                placeholder="Write a client-facing message...">
+            </lightning-textarea>
+            <div class="action-required-row slds-m-top_small">
+                <lightning-input
+                    type="checkbox"
+                    label="Mark as Action Required"
+                    name="actionRequired">
+                </lightning-input>
+            </div>
+            <div class="slds-m-top_small slds-grid slds-grid_align-spread">
+                <span class="slds-text-color_weak slds-text-body_small">Sends via MuleSoft → FEXA</span>
+                <lightning-button
+                    label="Send to Client →"
+                    variant="brand">
+                </lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

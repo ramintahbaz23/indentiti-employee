@@ -9,7 +9,7 @@ let state = {
         created: '',
         paidDate: '',
         corporate: '',
-        status: 'all'
+        status: []  // array of selected statuses; empty = all
     },
     searchQuery: '',
     pageSize: 25,
@@ -35,6 +35,14 @@ function formatDateTime(date) {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) + 
            ' ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function escapeHtmlComment(str) {
+    if (str == null) return '';
+    const s = Array.isArray(str) ? str.join('\n') : String(str);
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
 }
 
 function getStatusSLDSClass(status) {
@@ -133,8 +141,8 @@ function filterInvoices() {
     }
 
     // Status filter
-    if (state.filters.status !== 'all') {
-        filtered = filtered.filter(inv => inv.status === state.filters.status);
+    if (state.filters.status && state.filters.status.length) {
+        filtered = filtered.filter(inv => state.filters.status.includes(inv.status));
     }
 
     // Sort
@@ -232,8 +240,8 @@ function updateActiveFilterTags() {
     if (state.filters.corporate) {
         tags.push({ type: 'corporate', label: `Corporate: ${state.filters.corporate}`, value: state.filters.corporate });
     }
-    if (state.filters.status !== 'all') {
-        tags.push({ type: 'status', label: `Status: ${state.filters.status}`, value: state.filters.status });
+    if (state.filters.status && state.filters.status.length) {
+        tags.push({ type: 'status', label: `Status: ${state.filters.status.join(', ')}`, value: state.filters.status });
     }
     
     state.activeFilterTags = tags;
@@ -272,10 +280,10 @@ function renderTable() {
     
     if (!tbody) return;
     
-    if (state.filteredInvoices.length === 0) {
+        if (state.filteredInvoices.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="15" style="text-align: center; padding: 3rem;">
+                <td colspan="17" style="text-align: center; padding: 3rem;">
                     <div style="color: #706e6b;">No invoices found matching your criteria.</div>
                 </td>
             </tr>
@@ -333,8 +341,15 @@ function renderTable() {
                 <td class="amount">${inv.paidAmount > 0 ? formatCurrency(inv.paidAmount) : '<span class="empty-cell">Empty</span>'}</td>
                 <td>${inv.checkAch || '<span class="empty-cell">Empty</span>'}</td>
                 <td>${inv.paidDate ? formatDate(inv.paidDate) : '<span class="empty-cell">Empty</span>'}</td>
+                <td class="cell-status-dropdown">
+                    <select class="invoice-status-yesno" data-invoice-id="${inv.id}" title="Status" aria-label="Status">
+                        <option value="" ${(inv.statusYesNo !== 'Yes' && inv.statusYesNo !== 'No') ? 'selected' : ''}>--</option>
+                        <option value="Yes" ${inv.statusYesNo === 'Yes' ? 'selected' : ''}>Yes</option>
+                        <option value="No" ${inv.statusYesNo === 'No' ? 'selected' : ''}>No</option>
+                    </select>
+                </td>
                 <td>${statusDisplay}</td>
-                <td>${inv.comment || '<span class="empty-cell">Empty</span>'}</td>
+                <td class="cell-comment">${inv.comment ? escapeHtmlComment(inv.comment) : '<span class="empty-cell">Empty</span>'}</td>
                 <td>${actionsDropdown}</td>
             </tr>
         `;
@@ -361,9 +376,10 @@ function updateColumnVisibility() {
         'colPaidAmount': 10,
         'colCheckAch': 11,
         'colPaidDate': 12,
-        'colStatus': 13,
-        'colComment': 14,
-        'colActions': 15
+        'colStatusYesNo': 13,
+        'colStatus': 14,
+        'colComment': 15,
+        'colActions': 16
     };
     
     const table = document.querySelector('table');
@@ -427,7 +443,19 @@ function attachTableListeners() {
             updateSelectAllCheckbox();
         });
     });
-    
+
+    // Status (Yes/No) dropdown
+    document.querySelectorAll('.invoice-status-yesno').forEach(select => {
+        select.addEventListener('change', (e) => {
+            const invId = e.target.dataset.invoiceId;
+            const value = e.target.value;
+            const inv = state.invoices.find(inv => inv.id === invId);
+            if (inv) inv.statusYesNo = value || undefined;
+            const filteredInv = state.filteredInvoices.find(inv => inv.id === invId);
+            if (filteredInv) filteredInv.statusYesNo = value || undefined;
+        });
+    });
+
     // Sortable column headers
     document.querySelectorAll('.sortable').forEach(header => {
         header.addEventListener('click', () => {
@@ -545,66 +573,9 @@ function approveInvoice(invoiceId) {
     }
 }
 
-// Store current invoice ID being rejected
-let currentRejectionInvoiceId = null;
-
 function rejectInvoice(invoiceId) {
-    currentRejectionInvoiceId = invoiceId;
-    const modal = document.getElementById('rejectionModal');
-    const textarea = document.getElementById('rejectionReason');
-    const confirmBtn = document.getElementById('confirmRejectionBtn');
-    if (modal && textarea) {
-        textarea.value = '';
-        modal.classList.add('show');
-        textarea.focus();
-        // Disable confirm button initially
-        if (confirmBtn) {
-            confirmBtn.disabled = true;
-        }
-    }
+    // Rejection modal removed – no-op
 }
-
-function closeRejectionModal() {
-    const modal = document.getElementById('rejectionModal');
-    const textarea = document.getElementById('rejectionReason');
-    const confirmBtn = document.getElementById('confirmRejectionBtn');
-    if (modal) {
-        modal.classList.remove('show');
-    }
-    if (textarea) {
-        textarea.value = '';
-    }
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-    }
-    currentRejectionInvoiceId = null;
-}
-
-function confirmRejection() {
-    const textarea = document.getElementById('rejectionReason');
-    const reason = textarea ? textarea.value.trim() : '';
-    
-    if (!reason) {
-        alert('Please provide a reason for rejection.');
-        if (textarea) {
-            textarea.focus();
-        }
-        return;
-    }
-    
-    if (!currentRejectionInvoiceId) {
-        return;
-    }
-    
-    const invoice = state.invoices.find(inv => inv.id === currentRejectionInvoiceId);
-    if (invoice) {
-        invoice.status = 'Rejected';
-        invoice.comment = `Rejected: ${reason}`;
-        filterInvoices();
-        closeRejectionModal();
-    }
-}
-
 
 function exportToCsv() {
     const headers = [
@@ -659,25 +630,15 @@ function exportToCsv() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Filter toggle button
-    const filterToggleBtn = document.getElementById('filterToggleBtn');
-    const filtersSection = document.getElementById('filtersSection');
-    
-    if (filterToggleBtn && filtersSection) {
-        filterToggleBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            filtersSection.classList.toggle('expanded');
-            const isExpanded = filtersSection.classList.contains('expanded');
-            filterToggleBtn.setAttribute('aria-expanded', isExpanded);
-            // Add/remove expanded class to button for border styling
-            if (isExpanded) {
-                filterToggleBtn.classList.add('expanded');
-            } else {
-                filterToggleBtn.classList.remove('expanded');
-            }
+    // PDF button
+    const pdfBtn = document.getElementById('pdfBtn');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+            // PDF export – in a real app would generate/download PDF
+            alert('PDF export would run here (e.g. current view or selected invoices).');
         });
     }
-    
+
     // Initialize state
     if (typeof invoicesData !== 'undefined') {
         state.invoices = invoicesData;
@@ -724,13 +685,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const filterStatus = document.getElementById('filterStatus');
     if (filterStatus) {
-        filterStatus.addEventListener('change', (e) => {
-            state.filters.status = e.target.value;
+        filterStatus.addEventListener('change', () => {
+            state.filters.status = Array.from(filterStatus.selectedOptions).map(opt => opt.value);
             state.currentPage = 1;
             filterInvoices();
         });
     }
-    
+
     // Clear all filters
     const clearAll = document.getElementById('clearAll');
     if (clearAll) {
@@ -740,14 +701,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 created: '',
                 paidDate: '',
                 corporate: '',
-                status: 'all'
+                status: []
             };
             state.searchQuery = '';
             if (searchInput) searchInput.value = '';
             if (filterCreated) filterCreated.value = '';
             if (filterPaidDate) filterPaidDate.value = '';
             if (filterCorporate) filterCorporate.value = '';
-            if (filterStatus) filterStatus.value = 'all';
+            if (filterStatus) {
+                Array.from(filterStatus.options).forEach(opt => { opt.selected = false; });
+            }
             state.currentPage = 1;
             filterInvoices();
         });
@@ -808,51 +771,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    
-    // Rejection Modal Event Listeners
-    const rejectionModal = document.getElementById('rejectionModal');
-    const closeRejectionModalBtn = document.getElementById('closeRejectionModal');
-    const cancelRejectionBtn = document.getElementById('cancelRejectionBtn');
-    const confirmRejectionBtn = document.getElementById('confirmRejectionBtn');
-    const rejectionReasonTextarea = document.getElementById('rejectionReason');
-    
-    if (closeRejectionModalBtn) {
-        closeRejectionModalBtn.addEventListener('click', closeRejectionModal);
-    }
-    
-    if (cancelRejectionBtn) {
-        cancelRejectionBtn.addEventListener('click', closeRejectionModal);
-    }
-    
-    if (confirmRejectionBtn) {
-        confirmRejectionBtn.addEventListener('click', confirmRejection);
-    }
-    
-    // Close modal when clicking outside
-    if (rejectionModal) {
-        rejectionModal.addEventListener('click', (e) => {
-            if (e.target === rejectionModal) {
-                closeRejectionModal();
-            }
-        });
-    }
-    
-    // Close modal on Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && rejectionModal && rejectionModal.classList.contains('show')) {
-            closeRejectionModal();
-        }
-    });
-    
-    // Enable/disable confirm button based on textarea content
-    if (rejectionReasonTextarea && confirmRejectionBtn) {
-        rejectionReasonTextarea.addEventListener('input', (e) => {
-            confirmRejectionBtn.disabled = !e.target.value.trim();
-        });
-        // Initially disable the button
-        confirmRejectionBtn.disabled = true;
-    }
-
     
     // Desktop dropdown hover for Accounting menu
     const accountingDropdown = document.querySelector('.nav-item-dropdown');
@@ -927,23 +845,47 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFilterBadge();
 });
 
-// Toggle actions dropdown
+// Toggle actions dropdown – position with fixed so it stays in view
 window.toggleActionsDropdown = function(invoiceId) {
     const dropdown = document.getElementById(`actionsDropdown-${invoiceId}`);
     if (!dropdown) return;
+    const btn = document.querySelector(`.actions-dropdown-btn[data-invoice-id="${invoiceId}"]`);
     
     // Close all other dropdowns
     document.querySelectorAll('.actions-dropdown-menu').forEach(menu => {
         if (menu.id !== `actionsDropdown-${invoiceId}`) {
             menu.style.display = 'none';
+            menu.style.position = '';
+            menu.style.left = '';
+            menu.style.top = '';
+            menu.style.right = '';
         }
     });
     
-    // Toggle current dropdown
-    if (dropdown.style.display === 'none') {
-        dropdown.style.display = 'block';
-    } else {
+    if (dropdown.style.display === 'block') {
         dropdown.style.display = 'none';
+        dropdown.style.position = '';
+        dropdown.style.left = '';
+        dropdown.style.top = '';
+        dropdown.style.right = '';
+        return;
+    }
+    
+    dropdown.style.display = 'block';
+    if (btn) {
+        const rect = btn.getBoundingClientRect();
+        const menuWidth = 150;
+        const menuHeight = 200;
+        const pad = 8;
+        let left = rect.right - menuWidth;
+        let top = rect.bottom + pad;
+        if (left < pad) left = pad;
+        if (left + menuWidth > window.innerWidth - pad) left = window.innerWidth - menuWidth - pad;
+        if (top + menuHeight > window.innerHeight - pad) top = Math.max(pad, rect.top - menuHeight - pad);
+        dropdown.style.position = 'fixed';
+        dropdown.style.left = left + 'px';
+        dropdown.style.top = top + 'px';
+        dropdown.style.right = 'auto';
     }
 };
 

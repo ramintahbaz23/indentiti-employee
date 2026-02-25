@@ -1,0 +1,95 @@
+<template>
+    <div class="slds-page-header slds-m-bottom_medium">
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <div>
+                <h1 class="slds-text-heading_large">Tickets</h1>
+                <span class="slds-text-color_weak slds-text-body_small">{totalCount} requests</span>
+            </div>
+            <div class="slds-grid slds-gutters_x-small">
+                <lightning-button label="Select All" onclick={handleSelectAll}></lightning-button>
+                <lightning-button label="CSV (ALL)" icon-name="utility:download" onclick={handleExport}></lightning-button>
+                <lightning-button label="+ Create Ticket" variant="brand" onclick={handleCreate}></lightning-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="kpi-grid slds-m-bottom_medium">
+        <template for:each={kpis} for:item="kpi">
+            <div key={kpi.id} class="slds-card kpi-card">
+                <div class="slds-card__body slds-card__body_inner">
+                    <p class="kpi-label">{kpi.label}</p>
+                    <p class={kpi.valueClass}>{kpi.value}</p>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <div class="filter-tabs slds-m-bottom_medium">
+        <template for:each={tabs} for:item="tab">
+            <button key={tab.value} data-value={tab.value} class={tab.cssClass} onclick={handleTabClick}>{tab.label}</button>
+        </template>
+    </div>
+
+    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+        <lightning-input type="search" placeholder="Search approval requests..." class="slds-col slds-grow" onchange={handleSearch}></lightning-input>
+        <lightning-button label="Filters" icon-name="utility:filterList" class="slds-m-left_small" onclick={handleFilters}></lightning-button>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col" style="width:40px;">
+                        <input type="checkbox" id="select-all" onchange={handleSelectAllCheckbox} aria-label="Select all">
+                    </th>
+                    <th scope="col"><span class="slds-truncate">Work Order #</span></th>
+                    <th scope="col"><span class="slds-truncate">Created</span></th>
+                    <th scope="col"><span class="slds-truncate">Priority</span></th>
+                    <th scope="col"><span class="slds-truncate">Trade</span></th>
+                    <th scope="col"><span class="slds-truncate">Store / Location</span></th>
+                    <th scope="col"><span class="slds-truncate">Assigned To</span></th>
+                    <th scope="col"><span class="slds-truncate">SLA Age</span></th>
+                    <th scope="col"><span class="slds-truncate">Total</span></th>
+                    <th scope="col"><span class="slds-truncate">Grand Total</span></th>
+                    <th scope="col"><span class="slds-truncate">Status</span></th>
+                    <th scope="col"><span class="slds-truncate">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={filteredTickets} for:item="ticket">
+                    <tr key={ticket.id}>
+                        <td>
+                            <input type="checkbox" data-id={ticket.id} checked={ticket.selected} onchange={handleRowCheckboxChange} aria-label="Select row">
+                        </td>
+                        <td><a href={ticket.detailUrl} class="slds-truncate">{ticket.workOrderNumber}</a></td>
+                        <td><span class="slds-truncate">{ticket.created}</span></td>
+                        <td><span class={ticket.priorityClass}>{ticket.priority}</span></td>
+                        <td><span class="slds-truncate">{ticket.trade}</span></td>
+                        <td><span class="slds-truncate">{ticket.storeLocation}</span></td>
+                        <td><span class="slds-truncate">{ticket.assignedTo}</span></td>
+                        <td><span class={ticket.slaClass}>{ticket.slaAge}</span></td>
+                        <td><span class="slds-truncate">{ticket.total}</span></td>
+                        <td><span class="slds-truncate">{ticket.grandTotal}</span></td>
+                        <td><span class={ticket.statusBadgeClass}>{ticket.statusLabel}</span></td>
+                        <td>
+                            <lightning-button-menu alternative-text="Actions" menu-alignment="right">
+                                <lightning-menu-item value="view" label="View"></lightning-menu-item>
+                                <lightning-menu-item value="approve" label="Approve"></lightning-menu-item>
+                                <lightning-menu-item value="reject" label="Reject"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="slds-grid slds-grid_align-spread slds-m-top_small">
+        <span class="slds-text-body_small slds-text-color_weak">{paginationLabel}</span>
+        <div class="slds-grid slds-gutters_x-small">
+            <lightning-select label="" value={pageSizeValue} options={pageSizeOptions} onchange={handlePageSizeChange} class="slds-size_1-of-8"></lightning-select>
+            <lightning-button label="Previous" disabled={isPreviousDisabled} onclick={handlePrevious}></lightning-button>
+            <lightning-button label="Next" disabled={isNextDisabled} onclick={handleNext}></lightning-button>
+        </div>
+    </div>
+</template>

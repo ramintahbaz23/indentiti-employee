@@ -1,56 +1,95 @@
 <template>
-    <template if:true={hasRecordId}>
-        <lightning-card title={workOrderTitle} icon-name="standard:work_order">
-            <div class="slds-card__body slds-card__body_inner">
-                <template if:true={isLoading}>
-                    <div class="slds-align_absolute-center slds-p-around_large">
-                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    <c-work-order-alert-banner></c-work-order-alert-banner>
+
+    <!-- Page Header -->
+    <div class="slds-page-header slds-m-bottom_medium">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:work_order" alternative-text="Work Order" size="small"></lightning-icon>
                     </div>
-                </template>
-                <template if:false={isLoading}>
-                    <template if:true={detail}>
-                        <div class="slds-box slds-m-bottom_medium detail-banner">
-                            <div class="slds-grid slds-wrap slds-gutters">
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Work Order #</span><br/>{detail.workOrderNumber}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Status</span><br/>{detail.status}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Priority</span><br/>{detail.priority}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Trade</span><br/>{detail.trade}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Issue</span><br/>{detail.issue}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Store / Location</span><br/>{detail.storeName} {detail.city} {detail.state}</div>
-                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">NTE Amount</span><br/>{formattedNteAmount}</div>
-                            </div>
-                        </div>
-                        <lightning-tabset>
-                            <lightning-tab label="Files">
-                                <p class="slds-p-around_medium">Files tab – upload and list (ContentVersion) can be added here.</p>
-                            </lightning-tab>
-                            <lightning-tab label="Estimates">
-                                <div class="slds-p-around_medium">
-                                    <template if:true={hasEstimates}>{estimatesCount} estimate(s)</template>
-                                    <template if:false={hasEstimates}>No estimates.</template>
-                                </div>
-                            </lightning-tab>
-                            <lightning-tab label="Invoices">
-                                <div class="slds-p-around_medium">
-                                    <template if:true={hasInvoices}>{invoicesCount} invoice(s)</template>
-                                    <template if:false={hasInvoices}>No invoices.</template>
-                                </div>
-                            </lightning-tab>
-                            <lightning-tab label="Messages">
-                                <p class="slds-p-around_medium">Messages / Chatter feed can be added here.</p>
-                            </lightning-tab>
-                        </lightning-tabset>
-                    </template>
-                    <template if:false={detail}>
-                        <p class="slds-p-around_medium slds-text-color_error">Work order not found.</p>
-                    </template>
-                </template>
+                    <div class="slds-media__body">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle">{workOrder.title}</h1>
+                        <p class="slds-page-header__meta-text slds-text-body_small slds-text-color_weak">{workOrder.subtitle}</p>
+                    </div>
+                </div>
             </div>
-        </lightning-card>
-    </template>
-    <template if:false={hasRecordId}>
-        <lightning-card title="Work Order Detail">
-            <p class="slds-p-around_medium">Open a work order record to view details.</p>
-        </lightning-card>
-    </template>
+            <div class="slds-page-header__col-actions">
+                <div class="slds-page-header__controls">
+                    <span class="slds-badge slds-badge_inverse slds-m-right_small">{workOrder.statusLabel}</span>
+                    <lightning-button-group>
+                        <template for:each={headerButtons} for:item="btn">
+                            <lightning-button key={btn} label={btn} variant="neutral" class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                    </lightning-button-group>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Order Details Card -->
+    <lightning-card title="Work Order Details" class="slds-m-bottom_medium">
+        <div class="slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Priority</span><br/>{workOrder.priority}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Issue</span><br/>{workOrder.issue}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Created</span><br/>{workOrder.createdOn}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Original ETA</span><br/>{workOrder.originalEta}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Scheduled</span><br/>{workOrder.scheduled}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Division</span><br/>{workOrder.division}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Classification</span><br/>{workOrder.classification}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">NTE Amount</span><br/>{workOrder.nteAmount}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Quote Date</span><br/>{workOrder.quoteDate}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Complete Date</span><br/>{workOrder.completeDate}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Recall</span><br/>{workOrder.recall}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Weather</span><br/>{workOrder.weather}</div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3"><span class="slds-text-title_caps slds-text-color_weak">Store Local Time</span><br/>{workOrder.storeLocalTime}</div>
+            </div>
+        </div>
+    </lightning-card>
+
+    <!-- Work Order Summary - full width -->
+    <lightning-card title="Work Order Summary" class="slds-m-bottom_medium">
+        <div class="slds-card__body_inner">
+            <div class="slds-m-bottom_small">
+                <span class="slds-text-title_caps slds-text-color_weak">Requested By</span><br/>{workOrder.requestedBy}
+            </div>
+            <div>
+                <span class="slds-text-title_caps slds-text-color_weak">Description</span><br/>
+                <p class="slds-text-body_regular">{workOrder.description}</p>
+            </div>
+        </div>
+    </lightning-card>
+
+    <!-- Store + Client Details - two column -->
+    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <c-work-order-store-details></c-work-order-store-details>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+            <c-work-order-client-details></c-work-order-client-details>
+        </div>
+    </div>
+
+    <!-- Financial Summary - full width -->
+    <c-work-order-financial-summary class="slds-m-bottom_medium"></c-work-order-financial-summary>
+
+    <!-- Activity Log - full width -->
+    <c-work-order-activity-log class="slds-m-bottom_medium"></c-work-order-activity-log>
+
+    <!-- Tabs -->
+    <lightning-tabset>
+        <lightning-tab label="Messages">
+            <c-client-communication-component></c-client-communication-component>
+        </lightning-tab>
+        <lightning-tab label="Files"></lightning-tab>
+        <lightning-tab label="Estimates">
+            <p class="slds-p-around_medium slds-text-color_weak">
+                CPQ financial data is available in the Financial Summary above.
+            </p>
+        </lightning-tab>
+        <lightning-tab label="Invoices"></lightning-tab>
+        <lightning-tab label="Trips"></lightning-tab>
+    </lightning-tabset>
 </template>

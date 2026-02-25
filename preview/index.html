@@ -1135,6 +1135,113 @@
         .dashboard-card .slds-card__body_inner { padding: 1rem 1.25rem; }
         .dashboard-card .slds-card__body_inner.slds-p-horizontal_none { padding-left: 0; padding-right: 0; }
 
+        /* KPI summary row (between page header and Needs Attention) */
+        .kpi-summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .kpi-card {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .kpi-card-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #3e3e3c;
+        }
+        .kpi-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin: 6px 0 4px;
+        }
+        .kpi-card-sublabel {
+            font-size: 11px;
+            color: #706e6b;
+        }
+
+        /* Dashboard charts row (below My Active Work) */
+        .dashboard-charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .chart-card {
+            background: #ffffff;
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .chart-card .chart-card-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #080707;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dddbda;
+        }
+        .chart-card .chart-card-body {
+            padding: 16px;
+        }
+        .bar-chart-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .bar-chart-row:last-child { margin-bottom: 0; }
+        .bar-chart-label {
+            flex: 0 0 80px;
+            font-size: 13px;
+            color: #3e3e3c;
+        }
+        .bar-chart-track {
+            flex: 1;
+            height: 24px;
+            background: #f3f2f2;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .bar-chart-fill {
+            height: 100%;
+            background: #0176d3;
+            border-radius: 4px;
+            min-width: 4px;
+        }
+        .bar-chart-value {
+            flex: 0 0 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #181818;
+            text-align: right;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .stats-table th,
+        .stats-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .stats-table th {
+            font-weight: 600;
+            color: #3e3e3c;
+            background: #fafaf9;
+        }
+        .stats-table tr:last-child td { border-bottom: none; }
+        .stats-table td:last-child { font-weight: 600; color: #181818; }
+
         /* Needs Attention: now in triage slds-card; table uses slds-table (no custom table CSS here) */
 
         /* My Active Work: slds-table used; only custom = 6px status dots in Media/Quote (no SLDS equivalent) */
@@ -2590,6 +2697,135 @@
             text-decoration: underline;
         }
 
+        /* New Work Order modal: two-column layout and Vendor Types dual-list */
+        .form-section-header { margin-bottom: 1rem; }
+        .form-row-account-legend {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .form-group-account-display { flex: 1; min-width: 0; }
+        .account-display-value {
+            font-size: 0.875rem;
+            color: #181818;
+            padding: 0.5rem 0;
+        }
+        .form-required-legend {
+            font-size: 0.75rem;
+            color: #706e6b;
+            white-space: nowrap;
+        }
+        .form-two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem 2rem;
+            align-items: start;
+        }
+        .form-col { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+        .form-col .form-group { margin-bottom: 0; }
+        .input-with-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-with-search input {
+            padding-right: 2.25rem;
+            width: 100%;
+        }
+        .input-search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #706e6b;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-search-icon svg { width: 16px; height: 16px; }
+        .dual-list-wrap {
+            display: flex;
+            align-items: stretch;
+            gap: 0.5rem;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background: #ffffff;
+        }
+        .dual-list-box {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 140px;
+        }
+        .dual-list-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3e3e3c;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        .dual-list-options {
+            list-style: none;
+            margin: 0;
+            padding: 0.25rem 0;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #fafaf9;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.875rem;
+        }
+        .dual-list-options li {
+            padding: 0.4rem 0.75rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .dual-list-options li:hover { background: #f3f2f2; }
+        .dual-list-options li.selected { background: #e5f2fc; color: #003366; }
+        .dual-list-buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+        .dual-list-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+            background: #ffffff;
+            cursor: pointer;
+            padding: 0;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 12px;
+            transition: all 0.2s;
+        }
+        .dual-list-btn:hover {
+            background-color: #f3f2f2;
+            border-color: #c9c9c9;
+        }
+        .dual-list-add {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23706e6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='5' x2='12' y2='19'%3E%3C/line%3E%3Cline x1='5' y1='12' x2='19' y2='12'%3E%3C/line%3E%3C/svg%3E");
+        }
+        .dual-list-remove {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23706e6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'%3E%3C/line%3E%3C/svg%3E");
+        }
+
+        @media (max-width: 768px) {
+            .form-two-columns { grid-template-columns: 1fr; }
+            .form-row-account-legend { flex-direction: column; }
+            .form-required-legend { order: -1; }
+            .dual-list-wrap { flex-wrap: wrap; }
+            .dual-list-box { min-height: 120px; }
+        }
+
         @media (max-width: 768px) {
             .file-upload-area {
                 padding: 1.5rem 1rem;
@@ -2622,52 +2858,29 @@
     <div class="slds-scope">
     <div class="toast" id="toast"></div>
     
-    <!-- Top Navigation Bar -->
+    <!-- Top nav -->
     <header class="top-nav">
         <div class="top-nav-container">
-            <!-- Left Section: Logo + Navigation -->
             <div class="top-nav-left">
                 <nav class="top-nav-menu" id="topNavMenu">
-                    <a href="index.html" class="nav-item active">
-                        <span class="nav-item-text">Home</span>
-                    </a>
-                    <a href="view-all.html" class="nav-item">
-                        <span class="nav-item-text">Work Orders</span>
-                    </a>
+                    <a href="index.html" class="nav-item active"><span class="nav-item-text">Dashboard</span></a>
+                    <a href="view-all.html" class="nav-item"><span class="nav-item-text">Work Requests</span></a>
                     <div class="nav-item-dropdown">
-                        <a href="#" class="nav-item">
-                            <span class="nav-item-text">Accounting</span>
-                        </a>
+                        <a href="#" class="nav-item"><span class="nav-item-text">Accounting</span></a>
                         <div class="nav-dropdown-menu">
-                            <a href="invoices.html" class="nav-dropdown-item">
-                                <span>Invoices</span>
-                            </a>
-                            <a href="estimates.html" class="nav-dropdown-item">
-                                <span>Estimates</span>
-                            </a>
+                            <a href="invoices.html" class="nav-dropdown-item"><span>Invoices</span></a>
+                            <a href="estimates.html" class="nav-dropdown-item"><span>Estimates</span></a>
                         </div>
                     </div>
-                    <a href="approval-requests.html" class="nav-item">
-                        <span class="nav-item-text">Approval Requests</span>
-                    </a>
-                    <a href="client-store-info.html" class="nav-item">
-                        <span class="nav-item-text">My Store List</span>
-                    </a>
-                    <a href="training-faqs.html" class="nav-item">
-                        <span class="nav-item-text">Training and FAQs</span>
-                    </a>
+                    <a href="approval-requests.html" class="nav-item"><span class="nav-item-text">Tickets</span></a>
+                    <a href="client.html" class="nav-item"><span class="nav-item-text">Client</span></a>
+                    <a href="users.html" class="nav-item"><span class="nav-item-text">Users</span></a>
                 </nav>
             </div>
-            
-            <!-- Right Section: User Info -->
             <div class="top-nav-right">
-                <!-- User Info -->
                 <div class="top-nav-user">
-                    <div class="notification-bell" id="notificationBell">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
+                    <div class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notification-badge has-count" id="notificationBadge">3</span>
                     </div>
                     <div class="user-avatar">MT</div>
@@ -2676,19 +2889,11 @@
                         <div class="user-role">Title</div>
                     </div>
                 </div>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
             </div>
         </div>
-        
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
     </header>
 
@@ -2697,7 +2902,7 @@
         <main class="main-container">
             <!-- Breadcrumb - align with view-all.html -->
             <div class="breadcrumb">
-                <a href="index.html">Home</a> > Operational Triage Console
+                <a href="index.html">Dashboard</a> > Operational Triage Console
             </div>
 
             <!-- Page Header - align with view-all.html -->
@@ -2708,15 +2913,53 @@
                 <div class="page-actions">
                     <button type="button" class="slds-button slds-button_brand" id="newWorkOrderBtn">
                         <svg class="slds-button__icon slds-button__icon_left" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        New Work Order
+                        New Work Request
                     </button>
+                </div>
+            </div>
+
+            <!-- KPI summary row -->
+            <div class="kpi-summary-row">
+                <div class="kpi-card">
+                    <div class="kpi-card-label">Open Emergencies</div>
+                    <div class="kpi-card-value" style="color: #ba0517;">2</div>
+                    <div class="kpi-card-sublabel">Requires immediate action</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-card-label">SLA Breaches Today</div>
+                    <div class="kpi-card-value" style="color: #ba0517;">3</div>
+                    <div class="kpi-card-sublabel">At 0 days remaining</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-card-label">Media Pending</div>
+                    <div class="kpi-card-value" style="color: #ba0517;">4</div>
+                    <div class="kpi-card-sublabel">Missing or not consolidated</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-card-label">Quotes Awaiting Action</div>
+                    <div class="kpi-card-value" style="color: #a86403;">3</div>
+                    <div class="kpi-card-sublabel">Conflicts and pending sends</div>
                 </div>
             </div>
 
             <!-- Triage Zone: Needs Attention table -->
             <div class="triage-zone">
                 <div class="card-body">
-                    <h2 class="section-title-card">Needs Attention (<span id="needsAttentionCount">0</span>)</h2>
+                    <div class="section-title-card card-header-row">
+                        <div class="card-header-left">
+                            <h2 class="card-header-title">Needs Attention (<span id="needsAttentionCount">0</span>)</h2>
+                        </div>
+                        <div class="card-header-right" style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-filters" id="needsAttentionFiltersBtn" aria-label="Show filters">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                <span class="filters-toggle-label">Filters</span>
+                            </button>
+                            <button type="button" class="btn-secondary" id="needsAttentionExportBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Export
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-wrapper">
                         <table class="needs-attention-table triage-table" role="grid">
                             <colgroup>
@@ -2831,6 +3074,59 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Dashboard charts row -->
+            <div class="dashboard-charts-row">
+                <div class="chart-card">
+                    <div class="chart-card-header">Active Tickets by Category</div>
+                    <div class="chart-card-body">
+                        <div class="bar-chart-row">
+                            <span class="bar-chart-label">Emergency</span>
+                            <div class="bar-chart-track"><div class="bar-chart-fill" style="width: 50%; background: #ba0517;"></div></div>
+                            <span class="bar-chart-value">2</span>
+                        </div>
+                        <div class="bar-chart-row">
+                            <span class="bar-chart-label">Escalation</span>
+                            <div class="bar-chart-track"><div class="bar-chart-fill" style="width: 75%; background: #a86403;"></div></div>
+                            <span class="bar-chart-value">3</span>
+                        </div>
+                        <div class="bar-chart-row">
+                            <span class="bar-chart-label">Media</span>
+                            <div class="bar-chart-track"><div class="bar-chart-fill" style="width: 100%; background: #ba0517;"></div></div>
+                            <span class="bar-chart-value">4</span>
+                        </div>
+                        <div class="bar-chart-row">
+                            <span class="bar-chart-label">Quote</span>
+                            <div class="bar-chart-track"><div class="bar-chart-fill" style="width: 75%; background: #a86403;"></div></div>
+                            <span class="bar-chart-value">3</span>
+                        </div>
+                        <div class="bar-chart-row">
+                            <span class="bar-chart-label">Mall</span>
+                            <div class="bar-chart-track"><div class="bar-chart-fill" style="width: 50%; background: #ba0517;"></div></div>
+                            <span class="bar-chart-value">2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">Ticket Statistics</div>
+                    <div class="chart-card-body">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Total Open</td><td>14</td></tr>
+                                <tr><td>Closed This Week</td><td>8</td></tr>
+                                <tr><td>Avg SLA Age</td><td>2.1d</td></tr>
+                                <tr><td>Escalation Rate</td><td>21%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -2852,28 +3148,21 @@
                 </div>
             </div>
             <form id="newWorkOrderForm" class="modal-body">
-                <div class="form-section">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="account">Account <span class="required">*</span></label>
-                            <div class="input-with-clear">
-                                <input type="text" id="account" name="account" required placeholder="Search accounts..." />
-                                <button type="button" class="input-clear" id="clearAccount" style="display: none;" aria-label="Clear account">&times;</button>
-                                <span class="input-dropdown">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                        <path d="M6 9L1 4h10L6 9z" fill="currentColor"/>
-                                    </svg>
-                                </span>
-                            </div>
+                <div class="form-section form-section-header">
+                    <div class="form-row form-row-account-legend">
+                        <div class="form-group form-group-account-display">
+                            <label>Account</label>
+                            <div class="account-display-value" id="accountDisplay">5066 - Minnetonka Country Village</div>
                         </div>
+                        <div class="form-required-legend">* = Required Information</div>
                     </div>
-                    
-                    <div class="form-row">
+                </div>
+                <div class="form-section form-two-columns">
+                    <div class="form-col form-col-left">
                         <div class="form-group">
                             <label for="originalNTE">Original NTE <span class="required">*</span></label>
-                            <input type="number" id="originalNTE" name="originalNTE" required step="0.01" min="0" placeholder="0.00" />
+                            <input type="text" id="originalNTE" name="originalNTE" required inputmode="decimal" placeholder="0.00" value="1,000.00" />
                         </div>
-                        
                         <div class="form-group">
                             <label for="priority">Priority <span class="required">*</span></label>
                             <select id="priority" name="priority" required>
@@ -2881,22 +3170,56 @@
                                 <option value="P1 - Priority 1 Hour">P1 - Priority 1 Hour</option>
                                 <option value="P2 - Priority 2 Hours">P2 - Priority 2 Hours</option>
                                 <option value="P3 - Priority 3 Hours">P3 - Priority 3 Hours</option>
-                                <option value="P4 - Priority 4 Hours" selected>P4 - Priority 4 Hours</option>
+                                <option value="P4 - Priority 4 Hours">P4 - Priority 4 Hours</option>
                                 <option value="P5 - Priority 5 Hours">P5 - Priority 5 Hours</option>
                                 <option value="P6 - Priority 6 Hours">P6 - Priority 6 Hours</option>
                                 <option value="P7 - Priority 7 Hours">P7 - Priority 7 Hours</option>
-                                <option value="P8 - Priority 8 Hours">P8 - Priority 8 Hours</option>
+                                <option value="P8 - Priority 8 Hours" selected>P8 - Priority 8 Hours</option>
                                 <option value="P9 - Priority 9 Hours">P9 - Priority 9 Hours</option>
                                 <option value="P10 - Priority 10 Hours">P10 - Priority 10 Hours</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="isRecall">Is this a recall? <span class="required">*</span></label>
+                            <select id="isRecall" name="isRecall" required>
+                                <option value="No" selected>No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact</label>
+                            <div class="input-with-search">
+                                <input type="text" id="contact" name="contact" placeholder="Search Contacts..." />
+                                <span class="input-search-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="form-row">
+                    <div class="form-col form-col-right">
+                        <div class="form-group">
+                            <label>Vendor Types <span class="required">*</span></label>
+                            <div class="dual-list-wrap" id="vendorTypesDualList">
+                                <div class="dual-list-box dual-list-available">
+                                    <span class="dual-list-label">Available</span>
+                                    <ul class="dual-list-options" id="vendorTypesAvailable" role="listbox"></ul>
+                                </div>
+                                <div class="dual-list-buttons">
+                                    <button type="button" class="dual-list-btn dual-list-add" id="vendorTypesAdd" aria-label="Add selected" title="Add">&nbsp;</button>
+                                    <button type="button" class="dual-list-btn dual-list-remove" id="vendorTypesRemove" aria-label="Remove selected" title="Remove">&nbsp;</button>
+                                </div>
+                                <div class="dual-list-box dual-list-chosen">
+                                    <span class="dual-list-label">Chosen</span>
+                                    <ul class="dual-list-options" id="vendorTypesChosen" role="listbox"></ul>
+                                </div>
+                            </div>
+                            <input type="hidden" id="vendorTypesValue" name="vendorTypes" required />
+                        </div>
                         <div class="form-group">
                             <label for="trade">Trade <span class="required">*</span></label>
                             <select id="trade" name="trade" required>
                                 <option value="">Select Trade</option>
+                                <option value="Automotive" selected>Automotive</option>
                                 <option value="Awnings">Awnings</option>
                                 <option value="Plumbing">Plumbing</option>
                                 <option value="HVAC-R">HVAC-R</option>
@@ -2908,13 +3231,12 @@
                                 <option value="Lighting">Lighting</option>
                                 <option value="General Maintenance">General Maintenance</option>
                             </select>
-                            <a href="#" class="dependency-link">View all dependencies</a>
                         </div>
-                        
                         <div class="form-group">
-                            <label for="issue">Issue Type</label>
-                            <select id="issue" name="issue">
-                                <option value="">Select Issue Type</option>
+                            <label for="issue">Issue <span class="required">*</span></label>
+                            <select id="issue" name="issue" required>
+                                <option value="">Select Issue</option>
+                                <option value="Car Lifts" selected>Car Lifts</option>
                                 <option value="Awnings">Awnings</option>
                                 <option value="Toilet Repair">Toilet Repair</option>
                                 <option value="HVAC Repair">HVAC Repair</option>
@@ -2926,44 +3248,16 @@
                                 <option value="Lighting Upgrade">Lighting Upgrade</option>
                                 <option value="General Maintenance">General Maintenance</option>
                             </select>
-                            <a href="#" class="dependency-link">View all dependencies</a>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="isRecall">Is this a recall?</label>
-                            <select id="isRecall" name="isRecall">
-                                <option value="No" selected>No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
+                            <label for="subject">Subject <span class="required">*</span></label>
+                            <input type="text" id="subject" name="subject" required placeholder="Enter subject" value="TEST SUB" />
                         </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3 class="section-title">Description</h3>
-                    <div class="form-row full-width">
                         <div class="form-group">
                             <label for="description">Description <span class="required">*</span></label>
-                            <textarea id="description" name="description" required rows="5" placeholder="Enter description"></textarea>
+                            <textarea id="description" name="description" required rows="5" placeholder="Enter description">TEST SUB - DEMO</textarea>
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-section file-upload-section">
-                    <h3 class="section-title">Attachments</h3>
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
-                        <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <p class="file-upload-text">Click to upload files or drag and drop</p>
-                        <p class="file-upload-text">Images, PDFs, Documents (Max 10MB per file)</p>
-                    </div>
-                    <div class="uploaded-files-list" id="uploadedFilesList"></div>
                 </div>
             </form>
             <div class="modal-footer">

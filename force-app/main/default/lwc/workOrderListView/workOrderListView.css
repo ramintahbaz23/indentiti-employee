@@ -1,0 +1,26 @@
+.filter-tab {
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #706e6b;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    cursor: pointer;
+}
+
+.filter-tab_active {
+    color: #0176d3;
+    border-bottom: 2px solid #0176d3;
+}
+
+.status-action-needed { color: #ba0517; font-weight: 600; }
+.status-in-progress { color: #0176d3; font-weight: 600; }
+.status-awaiting-approval { color: #a86403; font-weight: 600; }
+.status-awaiting-estimate { color: #5c4a00; font-weight: 600; }
+.status-completed { color: #2e844a; font-weight: 600; }
+
+.priority-critical { color: #ba0517; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.priority-high { color: #ba0517; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.priority-npw1 { color: #a86403; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.priority-low { color: #706e6b; font-weight: 700; font-size: 11px; text-transform: uppercase; }

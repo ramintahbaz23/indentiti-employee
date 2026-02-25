@@ -1,0 +1,22 @@
+.account-confirm {
+    display: flex;
+    align-items: center;
+    background: #effaf3;
+    border: 1px solid #2e844a;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #2e844a;
+}
+
+.dependency-link {
+    display: block;
+    font-size: 11px;
+    color: #0176d3;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.vendor-types {
+    padding: 8px 0;
+}

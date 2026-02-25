@@ -1,0 +1,72 @@
+<template>
+    <div class="slds-page-header slds-m-bottom_medium">
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+            <h1 class="slds-text-heading_large">All Work Requests</h1>
+            <div class="slds-grid slds-gutters_x-small">
+                <lightning-button label="Export" icon-name="utility:download" onclick={handleExport}></lightning-button>
+                <lightning-button label="+ New Work Request" variant="brand" onclick={handleNew}></lightning-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-tabs slds-m-bottom_medium">
+        <template for:each={tabs} for:item="tab">
+            <button key={tab.value} data-value={tab.value} class={tab.cssClass} onclick={handleTabClick}>{tab.label}</button>
+        </template>
+    </div>
+
+    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+        <lightning-input type="search" placeholder="Search..." class="slds-col slds-grow" onchange={handleSearch}></lightning-input>
+        <lightning-button label="Filters" icon-name="utility:filterList" class="slds-m-left_small" onclick={handleFilters}></lightning-button>
+    </div>
+
+    <div class="slds-pill_container slds-m-bottom_small">
+        <template for:each={activeFilters} for:item="filter">
+            <span key={filter.id} class="slds-pill">
+                <span class="slds-pill__label">{filter.label}</span>
+                <button type="button" class="slds-button slds-button_icon slds-pill__remove" data-id={filter.id} onclick={handleRemoveFilter} aria-label="Remove filter">
+                    <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                </button>
+            </span>
+        </template>
+    </div>
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th scope="col"><span class="slds-truncate">Work Order #</span></th>
+                <th scope="col"><span class="slds-truncate">Status</span></th>
+                <th scope="col"><span class="slds-truncate">Priority</span></th>
+                <th scope="col"><span class="slds-truncate">Issue</span></th>
+                <th scope="col"><span class="slds-truncate">Created Date</span></th>
+                <th scope="col"><span class="slds-truncate">End Date</span></th>
+                <th scope="col"><span class="slds-truncate">Trade</span></th>
+                <th scope="col"><span class="slds-truncate">Store / Location</span></th>
+                <th scope="col"><span class="slds-truncate">NTE</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <template for:each={filteredWorkOrders} for:item="wo">
+                <tr key={wo.id}>
+                    <td><a href={wo.detailUrl} class="slds-truncate">{wo.workOrderNumber}</a></td>
+                    <td><span class={wo.statusClass}>{wo.statusLabel}</span></td>
+                    <td><span class={wo.priorityClass}>{wo.priority}</span></td>
+                    <td><span class="slds-truncate">{wo.issue}</span></td>
+                    <td><span class="slds-truncate">{wo.createdDate}</span></td>
+                    <td><span class="slds-truncate">{wo.endDate}</span></td>
+                    <td><span class="slds-truncate">{wo.trade}</span></td>
+                    <td><span class="slds-truncate">{wo.storeLocation}</span></td>
+                    <td><span class="slds-truncate">{wo.nte}</span></td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+
+    <div class="slds-grid slds-grid_align-spread slds-m-top_small">
+        <span class="slds-text-body_small slds-text-color_weak">{paginationLabel}</span>
+        <div class="slds-grid slds-gutters_x-small">
+            <lightning-button label="Previous" disabled={isPreviousDisabled} onclick={handlePrevious}></lightning-button>
+            <lightning-button label="Next" disabled={isNextDisabled} onclick={handleNext}></lightning-button>
+        </div>
+    </div>
+</template>
